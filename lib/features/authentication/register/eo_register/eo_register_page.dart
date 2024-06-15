@@ -1,0 +1,164 @@
+import 'package:eocout_flutter/components/my_background.dart';
+import 'package:eocout_flutter/components/my_logo.dart';
+import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/authentication/login/login_page.dart';
+import 'package:eocout_flutter/features/authentication/register/eo_register/eo_detail_page.dart';
+import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
+import 'package:eocout_flutter/features/authentication/widget/button_divider.dart';
+import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
+import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
+import 'package:eocout_flutter/models/register_data.dart';
+import 'package:eocout_flutter/utils/theme_data.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class EORegisterPage extends StatefulWidget {
+  const EORegisterPage({super.key});
+
+  @override
+  State<EORegisterPage> createState() => _EORegisterPageState();
+}
+
+class _EORegisterPageState extends State<EORegisterPage> {
+  final _formKey = GlobalKey<FormState>();
+  final registerSubject = EOREgisterData();
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MyBackground(
+      body: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(25, 25, 25, 0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(
+                flex: 3,
+                child: ListView(
+                  children: [
+                    const MyLogo(size: 100),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      "Daftar Sebagai\nEO atau Vendor",
+                      style: textStyle.headlineLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 7,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Username',
+                        ),
+                        onChanged: (value) {
+                          registerSubject.username = value;
+                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Username wajib diisi.';
+                          }
+                          if (value.length < 4) {
+                            return 'Username harus terdiri dari 4 karakter atau lebih.';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                        ),
+                        onChanged: (value) {
+                          registerSubject.email = value;
+                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Email wajib diisi.';
+                          }
+                          RegExp emailRegex = RegExp(
+                              r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+                          if (emailRegex.hasMatch(value) == false) {
+                            return 'Email tidak valid.';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      PasswordTextField(onChanged: (value) {
+                        registerSubject.password = value;
+                      }),
+                      const SizedBox(
+                        height: 60,
+                      ),
+                      AuthActionButton(
+                        label: "Daftar",
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            if (kDebugMode) {
+                              print(
+                                  'Register Data : ${registerSubject.toJson()}');
+                            }
+                            navigateTo(
+                              context,
+                              Provider<EOREgisterData>.value(
+                                  value: registerSubject,
+                                  child: const EODetailData()),
+                              transition: TransitionType.fadeIn,
+                            );
+                          }
+                        },
+                      ),
+                      const AuthButtonDivider(),
+                      const GoogleAuthButton(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('Sudah punya akun?'),
+                          TextButton(
+                            onPressed: () {
+                              navigateTo(
+                                  context,
+                                  LoginPage(
+                                    from: widget,
+                                  ),
+                                  transition: TransitionType.fadeIn,
+                                  replace: true);
+                            },
+                            child: const Text('Masuk'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
