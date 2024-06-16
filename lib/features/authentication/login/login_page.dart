@@ -12,9 +12,11 @@ import 'package:eocout_flutter/features/authentication/widget/button_divider.dar
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
 import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
-import 'package:eocout_flutter/features/dashboard/dashboard_page.dart';
+import 'package:eocout_flutter/features/dashboard_page.dart';
+import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/dummy_data.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   final Widget? from;
@@ -69,6 +71,8 @@ class _LoginPageState extends State<LoginPage> {
                         height: 30,
                       ),
                       TextFormField(
+                        controller:
+                            TextEditingController(text: "hello@hello.hello"),
                         decoration: const InputDecoration(
                           labelText: 'Email',
                         ),
@@ -89,6 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: 10,
                       ),
                       PasswordTextField(
+                        controller: TextEditingController(text: "helloHello@1"),
                         onChanged: (value) {},
                       ),
                       const SizedBox(
@@ -112,7 +117,11 @@ class _LoginPageState extends State<LoginPage> {
                             if (snapshot.data!.isAuthenticated) {
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 // TODO : Passing token, dan user data, buat new object untuk terima token dan data user, maybe UserData()
-                                navigateTo(context, const DashboardPage(),
+                                navigateTo(
+                                    context,
+                                    Provider<UserData>.value(
+                                        value: dummyData,
+                                        child: const DashboardPage()),
                                     transition:
                                         TransitionType.slideInFromBottom,
                                     clearStack: true);
