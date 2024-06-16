@@ -30,25 +30,7 @@ class _LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.fromLTRB(25, 25, 25, 0),
             child: Column(
               children: [
-                Expanded(
-                  flex: 3,
-                  child: ListView(
-                    children: [
-                      const MyLogo(size: 100),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        "Masuk",
-                        style: textStyle.headlineLarge,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                    ],
-                  ),
-                ),
+                const Expanded(flex: 3, child: LogoWithTitle(title: "Masuk")),
                 Expanded(
                   flex: 7,
                   child: ListView(
