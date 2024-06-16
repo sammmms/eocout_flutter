@@ -137,7 +137,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                                 LoginPage(
                                   from: widget,
                                 ),
-                                transition: TransitionType.fadeIn,
+                                transition: TransitionType.slideInFromBottom,
                                 replace: true);
                           },
                           child: const Text('Masuk'),

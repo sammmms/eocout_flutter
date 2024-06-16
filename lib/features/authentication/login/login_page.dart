@@ -3,7 +3,8 @@ import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/authentication_page.dart';
 import 'package:eocout_flutter/features/authentication/forgot_password/forgot_password_page.dart';
-import 'package:eocout_flutter/features/authentication/register/user_register/otp_page.dart';
+import 'package:eocout_flutter/features/authentication/register/eo_register/eo_register_page.dart';
+import 'package:eocout_flutter/features/authentication/register/user_register/user_register_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/button_divider.dart';
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
@@ -28,13 +29,17 @@ class _LoginPageState extends State<LoginPage> {
       onPopInvoked: (didPop) {
         if (didPop) return;
 
-        if (widget.from != null && widget.from is! OtpPage) {
-          navigateTo(context, widget.from!,
-              transition: TransitionType.fadeIn, replace: true);
-        } else {
-          navigateTo(context, const AuthenticationPage(),
-              transition: TransitionType.fadeIn, replace: true);
+        if (widget.from == null) {
+          Navigator.pop(context);
+          return;
         }
+        if (widget.from is UserRegisterPage || widget.from is EORegisterPage) {
+          navigateTo(context, widget.from!,
+              transition: TransitionType.slideInFromBottom, replace: true);
+          return;
+        }
+        navigateTo(context, const AuthenticationPage(),
+            transition: TransitionType.slideInFromBottom, replace: true);
       },
       child: MyBackground(
         body: Center(
@@ -84,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: TextButton(
                             onPressed: () {
                               navigateTo(context, const ForgotPasswordPage(),
-                                  transition: TransitionType.fadeIn);
+                                  transition: TransitionType.slideInFromBottom);
                             },
                             child: const Text('Lupa password? ')),
                       ),

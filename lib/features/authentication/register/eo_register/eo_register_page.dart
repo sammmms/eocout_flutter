@@ -131,7 +131,7 @@ class _EORegisterPageState extends State<EORegisterPage> {
                                 LoginPage(
                                   from: widget,
                                 ),
-                                transition: TransitionType.fadeIn,
+                                transition: TransitionType.slideInFromBottom,
                                 replace: true);
                           },
                           child: const Text('Masuk'),

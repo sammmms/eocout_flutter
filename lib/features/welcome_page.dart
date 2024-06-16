@@ -34,83 +34,87 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: MyBackground(
-        needPadding: false,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 600,
-              child: PageView(
-                controller: pageController,
-                children: [
-                  _iconWithHeadline(
-                    context,
-                    "Temukan EO-mu!",
-                    'EO Cout dapat membantu kamu menemukan dan merekomendasikan Event Organizer dan Vendor terbaik disekitaran kamu!',
-                  ),
-                  _iconWithHeadline(
-                    context,
-                    "Dapatkan solusi terbaik!",
-                    'Dengan Event Organizer dan Vendor terbaik, kami akan membantu kamu mendapatkan solusi terbaik untuk menyelesaikan permasalahan acaramu!',
-                  ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _iconWithHeadline(
-                          context,
-                          "Buat acaramu tak terlupakan!",
-                          'Dengan Event Organizer dan Vendor terbaik, kami akan membantu kamu membuat acaramu menjadi tak terlupakan!',
-                          Image.asset("assets/images/meeting_logo.png")),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 60,
-                          child: OutlinedButton(
-                            onPressed: () {
-                              navigateTo(context, const AuthenticationPage(),
-                                  transition: TransitionType.slideInFromBottom);
-                            },
-                            child: Text(
-                              'Mulai',
-                              style: textStyle.titleLarge!
-                                  .copyWith(color: colorScheme.onPrimary),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: MyBackground(
+          needPadding: false,
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 600,
+                child: PageView(
+                  controller: pageController,
+                  children: [
+                    _iconWithHeadline(
+                      context,
+                      "Temukan EO-mu!",
+                      'EO Cout dapat membantu kamu menemukan dan merekomendasikan Event Organizer dan Vendor terbaik disekitaran kamu!',
+                    ),
+                    _iconWithHeadline(
+                      context,
+                      "Dapatkan solusi terbaik!",
+                      'Dengan Event Organizer dan Vendor terbaik, kami akan membantu kamu mendapatkan solusi terbaik untuk menyelesaikan permasalahan acaramu!',
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _iconWithHeadline(
+                            context,
+                            "Buat acaramu tak terlupakan!",
+                            'Dengan Event Organizer dan Vendor terbaik, kami akan membantu kamu membuat acaramu menjadi tak terlupakan!',
+                            Image.asset("assets/images/meeting_logo.png")),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 60,
+                            child: OutlinedButton(
+                              onPressed: () {
+                                navigateTo(context, const AuthenticationPage(),
+                                    transition:
+                                        TransitionType.slideInFromBottom);
+                              },
+                              child: Text(
+                                'Mulai',
+                                style: textStyle.titleLarge!
+                                    .copyWith(color: colorScheme.onPrimary),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            StreamBuilder<int>(
-                stream: pageStream,
-                initialData: 0,
-                builder: (context, snapshot) {
-                  int currentPage = snapshot.data ?? 0;
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _progressBar(currentPage == 0),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      _progressBar(currentPage == 1),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      _progressBar(currentPage == 2),
-                    ],
-                  );
-                })
-          ],
+              StreamBuilder<int>(
+                  stream: pageStream,
+                  initialData: 0,
+                  builder: (context, snapshot) {
+                    int currentPage = snapshot.data ?? 0;
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _progressBar(currentPage == 0),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        _progressBar(currentPage == 1),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        _progressBar(currentPage == 2),
+                      ],
+                    );
+                  })
+            ],
+          ),
         ),
       ),
     );

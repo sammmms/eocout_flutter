@@ -74,7 +74,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             LoginPage(
                               from: widget,
                             ),
-                            transition: TransitionType.slideInFromBottom);
+                            transition: TransitionType.slideInFromBottom,
+                            clearStack: true);
                       }
                     },
                   )
