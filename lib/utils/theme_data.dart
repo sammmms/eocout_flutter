@@ -130,7 +130,7 @@ ThemeData lightThemeData = ThemeData(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      side: BorderSide(color: colorScheme.primary),
+      side: const BorderSide(color: Colors.transparent),
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
@@ -161,12 +161,13 @@ ThemeData lightThemeData = ThemeData(
       )),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-        foregroundColor: colorScheme.onTertiary,
-        backgroundColor: colorScheme.tertiary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        side: BorderSide(color: colorScheme.tertiary)),
+      foregroundColor: colorScheme.onTertiary,
+      backgroundColor: colorScheme.tertiary,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      side: const BorderSide(color: Colors.transparent),
+    ),
   ),
   cardTheme: CardTheme(
     color: colorScheme.tertiaryContainer,

@@ -1,3 +1,5 @@
+import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
+import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
 import 'package:eocout_flutter/components/my_background.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
@@ -10,6 +12,8 @@ import 'package:eocout_flutter/features/authentication/widget/button_divider.dar
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
 import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
+import 'package:eocout_flutter/features/dashboard/dashboard_page.dart';
+import 'package:eocout_flutter/utils/dummy_data.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -22,6 +26,14 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  final bloc = AuthenticationBloc();
+
+  @override
+  void dispose() {
+    bloc.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -53,6 +65,9 @@ class _LoginPageState extends State<LoginPage> {
                   child: ListView(
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
+                      const SizedBox(
+                        height: 30,
+                      ),
                       TextFormField(
                         decoration: const InputDecoration(
                           labelText: 'Email',
@@ -79,13 +94,42 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(
                         height: 60,
                       ),
-                      AuthActionButton(
-                          label: 'Masuk',
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              showMySnackBar(context, "Mencoba masuk...",
-                                  SnackbarStatus.nothing);
+                      StreamBuilder<AuthenticationState>(
+                          stream: bloc.stream,
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return const AuthActionButton(
+                                label: "Not Available",
+                                onPressed: null,
+                              );
                             }
+                            if (snapshot.data!.isAuthenticating) {
+                              return const AuthActionButton(
+                                label: "Logging in...",
+                                onPressed: null,
+                              );
+                            }
+                            if (snapshot.data!.isAuthenticated) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                // TODO : Passing token, dan user data, buat new object untuk terima token dan data user, maybe UserData()
+                                navigateTo(context, const DashboardPage(),
+                                    transition:
+                                        TransitionType.slideInFromBottom,
+                                    clearStack: true);
+                              });
+                            }
+                            return AuthActionButton(
+                                label: 'Masuk',
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    bloc.login();
+                                  } else {
+                                    showMySnackBar(
+                                        context,
+                                        'Mohon periksa kembali data yang diinput.',
+                                        SnackbarStatus.error);
+                                  }
+                                });
                           }),
                       const AuthButtonDivider(),
                       const GoogleAuthButton(),

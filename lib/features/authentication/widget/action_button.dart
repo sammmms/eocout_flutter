@@ -12,6 +12,11 @@ class AuthActionButton extends StatelessWidget {
       width: double.infinity,
       height: 60,
       child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          backgroundColor: onPressed == null
+              ? colorScheme.tertiaryContainer
+              : colorScheme.primary,
+        ),
         onPressed: onPressed,
         child: Text(label,
             style:
