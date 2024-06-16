@@ -4,7 +4,6 @@ import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/authentication_page.dart';
 import 'package:eocout_flutter/features/authentication/forgot_password/forgot_password_page.dart';
 import 'package:eocout_flutter/features/authentication/register/user_register/otp_page.dart';
-import 'package:eocout_flutter/features/authentication/register/user_register/user_register_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/button_divider.dart';
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
@@ -81,35 +80,14 @@ class _LoginPageState extends State<LoginPage> {
                           }),
                       const AuthButtonDivider(),
                       const GoogleAuthButton(),
-                      if (widget.from is! OtpPage &&
-                          widget.from is! AuthenticationPage)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text('Tidak punya akun?'),
-                            TextButton(
-                              onPressed: () {
-                                navigateTo(
-                                    context,
-                                    widget.from == null
-                                        ? const UserRegisterPage()
-                                        : widget.from!,
-                                    transition: TransitionType.fadeIn,
-                                    replace: true);
-                              },
-                              child: const Text('Daftar disini'),
-                            ),
-                          ],
-                        )
-                      else
-                        Center(
-                          child: TextButton(
-                              onPressed: () {
-                                navigateTo(context, const ForgotPasswordPage(),
-                                    transition: TransitionType.fadeIn);
-                              },
-                              child: const Text('Lupa password? ')),
-                        ),
+                      Center(
+                        child: TextButton(
+                            onPressed: () {
+                              navigateTo(context, const ForgotPasswordPage(),
+                                  transition: TransitionType.fadeIn);
+                            },
+                            child: const Text('Lupa password? ')),
+                      ),
                     ],
                   ),
                 )
