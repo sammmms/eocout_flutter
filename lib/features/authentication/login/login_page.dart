@@ -63,6 +63,10 @@ class _LoginPageState extends State<LoginPage> {
                           if (value == null || value.isEmpty) {
                             return 'Email wajib diisi.';
                           }
+                          if (!emailRegex.hasMatch(value)) {
+                            return 'Email tidak valid.';
+                          }
+
                           return null;
                         },
                       ),

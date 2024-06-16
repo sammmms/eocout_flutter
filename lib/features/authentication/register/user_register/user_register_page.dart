@@ -8,6 +8,7 @@ import 'package:eocout_flutter/features/authentication/widget/button_divider.dar
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
 import 'package:eocout_flutter/models/register_data.dart';
+import 'package:eocout_flutter/utils/dummy_data.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 
@@ -93,8 +94,6 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                         if (value == null || value.isEmpty) {
                           return 'Email wajib diisi.';
                         }
-                        RegExp emailRegex = RegExp(
-                            r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
                         if (emailRegex.hasMatch(value) == false) {
                           return 'Email tidak valid.';
                         }

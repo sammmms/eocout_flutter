@@ -3,6 +3,7 @@ import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/register/user_register/otp_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
+import 'package:eocout_flutter/utils/dummy_data.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -87,8 +88,6 @@ class _ChoosenMethodPageState extends State<ChoosenMethodPage> {
                     if (value == null || value.isEmpty) {
                       return "Mohon masukkan ${ChoosenForgotPasswordMethodUtil.textOf(widget.choosenMethod)} Anda";
                     }
-                    RegExp emailRegex =
-                        RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
                     if (widget.choosenMethod ==
                             ChoosenForgotPasswordMethod.email &&
