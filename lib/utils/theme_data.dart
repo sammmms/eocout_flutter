@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 ColorScheme colorScheme = const ColorScheme(
   // Primary Color
-  primary: Color(0xFF41b06e),
+  primary: Color(0xFF41B06E),
   onPrimary: Colors.white,
 
   // Primary Variant
-  primaryContainer: Color(0xCC41b06e),
+  primaryContainer: Color(0xFF009D7D),
   onPrimaryContainer: Colors.white,
 
   // Secondary Color
@@ -18,11 +18,11 @@ ColorScheme colorScheme = const ColorScheme(
   onSecondaryContainer: Colors.white,
 
   // Tertiary Color
-  tertiary: Color(0xFF141E46),
+  tertiary: Color(0xff2f4858),
   onTertiary: Colors.white,
 
   // Tertiary Variant
-  tertiaryContainer: Color(0x3E141E46),
+  tertiaryContainer: Color(0xFF1c5d6f),
   onTertiaryContainer: Colors.white,
 
   // Background Color

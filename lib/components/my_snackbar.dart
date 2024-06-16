@@ -3,30 +3,28 @@ import 'package:flutter/material.dart';
 
 enum SnackbarStatus { success, error, warning, nothing }
 
+class SnackbarStatusUtil {
+  static Color getColor(SnackbarStatus status) {
+    switch (status) {
+      case SnackbarStatus.success:
+        return colorScheme.primaryContainer;
+      case SnackbarStatus.error:
+        return Colors.redAccent;
+      case SnackbarStatus.warning:
+        return Colors.amberAccent;
+      default:
+        return Colors.grey.shade200;
+    }
+  }
+}
+
 void showMySnackBar(
     BuildContext context, String message, SnackbarStatus status) {
-  late Color snackbarColor;
-  switch (status) {
-    case SnackbarStatus.success:
-      snackbarColor = Colors.greenAccent;
-      break;
-    case SnackbarStatus.error:
-      snackbarColor = colorScheme.error;
-      break;
-    case SnackbarStatus.warning:
-      snackbarColor = Colors.orangeAccent;
-      break;
-    case SnackbarStatus.nothing:
-      snackbarColor = Colors.grey.shade200;
-      break;
-    default:
-      snackbarColor = colorScheme.primaryContainer;
-  }
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      backgroundColor: snackbarColor,
+      backgroundColor: SnackbarStatusUtil.getColor(status),
       padding: const EdgeInsets.all(25.0),
-      margin: const EdgeInsets.all(10),
+      margin: const EdgeInsets.fromLTRB(10, 10, 10, 20),
       behavior: SnackBarBehavior.floating,
       content: Text(message,
           style: textStyle.bodyLarge?.copyWith(

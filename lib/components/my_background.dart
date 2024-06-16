@@ -21,7 +21,7 @@ class MyBackground extends StatelessWidget {
               height: 330,
               width: 330,
               decoration: BoxDecoration(
-                color: colorScheme.tertiaryContainer,
+                color: colorScheme.tertiaryContainer.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(1000),
               ),
             ),
