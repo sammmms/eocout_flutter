@@ -1,3 +1,4 @@
+import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -12,6 +13,7 @@ class MySearchBar extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         hintText: label,
+        hintStyle: TextStyle(color: colorScheme.secondaryContainer),
         prefixIcon: Padding(
           padding: const EdgeInsets.all(15.0),
           child: SvgPicture.asset(
