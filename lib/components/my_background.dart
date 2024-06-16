@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 class MyBackground extends StatelessWidget {
   final Widget body;
-  const MyBackground({super.key, required this.body});
+  final bool needPadding;
+  const MyBackground({super.key, required this.body, this.needPadding = true});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,14 @@ class MyBackground extends StatelessWidget {
             ),
           ),
           Scaffold(
-              backgroundColor: Colors.transparent, body: SafeArea(child: body))
+              backgroundColor: Colors.transparent,
+              body: SafeArea(
+                  child: Padding(
+                padding: needPadding
+                    ? const EdgeInsets.fromLTRB(25, 25, 25, 0)
+                    : EdgeInsets.zero,
+                child: body,
+              )))
         ],
       ),
     );
