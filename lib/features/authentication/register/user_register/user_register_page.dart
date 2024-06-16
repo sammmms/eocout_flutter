@@ -28,8 +28,6 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
     return MyBackground(
       body: Form(
         key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(25, 25, 25, 0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -61,6 +59,9 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                     children: [
                       TextFormField(
                         decoration: const InputDecoration(
+                    const SizedBox(
+                      height: 30,
+                    ),
                           labelText: 'Username',
                         ),
                         onChanged: (value) {
