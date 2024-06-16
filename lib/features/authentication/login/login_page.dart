@@ -1,13 +1,15 @@
 import 'package:eocout_flutter/components/my_background.dart';
-import 'package:eocout_flutter/components/my_logo.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/authentication/authentication_page.dart';
+import 'package:eocout_flutter/features/authentication/forgot_password/forgot_password_page.dart';
+import 'package:eocout_flutter/features/authentication/register/user_register/otp_page.dart';
 import 'package:eocout_flutter/features/authentication/register/user_register/user_register_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/button_divider.dart';
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
+import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
 import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
-import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -22,12 +24,23 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return MyBackground(
-      body: Center(
-        child: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(25, 25, 25, 0),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+
+        if (widget.from != null && widget.from is! OtpPage) {
+          navigateTo(context, widget.from!,
+              transition: TransitionType.fadeIn, replace: true);
+        } else {
+          navigateTo(context, const AuthenticationPage(),
+              transition: TransitionType.fadeIn, replace: true);
+        }
+      },
+      child: MyBackground(
+        body: Center(
+          child: Form(
+            key: _formKey,
             child: Column(
               children: [
                 const Expanded(flex: 3, child: LogoWithTitle(title: "Masuk")),
@@ -40,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
                         decoration: const InputDecoration(
                           labelText: 'Email',
                         ),
+                        keyboardType: TextInputType.emailAddress,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -67,24 +81,35 @@ class _LoginPageState extends State<LoginPage> {
                           }),
                       const AuthButtonDivider(),
                       const GoogleAuthButton(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Tidak punya akun?'),
-                          TextButton(
-                            onPressed: () {
-                              navigateTo(
-                                  context,
-                                  widget.from == null
-                                      ? const UserRegisterPage()
-                                      : widget.from!,
-                                  transition: TransitionType.fadeIn,
-                                  replace: true);
-                            },
-                            child: const Text('Daftar disini'),
-                          ),
-                        ],
-                      ),
+                      if (widget.from is! OtpPage &&
+                          widget.from is! AuthenticationPage)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text('Tidak punya akun?'),
+                            TextButton(
+                              onPressed: () {
+                                navigateTo(
+                                    context,
+                                    widget.from == null
+                                        ? const UserRegisterPage()
+                                        : widget.from!,
+                                    transition: TransitionType.fadeIn,
+                                    replace: true);
+                              },
+                              child: const Text('Daftar disini'),
+                            ),
+                          ],
+                        )
+                      else
+                        Center(
+                          child: TextButton(
+                              onPressed: () {
+                                navigateTo(context, const ForgotPasswordPage(),
+                                    transition: TransitionType.fadeIn);
+                              },
+                              child: const Text('Lupa password? ')),
+                        ),
                     ],
                   ),
                 )
