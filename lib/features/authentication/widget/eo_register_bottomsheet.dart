@@ -1,5 +1,5 @@
 import 'package:eocout_flutter/components/my_searchbar.dart';
-import 'package:eocout_flutter/utils/data.dart';
+import 'package:eocout_flutter/utils/dummy_data.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
