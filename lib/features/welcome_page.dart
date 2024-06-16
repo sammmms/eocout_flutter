@@ -36,6 +36,7 @@ class _WelcomePageState extends State<WelcomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: MyBackground(
+        needPadding: false,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
