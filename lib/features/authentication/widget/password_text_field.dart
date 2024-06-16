@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 class PasswordTextField extends StatefulWidget {
-  final Function(String) onChanged;
-  const PasswordTextField({super.key, required this.onChanged});
+  final Function(String)? onChanged;
+  final TextEditingController? controller;
+  final String? label;
+  final Function(String)? validator;
+  const PasswordTextField(
+      {super.key, this.onChanged, this.controller, this.label, this.validator});
 
   @override
   State<PasswordTextField> createState() => _PasswordTextFieldState();
@@ -25,10 +29,11 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         initialData: true,
         builder: (context, snapshot) {
           return TextFormField(
+            controller: widget.controller,
             onChanged: widget.onChanged,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             decoration: InputDecoration(
-              labelText: 'Password',
+              labelText: widget.label ?? 'Password',
               suffixIcon: GestureDetector(
                 onTap: () {
                   _mustObscure.add(!_mustObscure.value);
@@ -47,9 +52,12 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
                 return 'Password minimal 8 karakter.';
               }
               RegExp passwordRegex = RegExp(
-                  r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$');
+                  r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
               if (passwordRegex.hasMatch(value) == false) {
-                return 'Password harus mengandung setidaknya satu huruf besar, satu huruf kecil, dan satu angka.';
+                return 'Password harus mengandung setidaknya satu huruf besar, satu huruf kecil, satu angka, dan satu karakter spesial.';
+              }
+              if (widget.validator != null) {
+                return widget.validator!(value);
               }
               return null;
             },
