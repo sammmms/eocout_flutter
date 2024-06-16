@@ -1,74 +1,86 @@
 import 'package:eocout_flutter/components/my_background.dart';
+import 'package:eocout_flutter/components/my_snackbar.dart';
+import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/authentication/login/login_page.dart';
+import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
+import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
 import 'package:flutter/material.dart';
 
-class ResetPasswordPage extends StatelessWidget {
+class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
 
+  @override
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
+}
+
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _passwordTEC = TextEditingController();
+  final _confirmPasswordTEC = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return MyBackground(
         body: Column(
       children: [
         const Expanded(
+          flex: 4,
           child: Align(
-            alignment: Alignment.center,
+            alignment: AlignmentDirectional.center,
             child: LogoWithTitle(
               title: "Reset Password",
-              subtitle: "Masukkan password baru yang ingin Anda gunakan.",
+              subtitle: "Masukkan password baru yang ingin Anda gunakan",
             ),
           ),
         ),
         Expanded(
-          child: Column(
-            children: [
-              TextFormField(
-                validator: (value) {
-                  RegExp passwordRegex = RegExp(
-                      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-                  if (value!.isEmpty) {
-                    return 'Password wajib diisi.';
-                  }
-                  if (value.length < 8) {
-                    return 'Password minimal 8 karakter.';
-                  }
-                  if (passwordRegex.hasMatch(value) == false) {
-                    return 'Password harus mengandung setidaknya satu huruf besar, satu huruf kecil, satu angka, dan satu karakter spesial.';
-                  }
-                  return null;
-                },
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                decoration: const InputDecoration(
-                  labelText: "Password Baru",
-                ),
+          flex: 6,
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  PasswordTextField(
+                    controller: _passwordTEC,
+                    label: "Password Baru",
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  PasswordTextField(
+                    controller: _confirmPasswordTEC,
+                    label: "Konfirmasi Password Baru",
+                    validator: (value) {
+                      if (value != _passwordTEC.text) {
+                        return 'Password tidak sama.';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  AuthActionButton(
+                    label: "Reset Password",
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        showMySnackBar(context, "Password berhasil diubah",
+                            SnackbarStatus.success);
+                        navigateTo(
+                            context,
+                            LoginPage(
+                              from: widget,
+                            ),
+                            transition: TransitionType.slideInFromBottom);
+                      }
+                    },
+                  )
+                ],
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                validator: (value) {
-                  RegExp passwordRegex = RegExp(
-                      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-                  if (value!.isEmpty) {
-                    return 'Password wajib diisi.';
-                  }
-                  if (value.length < 8) {
-                    return 'Password minimal 8 karakter.';
-                  }
-                  if (passwordRegex.hasMatch(value) == false) {
-                    return 'Password harus mengandung setidaknya satu huruf besar, satu huruf kecil, satu angka, dan satu karakter spesial.';
-                  }
-                  return null;
-                },
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                decoration: const InputDecoration(
-                  labelText: "Konfirmasi Password Baru",
-                ),
-              ),
-              const SizedBox(
-                height: 60,
-              ),
-            ],
+            ),
           ),
         )
       ],
