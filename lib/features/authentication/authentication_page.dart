@@ -13,9 +13,7 @@ class AuthenticationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: MyBackground(
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Center(
+        body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
