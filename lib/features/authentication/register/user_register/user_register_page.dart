@@ -28,124 +28,127 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
     return MyBackground(
       body: Form(
         key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                flex: 3,
-                child: ListView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              flex: 3,
+              child: ListView(
+                children: [
+                  const MyLogo(size: 100),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    "Daftar Sebagai Pengguna",
+                    style: textStyle.headlineLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 7,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                controller: _scrollController,
+                child: Column(
                   children: [
-                    const MyLogo(size: 100),
                     const SizedBox(
-                      height: 20,
+                      height: 30,
                     ),
-                    Text(
-                      "Daftar Sebagai Pengguna",
-                      style: textStyle.headlineLarge,
-                      textAlign: TextAlign.center,
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Username',
+                      ),
+                      onChanged: (value) {
+                        registerData.username = value;
+                      },
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Username wajib diisi.';
+                        }
+                        if (value.length < 4) {
+                          return 'Username minimal 4 karakter.';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(
-                      height: 40,
+                      height: 10,
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                      ),
+                      onChanged: (value) {
+                        registerData.email = value;
+                      },
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Email wajib diisi.';
+                        }
+                        RegExp emailRegex = RegExp(
+                            r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+                        if (emailRegex.hasMatch(value) == false) {
+                          return 'Email tidak valid.';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    PasswordTextField(
+                      onChanged: (value) {
+                        registerData.password = value;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    AuthActionButton(
+                      label: "Daftar",
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          navigateTo(
+                            context,
+                            const OtpPage(),
+                            transition: TransitionType.fadeIn,
+                          );
+                        }
+                      },
+                    ),
+                    const AuthButtonDivider(),
+                    const GoogleAuthButton(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Sudah memiliki akun?'),
+                        TextButton(
+                          onPressed: () {
+                            navigateTo(
+                                context,
+                                LoginPage(
+                                  from: widget,
+                                ),
+                                transition: TransitionType.fadeIn,
+                                replace: true);
+                          },
+                          child: const Text('Masuk'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              Expanded(
-                flex: 7,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  controller: _scrollController,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        decoration: const InputDecoration(
-                    const SizedBox(
-                      height: 30,
-                    ),
-                          labelText: 'Username',
-                        ),
-                        onChanged: (value) {
-                          registerData.username = value;
-                        },
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Username wajib diisi.';
-                          }
-                          if (value.length < 4) {
-                            return 'Username minimal 4 karakter.';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                        ),
-                        onChanged: (value) {
-                          registerData.email = value;
-                        },
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Email wajib diisi.';
-                          }
-                          RegExp emailRegex = RegExp(
-                              r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
-                          if (emailRegex.hasMatch(value) == false) {
-                            return 'Email tidak valid.';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      PasswordTextField(
-                        onChanged: (value) {
-                          registerData.password = value;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 60,
-                      ),
-                      AuthActionButton(
-                        label: "Daftar",
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            navigateTo(
-                              context,
-                              const OtpPage(),
-                              transition: TransitionType.fadeIn,
-                            );
-                          }
-                        },
-                      ),
-                      const AuthButtonDivider(),
-                      const GoogleAuthButton(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Sudah memiliki akun?'),
-                          TextButton(
-                            onPressed: () {
-                              navigateTo(context, const LoginPage(),
-                                  transition: TransitionType.fadeIn,
-                                  replace: true);
-                            },
-                            child: const Text('Masuk'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );
