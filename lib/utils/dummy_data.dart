@@ -1,5 +1,10 @@
 import 'package:eocout_flutter/models/user_data.dart';
 
+List<String> scopes = [
+  "https://www.googleapis.com/auth/userinfo.email",
+  "https://www.googleapis.com/auth/userinfo.profile",
+];
+
 Map<String, List<String>> indonesiaProvince = {
   "Aceh": [
     "Banda Aceh",
