@@ -11,6 +11,7 @@ class LogoWithTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       children: [
         const MyLogo(size: 100),
         const SizedBox(
