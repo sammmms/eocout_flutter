@@ -16,9 +16,8 @@ class UserRoleUtil {
   }
 
   static UserRole valueOf(String role) {
-    return roleTypeMap.entries
-            .firstWhereOrNull((element) => element.value == role)
-            ?.key ??
+    return roleTypeMap.keys
+            .firstWhereOrNull((key) => roleTypeMap[key] == role) ??
         UserRole.basicUser;
   }
 }
