@@ -1,5 +1,5 @@
 import 'package:eocout_flutter/features/homepage/widgets/explore_list.dart';
-import 'package:eocout_flutter/features/homepage/widgets/see_all_page.dart';
+import 'package:eocout_flutter/features/homepage/see_all_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/business_type_util.dart';
 import 'package:flutter/material.dart';
