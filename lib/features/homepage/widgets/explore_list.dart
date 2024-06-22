@@ -25,6 +25,7 @@ class ExploreList extends StatelessWidget {
                 children: [
                   Text(
                     "Hello, ${user.name}",
+                    overflow: TextOverflow.ellipsis,
                     style: textStyle.headlineSmall,
                   ),
                   const Text("Ayo lihat EO terbaru yang kami sediakan!")
