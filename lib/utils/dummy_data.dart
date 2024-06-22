@@ -475,11 +475,11 @@ RegExp emailRegex = RegExp(
 Map<String, String> dummyJson = {
   "token": "dummyToken",
   "name": "Dummy User",
-  "email": "dummyEmail",
-  "phone": "dummyPhone",
-  "address": "dummyAddress",
-  "role": "basicUser",
-  "photo": "dummyPhoto",
+  "email": "dummyEmail@email.com",
+  "phone": "8888-8888-8888",
+  "address": "Jl. Dummy No. 1",
+  "role": "eventOrganizer",
+  "photo": "",
 };
 
 UserData dummyData = UserData.fromJson(dummyJson);
