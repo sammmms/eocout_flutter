@@ -1,3 +1,5 @@
+import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/profile_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/business_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
@@ -29,11 +31,21 @@ class ExploreList extends StatelessWidget {
                 ],
               ),
             ),
-            const Expanded(
+            Expanded(
               child: Align(
                 alignment: Alignment.centerRight,
-                child: CircleAvatar(
-                  child: Icon(Icons.person),
+                child: GestureDetector(
+                  onTap: () {
+                    navigateTo(
+                        context,
+                        ProfilePage(
+                          user: user,
+                        ),
+                        transition: TransitionType.slideInFromRight);
+                  },
+                  child: const CircleAvatar(
+                    child: Icon(Icons.person),
+                  ),
                 ),
               ),
             )
