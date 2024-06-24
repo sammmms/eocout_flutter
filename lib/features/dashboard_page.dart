@@ -86,147 +86,78 @@ class _DashboardPageState extends State<DashboardPage> {
               const Center(child: Text('Chat')),
             ],
           ),
-          bottomSheet: ClipRRect(
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            child: Container(
-              padding: const EdgeInsets.only(top: 10),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
-                color: colorScheme.primary,
-              ),
-              child: StreamBuilder<int>(
-                  stream: _selectedPage,
-                  builder: (context, snapshot) {
-                    return Theme(
-                      data: Theme.of(context).copyWith(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                      ),
-                      child: BottomNavigationBar(
-                        showUnselectedLabels: false,
-                        showSelectedLabels: false,
-                        unselectedFontSize: 0,
-                        selectedFontSize: 0,
-                        selectedLabelStyle: const TextStyle(fontSize: 13),
-                        type: BottomNavigationBarType.fixed,
-                        elevation: 0,
-                        items: pageItem
-                            .mapIndexed(
-                              (index, item) => BottomNavigationBarItem(
-                                icon: SizedBox(
-                                  height: 32,
-                                  width: 32,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      NavigationItemUtil.iconsOf(item),
-                                      const SizedBox(height: 5),
-                                      if (snapshot.data == index) ...[
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(1000),
-                                              color: colorScheme.onPrimary),
-                                          height: 5,
-                                          width: 5,
-                                        )
-                                      ]
-                                    ],
+          resizeToAvoidBottomInset: false,
+          bottomSheet: SafeArea(
+            maintainBottomViewPadding: true,
+            minimum: EdgeInsets.zero,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+              child: Container(
+                padding: const EdgeInsets.only(top: 10),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20)),
+                  color: colorScheme.primary,
+                ),
+                child: StreamBuilder<int>(
+                    stream: _selectedPage,
+                    builder: (context, snapshot) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                        ),
+                        child: BottomNavigationBar(
+                          showUnselectedLabels: false,
+                          showSelectedLabels: false,
+                          unselectedFontSize: 0,
+                          selectedFontSize: 0,
+                          selectedLabelStyle: const TextStyle(fontSize: 13),
+                          type: BottomNavigationBarType.fixed,
+                          elevation: 0,
+                          items: pageItem
+                              .mapIndexed(
+                                (index, item) => BottomNavigationBarItem(
+                                  icon: SizedBox(
+                                    height: 32,
+                                    width: 32,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        NavigationItemUtil.iconsOf(item),
+                                        const SizedBox(height: 5),
+                                        if (snapshot.data == index) ...[
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(1000),
+                                                color: colorScheme.onPrimary),
+                                            height: 5,
+                                            width: 5,
+                                          )
+                                        ]
+                                      ],
+                                    ),
                                   ),
+                                  label: "",
                                 ),
-                                label: "",
-                              ),
-                            )
-                            .toList(),
-                        currentIndex: _selectedPage.value,
-                        onTap: (index) async {
-                          await _pageController.animateToPage(index,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeOutCubic);
-                        },
-                      ),
-                    );
-                  }),
+                              )
+                              .toList(),
+                          currentIndex: _selectedPage.value,
+                          onTap: (index) async {
+                            await _pageController.animateToPage(index,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeOutCubic);
+                          },
+                        ),
+                      );
+                    }),
+              ),
             ),
           )),
     );
-    return Scaffold(
-        body: PageView(
-          controller: _pageController,
-          children: [
-            const Homepage(),
-            if (user.role == UserRole.eventOrganizer)
-              const Center(child: Text('Add Event')),
-            const Center(child: Text('Cart')),
-            const Center(child: Text('Chat')),
-          ],
-        ),
-        resizeToAvoidBottomInset: false,
-        bottomSheet: SafeArea(
-          maintainBottomViewPadding: true,
-          minimum: EdgeInsets.zero,
-          child: Container(
-            margin: EdgeInsets.zero,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-              color: colorScheme.primary,
-            ),
-            child: StreamBuilder<int>(
-                stream: _selectedPage,
-                builder: (context, snapshot) {
-                  return Theme(
-                    data: Theme.of(context).copyWith(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                    ),
-                    child: BottomNavigationBar(
-                      showUnselectedLabels: false,
-                      showSelectedLabels: false,
-                      selectedLabelStyle: textStyle.headlineLarge,
-                      type: BottomNavigationBarType.fixed,
-                      elevation: 0,
-                      items: pageItem
-                          .mapIndexed(
-                            (index, item) => BottomNavigationBarItem(
-                              icon: SizedBox(
-                                height: 32,
-                                width: 32,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    NavigationItemUtil.iconsOf(item),
-                                    const SizedBox(height: 5),
-                                    if (snapshot.data == index) ...[
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(1000),
-                                            color: colorScheme.onPrimary),
-                                        height: 5,
-                                        width: 5,
-                                      )
-                                    ]
-                                  ],
-                                ),
-                              ),
-                              label: "",
-                            ),
-                          )
-                          .toList(),
-                      currentIndex: _selectedPage.value,
-                      onTap: (index) async {
-                        await _pageController.animateToPage(index,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeOutCubic);
-                      },
-                    ),
-                  );
-                }),
-          ),
-        ));
   }
 }
