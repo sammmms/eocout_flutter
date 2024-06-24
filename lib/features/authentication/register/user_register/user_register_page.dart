@@ -1,5 +1,8 @@
+import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
+import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
 import 'package:eocout_flutter/components/my_background.dart';
 import 'package:eocout_flutter/components/my_logo.dart';
+import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/login/login_page.dart';
 import 'package:eocout_flutter/features/authentication/register/user_register/otp_page.dart';
@@ -8,9 +11,11 @@ import 'package:eocout_flutter/features/authentication/widget/button_divider.dar
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
 import 'package:eocout_flutter/models/register_data.dart';
-import 'package:eocout_flutter/utils/dummy_data.dart';
+import 'package:eocout_flutter/utils/data.dart';
+import 'package:eocout_flutter/utils/error_status.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UserRegisterPage extends StatefulWidget {
   const UserRegisterPage({super.key});
@@ -23,6 +28,13 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
   final registerData = RegisterData();
+  late AuthBloc bloc;
+
+  @override
+  void initState() {
+    bloc = context.read<AuthBloc>();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,18 +123,16 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                     const SizedBox(
                       height: 60,
                     ),
-                    AuthActionButton(
-                      label: "Daftar",
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          navigateTo(
-                            context,
-                            const OtpPage(),
-                            transition: TransitionType.fadeIn,
+                    StreamBuilder<AuthState>(
+                        stream: bloc.stream,
+                        builder: (context, snapshot) {
+                          bool isLoading = !snapshot.hasData ||
+                              (snapshot.data?.isAuthenticating ?? false);
+                          return AuthActionButton(
+                            label: "Daftar",
+                            onPressed: isLoading ? null : _registerUser,
                           );
-                        }
-                      },
-                    ),
+                        }),
                     const AuthButtonDivider(),
                     const GoogleAuthButton(),
                     Row(
@@ -151,5 +161,26 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
         ),
       ),
     );
+  }
+
+  void _registerUser() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      ErrorStatus? status = await bloc.register(registerData);
+      if (status == null) {
+        if (!mounted) return;
+        navigateTo(
+          context,
+          const OtpPage(),
+          transition: TransitionType.fadeIn,
+        );
+        return;
+      }
+      if (!mounted) return;
+      showMySnackBar(
+        context,
+        status.message,
+        SnackbarStatus.error,
+      );
+    }
   }
 }

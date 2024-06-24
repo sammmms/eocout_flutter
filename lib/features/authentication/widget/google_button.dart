@@ -1,6 +1,7 @@
-import 'package:eocout_flutter/components/my_snackbar.dart';
+import 'package:eocout_flutter/utils/data.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleAuthButton extends StatelessWidget {
   const GoogleAuthButton({super.key});
@@ -21,9 +22,14 @@ class GoogleAuthButton extends StatelessWidget {
             ),
           ),
         ),
-        onPressed: () {
-          showMySnackBar(context, "Google sedang dalam maintenance.",
-              SnackbarStatus.error);
+        onPressed: () async {
+          GoogleSignIn googleSignIn = GoogleSignIn(
+            scopes: scopes,
+          );
+
+          GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+          // TODO: Login using googleUser
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

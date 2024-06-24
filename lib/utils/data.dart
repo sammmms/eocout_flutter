@@ -1,4 +1,7 @@
-import 'package:eocout_flutter/models/user_data.dart';
+List<String> scopes = [
+  "https://www.googleapis.com/auth/userinfo.email",
+  "https://www.googleapis.com/auth/userinfo.profile",
+];
 
 Map<String, List<String>> indonesiaProvince = {
   "Aceh": [
@@ -471,15 +474,3 @@ Map<String, List<String>> indonesiaProvince = {
 
 RegExp emailRegex = RegExp(
     r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
-
-Map<String, String> dummyJson = {
-  "token": "dummyToken",
-  "name": "Dummy User",
-  "email": "dummyEmail",
-  "phone": "dummyPhone",
-  "address": "dummyAddress",
-  "role": "basicUser",
-  "photo": "dummyPhoto",
-};
-
-UserData dummyData = UserData.fromJson(dummyJson);

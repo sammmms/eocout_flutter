@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 
-ColorScheme colorScheme = const ColorScheme(
+ColorScheme colorScheme = ColorScheme(
   // Primary Color
-  primary: Color(0xFF41B06E),
+  primary: const Color(0xFF41B06E),
   onPrimary: Colors.white,
 
   // Primary Variant
-  primaryContainer: Color(0xFF009D7D),
+  primaryContainer: const Color(0xFF009D7D),
   onPrimaryContainer: Colors.white,
 
   // Secondary Color
-  secondary: Color.fromRGBO(232, 232, 232, 0.2),
+  secondary: Colors.grey.shade100,
   onSecondary: Colors.black,
 
   // Secondary Variant
-  secondaryContainer: Color(0xFF9F9F9F),
+  secondaryContainer: const Color(0xFF9F9F9F),
   onSecondaryContainer: Colors.white,
 
   // Tertiary Color
-  tertiary: Color(0xff2f4858),
+  tertiary: const Color(0xff2f4858),
   onTertiary: Colors.white,
 
   // Tertiary Variant
-  tertiaryContainer: Color(0xFF1c5d6f),
+  tertiaryContainer: const Color(0xFF1c5d6f),
   onTertiaryContainer: Colors.white,
 
   // Background Color
@@ -41,8 +41,8 @@ ColorScheme colorScheme = const ColorScheme(
   brightness: Brightness.light,
 
   // Others
-  shadow: Color.fromRGBO(0, 0, 0, 0.2),
-  outline: Color(0xFFA7A7A7),
+  shadow: const Color.fromRGBO(0, 0, 0, 0.2),
+  outline: const Color(0xFFA7A7A7),
 );
 
 TextTheme textStyle = const TextTheme(

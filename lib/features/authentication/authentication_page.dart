@@ -68,7 +68,7 @@ class AuthenticationPage extends StatelessWidget {
                             .copyWith(color: colorScheme.onTertiary),
                       )),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

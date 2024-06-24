@@ -1,3 +1,6 @@
+import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
+import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/profile_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/business_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
@@ -11,7 +14,7 @@ class ExploreList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserData user = context.read<UserData>();
+    UserData user = context.read<AuthBloc>().stream.value.user!;
     return Column(
       children: [
         Row(
@@ -22,18 +25,29 @@ class ExploreList extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Hello, ${user.name}",
+                    "Hello, ${user.fullname}",
+                    overflow: TextOverflow.ellipsis,
                     style: textStyle.headlineSmall,
                   ),
                   const Text("Ayo lihat EO terbaru yang kami sediakan!")
                 ],
               ),
             ),
-            const Expanded(
+            Expanded(
               child: Align(
                 alignment: Alignment.centerRight,
-                child: CircleAvatar(
-                  child: Icon(Icons.person),
+                child: GestureDetector(
+                  onTap: () {
+                    navigateTo(
+                        context,
+                        ProfilePage(
+                          user: user,
+                        ),
+                        transition: TransitionType.slideInFromRight);
+                  },
+                  child: const CircleAvatar(
+                    child: Icon(Icons.person),
+                  ),
                 ),
               ),
             )
