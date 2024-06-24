@@ -221,23 +221,31 @@ class _ProfilePageState extends State<ProfilePage> {
                       isEdit
                           ? TextFormField(
                               onChanged: (value) {
-                                editableUserData.fullname = value;
+                                  editableUserData.username = value;
                               },
-                              decoration: const InputDecoration(
+                                decoration: InputDecoration(
+                                  constraints:
+                                      const BoxConstraints(maxWidth: 200),
                                 contentPadding: EdgeInsets.zero,
-                                hintText: "Nama Pengguna",
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
+                                  hintText: widget.user.fullname.isEmpty
+                                      ? "Username"
+                                      : widget.user.username,
+                                  enabledBorder: const UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.grey),
+                                  ),
+                                  focusedBorder: const UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                  ),
                               ),
                               style: textStyle.headlineMedium!,
                               textAlign: TextAlign.center,
                             )
                           : Text(
-                              widget.user.fullname.isEmpty
-                                  ? "Nama Pengguna"
-                                  : widget.user.fullname,
+                                widget.user.username.isEmpty
+                                    ? "Username"
+                                    : widget.user.username,
                               style: textStyle.headlineMedium!.copyWith(
-                                color: widget.user.fullname.isEmpty
+                                  color: widget.user.username.isEmpty
                                     ? Colors.grey
                                     : Colors.black,
                               ),
@@ -252,6 +260,18 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(
                   height: 10,
                 ),
+                  isEdit
+                      ? _editTextField(
+                          label: "Nama Lengkap",
+                          value: widget.user.fullname,
+                          onChanged: (value) {
+                            editableUserData.fullname = value;
+                          })
+                      : _showLabel(
+                          label: "Nama Lengkap", value: widget.user.fullname),
+                  const SizedBox(
+                    height: 10,
+                  ),
                 isEdit
                     ? _editTextField(
                         label: "Alamat",
