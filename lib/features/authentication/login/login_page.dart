@@ -30,6 +30,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _emailTEC = TextEditingController();
+  final _passwordTEC = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late AuthBloc bloc;
   final loginData = LoginData();
@@ -38,6 +40,13 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     bloc = context.read<AuthBloc>();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _emailTEC.dispose();
+    _passwordTEC.dispose();
+    super.dispose();
   }
 
   @override
@@ -75,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: 30,
                       ),
                       TextFormField(
-                        controller: TextEditingController(),
+                        controller: _emailTEC,
                         onChanged: (value) {
                           loginData.email = value;
                         },
@@ -99,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: 10,
                       ),
                       PasswordTextField(
-                        controller: TextEditingController(),
+                        controller: _passwordTEC,
                         onChanged: (value) {
                           loginData.password = value;
                         },
