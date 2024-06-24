@@ -1,7 +1,6 @@
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/features/homepage/widgets/explore_list.dart';
 import 'package:eocout_flutter/features/homepage/see_all_page.dart';
-import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/business_type_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,11 +15,12 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   final _selectedBusiness = BehaviorSubject<BusinessType>();
-  late UserData user;
+  late AuthBloc bloc;
 
   @override
   void initState() {
-    user = context.read<AuthBloc>().stream.value.user!;
+    bloc = context.read<AuthBloc>();
+    bloc.refreshProfile();
     super.initState();
   }
 

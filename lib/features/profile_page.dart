@@ -145,11 +145,13 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: isEdit
                   ? SvgPicture.asset(
                       "assets/svg/save_icon.svg",
+                      // ignore: deprecated_member_use
                       color: colorScheme.onBackground,
                       width: 30,
                     )
                   : SvgPicture.asset(
                       "assets/svg/edit_icon.svg",
+                      // ignore: deprecated_member_use
                       color: colorScheme.onBackground,
                       width: 30,
                     ))

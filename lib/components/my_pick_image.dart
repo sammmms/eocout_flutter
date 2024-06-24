@@ -15,6 +15,7 @@ class MyPickImage extends StatelessWidget {
             leading: SvgPicture.asset(
               "assets/svg/camera_icon.svg",
               width: 20,
+              // ignore: deprecated_member_use
               color: colorScheme.onBackground,
             ),
             title: const Text("Ambil Foto"),
@@ -25,6 +26,7 @@ class MyPickImage extends StatelessWidget {
             leading: SvgPicture.asset(
               "assets/svg/gallery_icon.svg",
               width: 20,
+              // ignore: deprecated_member_use
               color: colorScheme.onBackground,
             ),
             title: const Text("Pilih dari Galeri"),
