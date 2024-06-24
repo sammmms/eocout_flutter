@@ -18,15 +18,15 @@ class MySearchBar extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         enabledBorder: OutlineInputBorder(
-          borderRadius:
-              isRounded ? BorderRadius.circular(30) : BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.transparent),
-        ),
+            borderRadius: isRounded
+                ? BorderRadius.circular(30)
+                : BorderRadius.circular(10),
+            borderSide: BorderSide(color: colorScheme.outline)),
         focusedBorder: OutlineInputBorder(
-          borderRadius:
-              isRounded ? BorderRadius.circular(30) : BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.transparent),
-        ),
+            borderRadius: isRounded
+                ? BorderRadius.circular(30)
+                : BorderRadius.circular(10),
+            borderSide: BorderSide(color: colorScheme.outline)),
         hintText: label,
         hintStyle: TextStyle(color: colorScheme.secondaryContainer),
         prefixIcon: Padding(
