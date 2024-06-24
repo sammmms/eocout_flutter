@@ -1,0 +1,28 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
+import 'package:eocout_flutter/models/user_data.dart';
+import 'package:eocout_flutter/utils/dio_interceptor.dart';
+import 'package:eocout_flutter/utils/error_status.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:rxdart/rxdart.dart';
+
+class ProfileBloc {
+  final dio = Dio(BaseOptions(baseUrl: dotenv.env['BASE_URL']!));
+  final controller = BehaviorSubject<UserData>();
+  final AuthBloc authBloc;
+
+  ProfileBloc(this.authBloc) {
+    authBloc.stream.listen((state) {
+      if (state.user != null) {
+        controller.add(state.user!);
+      }
+    });
+  }
+
+  void dispose() {
+    controller.close();
+  }
+}
