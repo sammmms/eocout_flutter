@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
 import 'package:eocout_flutter/models/login_data.dart';
@@ -8,6 +10,7 @@ import 'package:eocout_flutter/utils/error_status.dart';
 import 'package:eocout_flutter/utils/store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 class AuthBloc {
@@ -62,17 +65,8 @@ class AuthBloc {
       }
 
       if (userData.pictureId.isNotEmpty) {
-        try {
-          var responsePicture = await dio.get('/image/${userData.pictureId}');
-          var responseData = responsePicture.data['data'];
-          String imageLink = responseData['image'];
-
-          userData = userData.copyWith(pictureLink: imageLink);
-        } catch (err) {
-          if (kDebugMode) {
-            print("Error: $err");
-          }
-        }
+        userData =
+            userData.copyWith(profilePicture: await _loadImage(userData));
       }
 
       await Store.saveUser(userData);
@@ -140,17 +134,8 @@ class AuthBloc {
       }
 
       if (userData.pictureId.isNotEmpty) {
-        try {
-          var responsePicture = await dio.get('/image/${userData.pictureId}');
-          var responseData = responsePicture.data['data'];
-          String imageLink = responseData['image'];
-
-          userData = userData.copyWith(pictureLink: imageLink);
-        } catch (err) {
-          if (kDebugMode) {
-            print("Error: $err");
-          }
-        }
+        userData =
+            userData.copyWith(profilePicture: await _loadImage(userData));
       }
 
       await Store.saveUser(userData);
@@ -169,6 +154,24 @@ class AuthBloc {
         print("Error: $err");
       }
       _updateStream(AuthState.failed());
+    }
+  }
+
+  Future<File?> _loadImage(UserData userData) async {
+    try {
+      var responsePicture = await dio.get('/image/${userData.pictureId}',
+          options: Options(responseType: ResponseType.bytes));
+      Uint8List responseData = responsePicture.data;
+
+      final tempDir = await getTemporaryDirectory();
+      File file = File('${tempDir.path}/profile_picture.jpg');
+      await file.writeAsBytes(responseData);
+      return file;
+    } catch (err) {
+      if (kDebugMode) {
+        print("Error in obtaining image: $err");
+      }
+      return null;
     }
   }
 }
