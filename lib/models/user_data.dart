@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:eocout_flutter/utils/role_type_util.dart';
 
 class UserData {
@@ -14,7 +13,7 @@ class UserData {
   final String phone;
   final String address;
   final UserRole role;
-  final String pictureLink;
+  final File? profilePicture;
 
   // Additional data
   final bool isEmailVerified;
@@ -28,12 +27,12 @@ class UserData {
     required this.phone,
     required this.address,
     required this.role,
-    this.pictureLink = "",
+    this.profilePicture,
     required this.isEmailVerified,
     required this.pictureId,
   });
 
-  factory UserData.fromJson(Map<String, dynamic> json, {String? pictureLink}) {
+  factory UserData.fromJson(Map<String, dynamic> json, {File? profilePicture}) {
     return UserData(
       userId: json['id'],
       username: json['username'],
@@ -42,7 +41,7 @@ class UserData {
       phone: json['phone'] ?? '',
       address: json['address'] ?? '',
       role: UserRoleUtil.valueOf(json['role']),
-      pictureLink: pictureLink ?? '',
+      profilePicture: profilePicture,
       isEmailVerified: json['is_email_verified'],
       pictureId: json['profile_pic_media_id'] ?? '',
     );
@@ -56,7 +55,7 @@ class UserData {
       String? phone,
       String? address,
       UserRole? role,
-      String? pictureLink,
+      File? profilePicture,
       bool? isEmailVerified,
       String? pictureId}) {
     return UserData(
@@ -67,7 +66,7 @@ class UserData {
       phone: phone ?? this.phone,
       address: address ?? this.address,
       role: role ?? this.role,
-      pictureLink: pictureLink ?? this.pictureLink,
+      profilePicture: profilePicture ?? this.profilePicture,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       pictureId: pictureId ?? this.pictureId,
     );
@@ -88,35 +87,43 @@ class UserData {
 
 class EditableUserData {
   String fullname;
+  String username;
   String address;
   String phone;
   File? picture;
 
   EditableUserData({
     this.fullname = "",
+    this.username = "",
     this.address = "",
     this.phone = "",
     this.picture,
   });
 
   Map<String, dynamic> toJson(String? mediaId) => {
-        'full_name': fullname,
-        'address': address,
-        'phone': phone,
+        if (fullname.isNotEmpty) 'full_name': fullname,
+        if (address.isNotEmpty) 'address': address,
+        if (phone.isNotEmpty) 'phone': phone,
         if (mediaId != null) 'profile_pic_media_id': mediaId,
+        if (username.isNotEmpty) 'username': username,
       };
 
   bool isEquals(UserData user) {
     return fullname == user.fullname &&
-        address == user.address &&
-        phone == user.phone;
+            address == user.address &&
+            phone == user.phone &&
+            username == user.username &&
+            (picture == null || user.profilePicture == null)
+        ? true
+        : picture! == user.profilePicture!;
   }
 
   factory EditableUserData.fromUserData(UserData user) {
     return EditableUserData(
-      fullname: user.fullname,
-      address: user.address,
-      phone: user.phone,
-    );
+        fullname: user.fullname,
+        address: user.address,
+        phone: user.phone,
+        username: user.username,
+        picture: user.profilePicture);
   }
 }
