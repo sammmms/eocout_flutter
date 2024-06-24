@@ -3,19 +3,19 @@ import 'package:eocout_flutter/models/register_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
-class AuthenticationBloc {
-  final controller =
-      BehaviorSubject<AuthenticationState>.seeded(AuthenticationState());
+class AuthBloc {
+  final dio = Dio(BaseOptions(baseUrl: dotenv.env['BASE_URL']!));
+  final controller = BehaviorSubject<AuthState>.seeded(AuthState());
 
-  get stream => controller;
+  BehaviorSubject<AuthState> get stream => controller;
 
-  void _updateStream(AuthenticationState state) {
+  void _updateStream(AuthState state) {
     if (controller.isClosed) {
       if (kDebugMode) print('AuthenticationBloc: Stream is closed');
       return;
     }
 
-    if (kDebugMode) print('AuthenticationBloc: $state');
+    if (kDebugMode) print('AuthenticationBloc: ${state.status}');
     controller.add(state);
   }
 
