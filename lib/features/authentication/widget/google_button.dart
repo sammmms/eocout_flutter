@@ -1,5 +1,5 @@
 import 'package:eocout_flutter/components/my_snackbar.dart';
-import 'package:eocout_flutter/utils/dummy_data.dart';
+import 'package:eocout_flutter/utils/data.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
