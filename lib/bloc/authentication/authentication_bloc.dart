@@ -31,6 +31,58 @@ class AuthBloc {
     });
   }
 
+  Future<ErrorStatus?> login(LoginData data) async {
+    try {
+      _updateStream(AuthState.authenticating());
+
+      var responseToken = await dio.post('/auth/login', data: data.toJson());
+      var responseData = responseToken.data['data'];
+      String token = responseData['token'];
+      await Store.saveToken(token);
+
+      dio.interceptors.add(TokenInterceptor());
+      var responseUser = await dio.get('/profile');
+      var responseUserData = responseUser.data['data'];
+
+      print(responseUserData);
+      UserData userData =
+          UserData.fromJson(responseUserData as Map<String, dynamic>);
+
+      print(userData.toJson());
+
+      if (userData.pictureId != null) {
+        try {
+          var responsePicture = await dio.get('/image/${userData.pictureId}');
+          var responseData = responsePicture.data['data'];
+          String imageLink = responseData['image'];
+
+          userData = userData.copyWith(pictureLink: imageLink);
+        } catch (err) {
+          if (kDebugMode) {
+            print("Error: $err");
+          }
+        }
+      }
+
+      await Store.saveUser(userData);
+      _updateStream(AuthState(user: userData));
+    } catch (err) {
+      if (err is DioException) {
+        if (err.response?.statusCode == 403) {
+          if (kDebugMode) {
+            print("Error: ${err.response}");
+          }
+          _updateStream(AuthState.failed());
+          return ErrorStatus("Email atau password salah.", 403);
+        }
+      }
+      if (kDebugMode) {
+        print("Error: $err");
+      }
+      _updateStream(AuthState.failed());
+      return ErrorStatus("Terjadi kesalahan.", 500);
+    }
+    return null;
   }
 
   void logout() {
