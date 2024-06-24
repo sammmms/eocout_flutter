@@ -23,10 +23,14 @@ class AuthBloc {
     controller.close();
   }
 
-  void login() async {
-    _updateStream(AuthenticationState.authenticating());
-    await Future.delayed(const Duration(seconds: 3));
-    _updateStream(AuthenticationState.authenticated());
+  Future checkLogin() async {
+    await Store.getUser().then((user) {
+      if (user != null) {
+        _updateStream(AuthState(user: user));
+      }
+    });
+  }
+
   }
 
   void logout() {
