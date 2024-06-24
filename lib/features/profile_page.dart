@@ -45,8 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () async {
-            bool notEdited = editableUserData.isEquals(widget.user) &&
-                editableUserData.picture == null;
+            bool notEdited = editableUserData.isEquals(widget.user);
             if (isEdit && !notEdited) {
               Confirmation? confirmedEdit = await showDialog(
                   context: context,
@@ -83,150 +82,99 @@ class _ProfilePageState extends State<ProfilePage> {
                         isEdit = !isEdit;
                       });
                     }
-                  : () async {
-                      if (!_formKey.currentState!.validate()) {
-                        return;
-                      }
-
-                      if (editableUserData.isEquals(widget.user) &&
-                          editableUserData.picture == null) {
-                        setState(() {
-                          isEdit = !isEdit;
-                        });
-                        return;
-                      }
-                      Confirmation? confirmedEdit = await showDialog(
-                          context: context,
-                          builder: (context) => const MyConfirmationDialog(
-                                label:
-                                    "Apakah anda yakin ingin menyimpan perubahan?",
-                                negativeLabel: "Batal",
-                                noAnswerLabel: "Tunggu",
-                                positiveLabel: "Simpan",
-                              ));
-                      if (confirmedEdit == null ||
-                          confirmedEdit == Confirmation.noAnswer) {
-                        return;
-                      }
-
-                      if (confirmedEdit == Confirmation.negative) {
-                        editableUserData =
-                            EditableUserData.fromUserData(widget.user);
-                        setState(() {
-                          isEdit = !isEdit;
-                        });
-                        return;
-                      }
-
-                      if (!context.mounted) return;
-                      showDialog(
-                          context: context,
-                          builder: (context) => const MyLoadingDialog(
-                                label: "Menyimpan perubahan...",
-                              ));
-
-                      ErrorStatus? status =
-                          await bloc.updateProfile(editableUserData);
-
-                      // Pop loading dialog
-                      if (!context.mounted) return;
-                      Navigator.pop(context);
-
-                      if (status == null) {
-                        setState(() {
-                          isEdit = !isEdit;
-                        });
-                        return;
-                      }
-
-                      showMySnackBar(
-                          context, status.message, SnackbarStatus.error);
-                    },
+                  : _saveChanges,
               icon: isEdit
                   ? SvgPicture.asset(
                       "assets/svg/save_icon.svg",
                       // ignore: deprecated_member_use
                       color: colorScheme.onBackground,
-                      width: 30,
+                      width: 20,
                     )
                   : SvgPicture.asset(
                       "assets/svg/edit_icon.svg",
                       // ignore: deprecated_member_use
                       color: colorScheme.onBackground,
-                      width: 30,
+                      width: 20,
                     ))
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Column(
-                    children: [
-                      Stack(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: GestureDetector(
-                              onTap: isEdit ? _pickImage : null,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(200),
-                                child: CircleAvatar(
-                                  radius: 80,
-                                  child:
-                                      isEdit && editableUserData.picture != null
-                                          ? Image.file(
-                                              editableUserData.picture!,
-                                              fit: BoxFit.cover,
-                                              height: 200,
-                                              width: 200,
-                                            )
-                                          : widget.user.pictureLink.isEmpty
-                                              ? const Icon(
-                                                  Icons.person,
-                                                  size: 80,
-                                                )
-                                              : Image.network(
-                                                  widget.user.pictureLink,
-                                                  fit: BoxFit.cover,
-                                                  height: 200,
-                                                  width: 200,
-                                                ),
+      body: RefreshIndicator(
+        onRefresh: isEdit
+            ? () async {}
+            : () async {
+                await authBloc.refreshProfile();
+              },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Column(
+                      children: [
+                        Stack(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10.0),
+                              child: GestureDetector(
+                                onTap: isEdit ? _pickImage : null,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(200),
+                                  child: CircleAvatar(
+                                    radius: 60,
+                                    child: isEdit &&
+                                            editableUserData.picture != null
+                                        ? Image.file(
+                                            editableUserData.picture!,
+                                            fit: BoxFit.cover,
+                                            height: 200,
+                                            width: 200,
+                                          )
+                                        : widget.user.profilePicture == null
+                                            ? const Icon(
+                                                Icons.person,
+                                                size: 80,
+                                              )
+                                            : Image.file(
+                                                widget.user.profilePicture!,
+                                                fit: BoxFit.cover,
+                                                height: 200,
+                                                width: 200,
+                                              ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 15,
-                            child: Container(
-                                decoration: BoxDecoration(
-                                  color: colorScheme.tertiary,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding: const EdgeInsets.all(10),
-                                child: SvgPicture.asset(
-                                    "assets/svg/camera_icon.svg")),
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      isEdit
-                          ? TextFormField(
-                              onChanged: (value) {
+                            Positioned(
+                              bottom: 0,
+                              right: 15,
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.tertiary,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  child: SvgPicture.asset(
+                                      "assets/svg/camera_icon.svg")),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        isEdit
+                            ? TextFormField(
+                                onChanged: (value) {
                                   editableUserData.username = value;
-                              },
+                                },
                                 decoration: InputDecoration(
                                   constraints:
                                       const BoxConstraints(maxWidth: 200),
-                                contentPadding: EdgeInsets.zero,
+                                  contentPadding: EdgeInsets.zero,
                                   hintText: widget.user.fullname.isEmpty
                                       ? "Username"
                                       : widget.user.username,
@@ -236,30 +184,30 @@ class _ProfilePageState extends State<ProfilePage> {
                                   focusedBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(color: Colors.black),
                                   ),
-                              ),
-                              style: textStyle.headlineMedium!,
-                              textAlign: TextAlign.center,
-                            )
-                          : Text(
+                                ),
+                                style: textStyle.headlineMedium!,
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(
                                 widget.user.username.isEmpty
                                     ? "Username"
                                     : widget.user.username,
-                              style: textStyle.headlineMedium!.copyWith(
+                                style: textStyle.headlineMedium!.copyWith(
                                   color: widget.user.username.isEmpty
-                                    ? Colors.grey
-                                    : Colors.black,
+                                      ? Colors.grey
+                                      : Colors.black,
+                                ),
                               ),
-                            ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                _showLabel(label: "Email", value: widget.user.email),
-                const SizedBox(
-                  height: 10,
-                ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  _showLabel(label: "Email", value: widget.user.email),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   isEdit
                       ? _editTextField(
                           label: "Nama Lengkap",
@@ -272,42 +220,43 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(
                     height: 10,
                   ),
-                isEdit
-                    ? _editTextField(
-                        label: "Alamat",
-                        value: widget.user.address,
-                        onChanged: (value) {
-                          editableUserData.address = value;
-                        })
-                    : _showLabel(label: "Alamat", value: widget.user.address),
-                const SizedBox(
-                  height: 10,
-                ),
-                isEdit
-                    ? _editTextField(
-                        label: "Nomor Telepon",
-                        value: widget.user.phone,
-                        onChanged: (value) {
-                          editableUserData.phone = value;
-                        })
-                    : _showLabel(
-                        label: "Nomor Telepon", value: widget.user.phone),
-                const SizedBox(
-                  height: 40,
-                ),
-                const Divider(),
-                const SizedBox(
-                  height: 20,
-                ),
-                GestureDetector(
-                    onTap: () {},
-                    child: Text(
-                      "Keluar",
-                      style: textStyle.labelLarge!.copyWith(
-                          color: colorScheme.onBackground,
-                          fontWeight: FontWeight.w400),
-                    ))
-              ],
+                  isEdit
+                      ? _editTextField(
+                          label: "Alamat",
+                          value: widget.user.address,
+                          onChanged: (value) {
+                            editableUserData.address = value;
+                          })
+                      : _showLabel(label: "Alamat", value: widget.user.address),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  isEdit
+                      ? _editTextField(
+                          label: "Nomor Telepon",
+                          value: widget.user.phone,
+                          onChanged: (value) {
+                            editableUserData.phone = value;
+                          })
+                      : _showLabel(
+                          label: "Nomor Telepon", value: widget.user.phone),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  const Divider(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  GestureDetector(
+                      onTap: () {},
+                      child: Text(
+                        "Keluar",
+                        style: textStyle.labelLarge!.copyWith(
+                            color: colorScheme.onBackground,
+                            fontWeight: FontWeight.w400),
+                      ))
+                ],
+              ),
             ),
           ),
         ),
@@ -332,6 +281,60 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  void _saveChanges() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if (editableUserData.isEquals(widget.user)) {
+      setState(() {
+        isEdit = !isEdit;
+      });
+      return;
+    }
+    Confirmation? confirmedEdit = await showDialog(
+        context: context,
+        builder: (context) => const MyConfirmationDialog(
+              label: "Apakah anda yakin ingin menyimpan perubahan?",
+              negativeLabel: "Batal",
+              noAnswerLabel: "Tunggu",
+              positiveLabel: "Simpan",
+            ));
+    if (confirmedEdit == null || confirmedEdit == Confirmation.noAnswer) {
+      return;
+    }
+
+    if (confirmedEdit == Confirmation.negative) {
+      editableUserData = EditableUserData.fromUserData(widget.user);
+      setState(() {
+        isEdit = !isEdit;
+      });
+      return;
+    }
+
+    if (!mounted) return;
+    showDialog(
+        context: context,
+        builder: (context) => const MyLoadingDialog(
+              label: "Menyimpan perubahan...",
+            ));
+
+    ErrorStatus? status = await bloc.updateProfile(editableUserData);
+
+    // Pop loading dialog
+    if (!mounted) return;
+    Navigator.pop(context);
+
+    if (status == null) {
+      setState(() {
+        isEdit = !isEdit;
+      });
+      return;
+    }
+
+    showMySnackBar(context, status.message, SnackbarStatus.error);
+  }
+
   Widget _editTextField({
     required String label,
     required String value,
@@ -344,6 +347,19 @@ class _ProfilePageState extends State<ProfilePage> {
             style: textStyle.labelLarge!.copyWith(
                 color: Colors.grey.shade600, fontWeight: FontWeight.bold)),
         TextFormField(
+          controller: TextEditingController(text: value),
+          decoration: InputDecoration(
+              contentPadding: EdgeInsets.zero,
+              hintText: value.isEmpty ? "-" : value,
+              hintStyle: textStyle.titleMedium!.copyWith(
+                color: value.isEmpty ? Colors.grey : Colors.black,
+              ),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              )),
           onChanged: onChanged,
         ),
       ],
@@ -368,7 +384,17 @@ class _ProfilePageState extends State<ProfilePage> {
       return;
     }
 
-    editableUserData.picture = File(pickedImage.path);
+    File image = File(pickedImage.path);
+
+    if (image.readAsBytesSync().lengthInBytes / 1024 / 1024 > 3) {
+      if (mounted) {
+        showMySnackBar(context, "Ukuran gambar tidak boleh melebihi 3 MB.",
+            SnackbarStatus.error);
+      }
+      return;
+    }
+
+    editableUserData.picture = image;
     setState(() {});
   }
 }
