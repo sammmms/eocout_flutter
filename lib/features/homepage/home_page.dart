@@ -28,17 +28,14 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      body: SingleChildScrollView(
-          padding:
-              const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 100),
-          child: StreamBuilder<BusinessType>(
-              stream: _selectedBusiness,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return SeeAllPage(selectedBusiness: snapshot.data!);
-                }
-                return ExploreList(selectedBusiness: _selectedBusiness);
-              })),
+      body: StreamBuilder<BusinessType>(
+          stream: _selectedBusiness,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return SeeAllPage(selectedBusiness: snapshot.data!);
+            }
+            return ExploreList(selectedBusiness: _selectedBusiness);
+          }),
     ));
   }
 }

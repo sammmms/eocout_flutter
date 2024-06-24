@@ -22,31 +22,33 @@ class _SeeAllPageState extends State<SeeAllPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        MySearchBar(
-            isRounded: true,
-            onChanged: (value) {
-              _searchStream.add(value);
-            },
-            label: "Cari EO atau Vendor yang kamu inginkan!"),
-        StreamBuilder(
-            stream: _searchStream,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const Center(
-                    child: Text("Tidak ada data yang ditemukan."));
-              }
-              return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return const ListTile(
-                      title: Text("Data"),
-                    );
-                  });
-            })
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          MySearchBar(
+              isRounded: true,
+              onChanged: (value) {
+                _searchStream.add(value);
+              },
+              label: "Cari EO atau Vendor yang kamu inginkan!"),
+          StreamBuilder(
+              stream: _searchStream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(
+                      child: Text("Tidak ada data yang ditemukan."));
+                }
+                return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: 10,
+                    itemBuilder: (context, index) {
+                      return const ListTile(
+                        title: Text("Data"),
+                      );
+                    });
+              })
+        ],
+      ),
     );
   }
 }
