@@ -79,7 +79,11 @@ class _DashboardPageState extends State<DashboardPage> {
             const Center(child: Text('Chat')),
           ],
         ),
-        bottomSheet: Container(
+        bottomSheet: SafeArea(
+          maintainBottomViewPadding: true,
+          minimum: EdgeInsets.zero,
+          child: Container(
+            margin: EdgeInsets.zero,
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20)),
@@ -136,6 +140,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 );
               }),
+          ),
         ));
   }
 }
