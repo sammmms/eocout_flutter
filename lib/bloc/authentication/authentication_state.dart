@@ -1,18 +1,21 @@
-class AuthenticationState {
-  final bool isAuthenticated;
+import 'package:eocout_flutter/models/user_data.dart';
+
+class AuthState {
+  final UserData? user;
   final bool isAuthenticating;
   final bool hasFailed;
 
-  AuthenticationState(
-      {this.isAuthenticated = false,
-      this.isAuthenticating = false,
-      this.hasFailed = false});
+  get status => user != null
+      ? 'Authenticated'
+      : hasFailed
+          ? 'Failed'
+          : 'Loading';
 
-  factory AuthenticationState.authenticated() =>
-      AuthenticationState(isAuthenticated: true);
+  AuthState({this.isAuthenticating = false, this.hasFailed = false, this.user});
 
-  factory AuthenticationState.authenticating() =>
-      AuthenticationState(isAuthenticating: true);
+  factory AuthState.authenticating() => AuthState(isAuthenticating: true);
 
-  factory AuthenticationState.failed() => AuthenticationState(hasFailed: true);
+  factory AuthState.failed() => AuthState(hasFailed: true);
+
+  factory AuthState.resetState() => AuthState();
 }
