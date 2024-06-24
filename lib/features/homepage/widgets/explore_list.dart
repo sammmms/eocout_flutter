@@ -1,3 +1,4 @@
+import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/profile_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
@@ -13,7 +14,7 @@ class ExploreList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserData user = context.read<UserData>();
+    UserData user = context.read<AuthBloc>().stream.value.user!;
     return Column(
       children: [
         Row(
@@ -24,7 +25,7 @@ class ExploreList extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Hello, ${user.name}",
+                    "Hello, ${user.fullname}",
                     overflow: TextOverflow.ellipsis,
                     style: textStyle.headlineSmall,
                   ),

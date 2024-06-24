@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/features/homepage/home_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
@@ -45,6 +46,7 @@ class _DashboardPageState extends State<DashboardPage> {
   final _selectedPage = BehaviorSubject<int>.seeded(0);
   final _pageController = PageController(initialPage: 0);
   late UserData user;
+  late AuthBloc bloc;
   List<NavigationItem> pageItem = [
     NavigationItem.dashboard,
     NavigationItem.addEvent,
@@ -54,7 +56,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   void initState() {
-    user = context.read<UserData>();
+    bloc = context.read<AuthBloc>();
+    user = bloc.stream.value.user!;
     if (user.role != UserRole.eventOrganizer) {
       pageItem.remove(NavigationItem.addEvent);
     }

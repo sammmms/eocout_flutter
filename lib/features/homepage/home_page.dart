@@ -1,3 +1,4 @@
+import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/features/homepage/widgets/explore_list.dart';
 import 'package:eocout_flutter/features/homepage/see_all_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
@@ -19,7 +20,7 @@ class _HomepageState extends State<Homepage> {
 
   @override
   void initState() {
-    user = context.read<UserData>();
+    user = context.read<AuthBloc>().stream.value.user!;
     super.initState();
   }
 

@@ -1,13 +1,16 @@
+import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
+import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
 import 'package:eocout_flutter/components/my_background.dart';
 import 'package:eocout_flutter/components/my_important_text.dart';
+import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/register/user_register/otp_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
 import 'package:eocout_flutter/models/register_data.dart';
 import 'package:eocout_flutter/utils/business_type_util.dart';
+import 'package:eocout_flutter/utils/error_status.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -24,10 +27,12 @@ class _EOBusinessDataState extends State<EOBusinessData> {
   final _formKey = GlobalKey<FormState>();
   final _businessSelection = BehaviorSubject<BusinessType?>();
   late EOREgisterData registerData;
+  late AuthBloc bloc;
 
   @override
   void initState() {
     registerData = context.read<EOREgisterData>();
+    bloc = context.read<AuthBloc>();
     super.initState();
   }
 
@@ -114,21 +119,16 @@ class _EOBusinessDataState extends State<EOBusinessData> {
                     const SizedBox(
                       height: 60,
                     ),
-                    AuthActionButton(
-                      label: "Lanjut",
-                      onPressed: () {
-                        if (kDebugMode) {
-                          print("Register Data: ${registerData.toJson()}");
-                        }
-                        if (_formKey.currentState!.validate()) {
-                          navigateTo(
-                            context,
-                            const OtpPage(),
-                            transition: TransitionType.fadeIn,
+                    StreamBuilder<AuthState>(
+                        stream: bloc.stream,
+                        builder: (context, snapshot) {
+                          bool isLoading = !snapshot.hasData ||
+                              (snapshot.data?.isAuthenticating ?? false);
+                          return AuthActionButton(
+                            label: "Lanjut",
+                            onPressed: isLoading ? null : _registerEO,
                           );
-                        }
-                      },
-                    ),
+                        }),
                   ],
                 ),
               ),
@@ -137,5 +137,22 @@ class _EOBusinessDataState extends State<EOBusinessData> {
         ),
       ),
     );
+  }
+
+  void _registerEO() async {
+    if (_formKey.currentState!.validate()) {
+      ErrorStatus? status = await bloc.register(registerData);
+      if (status == null) {
+        if (!mounted) return;
+        navigateTo(
+          context,
+          const OtpPage(),
+          transition: TransitionType.fadeIn,
+        );
+        return;
+      }
+      if (!mounted) return;
+      showMySnackBar(context, status.message, SnackbarStatus.error);
+    }
   }
 }

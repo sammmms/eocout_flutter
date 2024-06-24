@@ -13,8 +13,11 @@ import 'package:eocout_flutter/features/authentication/widget/google_button.dart
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
 import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
 import 'package:eocout_flutter/features/dashboard_page.dart';
-import 'package:eocout_flutter/models/user_data.dart';
-import 'package:eocout_flutter/utils/dummy_data.dart';
+import 'package:eocout_flutter/models/login_data.dart';
+import 'package:eocout_flutter/utils/data.dart';
+import 'package:eocout_flutter/utils/error_status.dart';
+import 'package:eocout_flutter/utils/role_type_util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,12 +31,13 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final bloc = AuthenticationBloc();
+  late AuthBloc bloc;
+  final loginData = LoginData();
 
   @override
-  void dispose() {
-    bloc.dispose();
-    super.dispose();
+  void initState() {
+    bloc = context.read<AuthBloc>();
+    super.initState();
   }
 
   @override
@@ -71,8 +75,10 @@ class _LoginPageState extends State<LoginPage> {
                         height: 30,
                       ),
                       TextFormField(
-                        controller:
-                            TextEditingController(text: "hello@hello.hello"),
+                        controller: TextEditingController(),
+                        onChanged: (value) {
+                          loginData.email = value;
+                        },
                         decoration: const InputDecoration(
                           labelText: 'Email',
                         ),
@@ -93,52 +99,51 @@ class _LoginPageState extends State<LoginPage> {
                         height: 10,
                       ),
                       PasswordTextField(
-                        controller: TextEditingController(text: "helloHello@1"),
-                        onChanged: (value) {},
+                        controller: TextEditingController(),
+                        onChanged: (value) {
+                          loginData.password = value;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          const Expanded(child: Text("Masuk sebagai :")),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Flexible(
+                            child: DropdownButton<UserRole>(
+                              isExpanded: true,
+                              value: loginData.role,
+                              onChanged: (UserRole? value) {
+                                setState(() {
+                                  loginData.role = value!;
+                                });
+                              },
+                              items: UserRole.values.map((UserRole value) {
+                                return DropdownMenuItem<UserRole>(
+                                  value: value,
+                                  child:
+                                      Text(UserRoleUtil.readableTextOf(value)),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(
                         height: 60,
                       ),
-                      StreamBuilder<AuthenticationState>(
+                      StreamBuilder<AuthState>(
                           stream: bloc.stream,
                           builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              return const AuthActionButton(
-                                label: "Not Available",
-                                onPressed: null,
-                              );
-                            }
-                            if (snapshot.data!.isAuthenticating) {
-                              return const AuthActionButton(
-                                label: "Logging in...",
-                                onPressed: null,
-                              );
-                            }
-                            if (snapshot.data!.isAuthenticated) {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                // TODO : Passing token, dan user data, buat new object untuk terima token dan data user, maybe UserData()
-                                navigateTo(
-                                    context,
-                                    Provider<UserData>.value(
-                                        value: dummyData,
-                                        child: const DashboardPage()),
-                                    transition:
-                                        TransitionType.slideInFromBottom,
-                                    clearStack: true);
-                              });
-                            }
+                            bool isLoading = !snapshot.hasData ||
+                                (snapshot.data?.isAuthenticating ?? false);
                             return AuthActionButton(
-                                label: 'Masuk',
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    bloc.login();
-                                  } else {
-                                    showMySnackBar(
-                                        context,
-                                        'Mohon periksa kembali data yang diinput.',
-                                        SnackbarStatus.error);
-                                  }
-                                });
+                                label: "Masuk",
+                                onPressed: isLoading ? null : _loginUser);
                           }),
                       const AuthButtonDivider(),
                       const GoogleAuthButton(),
@@ -159,5 +164,22 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  void _loginUser() async {
+    if (_formKey.currentState!.validate()) {
+      if (kDebugMode) {
+        print("Login data : ${loginData.toJson()}");
+      }
+      ErrorStatus? status = await bloc.login(loginData);
+      if (status == null) {
+        if (!mounted) return;
+        navigateTo(context, const DashboardPage(),
+            transition: TransitionType.fadeIn, replace: true);
+        return;
+      }
+      if (!mounted) return;
+      showMySnackBar(context, status.message, SnackbarStatus.error);
+    }
   }
 }
