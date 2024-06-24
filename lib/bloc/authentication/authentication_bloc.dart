@@ -1,13 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
-import 'package:eocout_flutter/models/login_data.dart';
 import 'package:eocout_flutter/models/register_data.dart';
-import 'package:eocout_flutter/models/user_data.dart';
-import 'package:eocout_flutter/utils/dio_interceptor.dart';
-import 'package:eocout_flutter/utils/error_status.dart';
-import 'package:eocout_flutter/utils/store.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:rxdart/rxdart.dart';
 
 class AuthBloc {
@@ -93,8 +86,29 @@ class AuthBloc {
   }
 
   void logout() {
-    _updateStream(AuthenticationState());
+    _updateStream(AuthState());
   }
 
-  void register(RegisterData data) {}
+  Future<ErrorStatus?> register(RegisterData data) async {
+    try {
+      _updateStream(AuthState.authenticating());
+
+      await dio.post('/auth/register', data: data.toJson());
+
+      _updateStream(AuthState.resetState());
+      return null;
+    } catch (err) {
+      if (err is DioException) {
+        if (err.response?.statusCode == 409) {
+          _updateStream(AuthState.failed());
+          return ErrorStatus("Akun telah terdaftar.", 409);
+        }
+      }
+      if (kDebugMode) {
+        print("Error: $err");
+      }
+      _updateStream(AuthState.failed());
+      return ErrorStatus("Terjadi kesalahan.", 500);
+    }
+  }
 }
