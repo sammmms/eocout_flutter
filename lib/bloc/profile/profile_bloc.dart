@@ -34,7 +34,7 @@ class ProfileBloc {
         mediaId = await uploadImage(user.picture!);
       }
       await dio.put('/profile', data: user.toJson(mediaId));
-      authBloc.refreshProfile();
+      await authBloc.refreshProfile();
       return null;
     } catch (err) {
       if (err is DioException) {
