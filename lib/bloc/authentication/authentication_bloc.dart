@@ -61,7 +61,7 @@ class AuthBloc {
         print(userData.toJson());
       }
 
-      if (userData.pictureId != null) {
+      if (userData.pictureId.isNotEmpty) {
         try {
           var responsePicture = await dio.get('/image/${userData.pictureId}');
           var responseData = responsePicture.data['data'];
@@ -120,6 +120,55 @@ class AuthBloc {
       }
       _updateStream(AuthState.failed());
       return ErrorStatus("Terjadi kesalahan.", 500);
+    }
+  }
+
+  Future refreshProfile() async {
+    try {
+      dio.interceptors.add(TokenInterceptor());
+      var response = await dio.get('/profile');
+      var responseData = response.data['data'];
+
+      if (kDebugMode) {
+        print(responseData);
+      }
+      UserData userData =
+          UserData.fromJson(responseData as Map<String, dynamic>);
+
+      if (kDebugMode) {
+        print(userData.toJson());
+      }
+
+      if (userData.pictureId.isNotEmpty) {
+        try {
+          var responsePicture = await dio.get('/image/${userData.pictureId}');
+          var responseData = responsePicture.data['data'];
+          String imageLink = responseData['image'];
+
+          userData = userData.copyWith(pictureLink: imageLink);
+        } catch (err) {
+          if (kDebugMode) {
+            print("Error: $err");
+          }
+        }
+      }
+
+      await Store.saveUser(userData);
+      _updateStream(AuthState(user: userData));
+    } catch (err) {
+      if (err is DioException) {
+        if (err.response?.statusCode == 401) {
+          if (kDebugMode) {
+            print("Error: ${err.response}");
+          }
+          _updateStream(AuthState.failed());
+          return;
+        }
+      }
+      if (kDebugMode) {
+        print("Error: $err");
+      }
+      _updateStream(AuthState.failed());
     }
   }
 }
