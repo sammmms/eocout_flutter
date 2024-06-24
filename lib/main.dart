@@ -20,14 +20,41 @@ void main() async {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  final AuthBloc _authBloc = AuthBloc();
+
+  @override
+  void initState() {
+    _authBloc.checkLogin();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: lightThemeData,
-      home: const WelcomePage(),
+    return MultiProvider(
+      providers: [
+        Provider<AuthBloc>.value(value: _authBloc),
+      ],
+      child: MaterialApp(
+        theme: lightThemeData,
+        home: StreamBuilder<AuthState>(
+            stream: _authBloc.stream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data!.user != null) {
+                  return const DashboardPage();
+                }
+              }
+              return const WelcomePage();
+            }),
+      ),
     );
   }
 }
