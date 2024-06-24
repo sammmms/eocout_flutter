@@ -1,4 +1,3 @@
-import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/utils/data.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +28,8 @@ class GoogleAuthButton extends StatelessWidget {
           );
 
           GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+          // TODO: Login using googleUser
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -51,11 +51,15 @@ class AuthBloc {
       var responseUser = await dio.get('/profile');
       var responseUserData = responseUser.data['data'];
 
-      print(responseUserData);
+      if (kDebugMode) {
+        print(responseUserData);
+      }
       UserData userData =
           UserData.fromJson(responseUserData as Map<String, dynamic>);
 
-      print(userData.toJson());
+      if (kDebugMode) {
+        print(userData.toJson());
+      }
 
       if (userData.pictureId != null) {
         try {

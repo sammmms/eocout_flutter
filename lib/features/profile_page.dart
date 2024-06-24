@@ -34,13 +34,13 @@ class ProfilePage extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 10.0),
                         child: CircleAvatar(
                           radius: 80,
-                          child: user.photo.isEmpty
+                          child: user.pictureLink.isEmpty
                               ? const Icon(
                                   Icons.person,
                                   size: 80,
                                 )
                               : Image.network(
-                                  user.photo,
+                                  user.pictureLink,
                                   fit: BoxFit.cover,
                                 ),
                         ),
@@ -63,7 +63,7 @@ class ProfilePage extends StatelessWidget {
                     height: 10,
                   ),
                   Text(
-                    user.name,
+                    user.fullname,
                     style: textStyle.headlineMedium,
                   ),
                 ],
