@@ -25,4 +25,49 @@ class ProfileBloc {
   void dispose() {
     controller.close();
   }
+
+  Future<ErrorStatus?> updateProfile(EditableUserData user) async {
+    try {
+      dio.interceptors.add(TokenInterceptor());
+      String? mediaId;
+      if (user.picture != null) {
+        mediaId = await uploadImage(user.picture!);
+      }
+      await dio.put('/profile', data: user.toJson(mediaId));
+      authBloc.refreshProfile();
+      return null;
+    } catch (err) {
+      if (err is DioException) {
+        if (kDebugMode) {
+          print(err.response!);
+        }
+      }
+      if (kDebugMode) {
+        print(err);
+      }
+      return ErrorStatus("Terjadi kesalahan.", 400);
+    }
+  }
+
+  Future uploadImage(File image) async {
+    try {
+      FormData formData = FormData.fromMap({
+        "picture": await MultipartFile.fromFile(image.path),
+      });
+      var response = await dio.post('/image/upload', data: formData);
+      var responseData = response.data['data'];
+      var mediaId = responseData['media_id'];
+      return mediaId;
+    } catch (err) {
+      if (err is DioException) {
+        if (kDebugMode) {
+          print("err dio upload image : \n ${err.response!}");
+        }
+      }
+      if (kDebugMode) {
+        print("err upload image : \n $err");
+      }
+      return null;
+    }
+  }
 }
