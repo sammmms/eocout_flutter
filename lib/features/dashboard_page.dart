@@ -22,15 +22,15 @@ class NavigationItemUtil {
   static SvgPicture iconsOf(NavigationItem item) {
     switch (item) {
       case NavigationItem.dashboard:
-        return SvgPicture.asset('assets/svg/dashboard.svg');
+        return SvgPicture.asset('assets/svg/dashboard_icon.svg');
       case NavigationItem.addEvent:
-        return SvgPicture.asset('assets/svg/add_event.svg');
+        return SvgPicture.asset('assets/svg/add_event_icon.svg');
       case NavigationItem.cart:
-        return SvgPicture.asset('assets/svg/cart.svg');
+        return SvgPicture.asset('assets/svg/cart_icon.svg');
       case NavigationItem.chat:
-        return SvgPicture.asset('assets/svg/chat.svg');
+        return SvgPicture.asset('assets/svg/chat_icon.svg');
       default:
-        return SvgPicture.asset('assets/svg/dashboard.svg');
+        return SvgPicture.asset('assets/svg/dashboard_icon.svg');
     }
   }
 }

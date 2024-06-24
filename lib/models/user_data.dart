@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:eocout_flutter/utils/role_type_util.dart';
 
 class UserData {
@@ -16,7 +18,7 @@ class UserData {
 
   // Additional data
   final bool isEmailVerified;
-  final String? pictureId;
+  final String pictureId;
 
   UserData({
     required this.userId,
@@ -82,4 +84,39 @@ class UserData {
         'is_email_verified': isEmailVerified,
         'profile_pic_media_id': pictureId,
       };
+}
+
+class EditableUserData {
+  String fullname;
+  String address;
+  String phone;
+  File? picture;
+
+  EditableUserData({
+    this.fullname = "",
+    this.address = "",
+    this.phone = "",
+    this.picture,
+  });
+
+  Map<String, dynamic> toJson(String? mediaId) => {
+        'full_name': fullname,
+        'address': address,
+        'phone': phone,
+        if (mediaId != null) 'profile_pic_media_id': mediaId,
+      };
+
+  bool isEquals(UserData user) {
+    return fullname == user.fullname &&
+        address == user.address &&
+        phone == user.phone;
+  }
+
+  factory EditableUserData.fromUserData(UserData user) {
+    return EditableUserData(
+      fullname: user.fullname,
+      address: user.address,
+      phone: user.phone,
+    );
+  }
 }
