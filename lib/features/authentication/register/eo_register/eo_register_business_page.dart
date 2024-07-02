@@ -8,8 +8,8 @@ import 'package:eocout_flutter/features/authentication/register/user_register/ot
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
 import 'package:eocout_flutter/models/register_data.dart';
+import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/business_type_util.dart';
-import 'package:eocout_flutter/utils/error_status.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -141,7 +141,7 @@ class _EOBusinessDataState extends State<EOBusinessData> {
 
   void _registerEO() async {
     if (_formKey.currentState!.validate()) {
-      ErrorStatus? status = await bloc.register(registerData);
+      AppError? status = await bloc.register(registerData);
       if (status == null) {
         if (!mounted) return;
         navigateTo(

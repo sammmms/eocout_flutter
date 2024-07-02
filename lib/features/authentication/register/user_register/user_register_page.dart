@@ -11,8 +11,8 @@ import 'package:eocout_flutter/features/authentication/widget/button_divider.dar
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
 import 'package:eocout_flutter/models/register_data.dart';
+import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/data.dart';
-import 'package:eocout_flutter/utils/error_status.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -165,7 +165,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
 
   void _registerUser() async {
     if (_formKey.currentState?.validate() ?? false) {
-      ErrorStatus? status = await bloc.register(registerData);
+      AppError? status = await bloc.register(registerData);
       if (status == null) {
         if (!mounted) return;
         navigateTo(
