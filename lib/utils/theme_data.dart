@@ -25,10 +25,6 @@ ColorScheme colorScheme = ColorScheme(
   tertiaryContainer: const Color(0xFF1c5d6f),
   onTertiaryContainer: Colors.white,
 
-  // Background Color
-  background: Colors.white,
-  onBackground: Colors.black,
-
   // Error Color
   onError: Colors.white,
   error: Colors.redAccent,
@@ -116,8 +112,8 @@ TextTheme textStyle = const TextTheme(
     fontWeight: FontWeight.bold,
   ),
 ).apply(
-  bodyColor: colorScheme.onBackground,
-  displayColor: colorScheme.onBackground,
+  bodyColor: colorScheme.onSurface,
+  displayColor: colorScheme.onSurface,
 );
 
 ThemeData lightThemeData = ThemeData(
@@ -181,21 +177,21 @@ ThemeData lightThemeData = ThemeData(
   ),
   iconButtonTheme: IconButtonThemeData(
     style: ButtonStyle(
-      foregroundColor: MaterialStateProperty.all(colorScheme.onTertiary),
-      backgroundColor: MaterialStateProperty.all(colorScheme.tertiary),
-      shape: MaterialStateProperty.all(
+      foregroundColor: WidgetStateProperty.all(colorScheme.onTertiary),
+      backgroundColor: WidgetStateProperty.all(colorScheme.tertiary),
+      shape: WidgetStateProperty.all(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
     ),
   ),
-  scaffoldBackgroundColor: colorScheme.background,
+  scaffoldBackgroundColor: colorScheme.surface,
   appBarTheme: AppBarTheme(
-    backgroundColor: colorScheme.background,
+    backgroundColor: colorScheme.surface,
     elevation: 0,
     iconTheme: IconThemeData(
-      color: colorScheme.onBackground,
+      color: colorScheme.onSurface,
     ),
   ),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -204,8 +200,8 @@ ThemeData lightThemeData = ThemeData(
     unselectedItemColor: colorScheme.onPrimary,
   ),
   bottomSheetTheme: BottomSheetThemeData(
-    surfaceTintColor: colorScheme.background,
-    backgroundColor: colorScheme.background,
+    surfaceTintColor: colorScheme.surface,
+    backgroundColor: colorScheme.surface,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(20),
@@ -214,11 +210,11 @@ ThemeData lightThemeData = ThemeData(
     ),
   ),
   iconTheme: IconThemeData(
-    color: colorScheme.onBackground,
+    color: colorScheme.onSurface,
   ),
   scrollbarTheme: ScrollbarThemeData(
-    thumbColor: MaterialStateProperty.all(colorScheme.primary),
-    trackColor: MaterialStateProperty.all(colorScheme.secondary),
+    thumbColor: WidgetStateProperty.all(colorScheme.primary),
+    trackColor: WidgetStateProperty.all(colorScheme.secondary),
   ),
   dividerTheme: DividerThemeData(
     color: colorScheme.outline,

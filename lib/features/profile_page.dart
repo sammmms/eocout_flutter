@@ -7,7 +7,7 @@ import 'package:eocout_flutter/components/my_loading_dialog.dart';
 import 'package:eocout_flutter/components/my_pick_image.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/models/user_data.dart';
-import 'package:eocout_flutter/utils/error_status.dart';
+import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -65,16 +65,16 @@ class _ProfilePageState extends State<ProfilePage> {
             Navigator.pop(context);
           },
           style: const ButtonStyle(
-            shape: MaterialStatePropertyAll(CircleBorder()),
-            backgroundColor: MaterialStatePropertyAll(Colors.transparent),
+            shape: WidgetStatePropertyAll(CircleBorder()),
+            backgroundColor: WidgetStatePropertyAll(Colors.transparent),
           ),
           icon: const Icon(Icons.arrow_back),
         ),
         actions: [
           IconButton(
               style: const ButtonStyle(
-                shape: MaterialStatePropertyAll(CircleBorder()),
-                backgroundColor: MaterialStatePropertyAll(Colors.transparent),
+                shape: WidgetStatePropertyAll(CircleBorder()),
+                backgroundColor: WidgetStatePropertyAll(Colors.transparent),
               ),
               onPressed: !isEdit
                   ? () {
@@ -252,7 +252,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Text(
                         "Keluar",
                         style: textStyle.labelLarge!.copyWith(
-                            color: colorScheme.onBackground,
+                            color: colorScheme.onSurface,
                             fontWeight: FontWeight.w400),
                       ))
                 ],
@@ -319,7 +319,7 @@ class _ProfilePageState extends State<ProfilePage> {
               label: "Menyimpan perubahan...",
             ));
 
-    ErrorStatus? status = await bloc.updateProfile(editableUserData);
+    AppError? status = await bloc.updateProfile(editableUserData);
 
     // Pop loading dialog
     if (!mounted) return;

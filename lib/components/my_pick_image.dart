@@ -36,7 +36,7 @@ class MyPickImage extends StatelessWidget {
         ListTile(
             leading: Icon(
               Icons.close,
-              color: colorScheme.onBackground,
+              color: colorScheme.onSurface,
             ),
             title: const Text("Batal"),
             onTap: () {
