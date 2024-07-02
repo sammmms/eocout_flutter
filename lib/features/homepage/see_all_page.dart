@@ -16,7 +16,9 @@ class _SeeAllPageState extends State<SeeAllPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    _searchStream
+        .debounceTime(const Duration(milliseconds: 500))
+        .listen((event) {});
     super.dispose();
   }
 
