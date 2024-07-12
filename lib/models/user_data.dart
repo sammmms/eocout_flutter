@@ -110,12 +110,29 @@ class EditableUserData {
 
   bool isEquals(UserData user) {
     return fullname == user.fullname &&
-            address == user.address &&
-            phone == user.phone &&
-            username == user.username &&
-            (picture == null || user.profilePicture == null)
-        ? true
-        : picture! == user.profilePicture!;
+        address == user.address &&
+        phone == user.phone &&
+        username == user.username &&
+        ((picture == null || user.profilePicture == null)
+            ? true
+            : picture! == user.profilePicture!);
+  }
+
+  factory EditableUserData.getDifference(
+      UserData user, EditableUserData editableUserData) {
+    return EditableUserData(
+      fullname: editableUserData.fullname == user.fullname
+          ? ""
+          : editableUserData.fullname,
+      address: editableUserData.address == user.address
+          ? ""
+          : editableUserData.address,
+      phone: editableUserData.phone == user.phone ? "" : editableUserData.phone,
+      username: editableUserData.username == user.username
+          ? ""
+          : editableUserData.username,
+      picture: editableUserData.picture,
+    );
   }
 
   factory EditableUserData.fromUserData(UserData user) {
