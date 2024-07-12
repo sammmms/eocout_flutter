@@ -90,6 +90,7 @@ class AuthBloc {
   }
 
   void logout() {
+    Store.clearStore();
     _updateStream(AuthState());
   }
 
