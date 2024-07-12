@@ -24,6 +24,8 @@ class AuthBloc {
 
   BehaviorSubject<AuthState> get stream => controller;
 
+  AuthState? get state => controller.valueOrNull;
+
   void _updateStream(AuthState state) {
     if (controller.isClosed) {
       if (kDebugMode) print('AuthenticationBloc: Stream is closed');
