@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ExploreList extends StatelessWidget {
-  final BehaviorSubject<BusinessType> selectedBusiness;
+  final BehaviorSubject<BusinessType?> selectedBusiness;
   const ExploreList({super.key, required this.selectedBusiness});
 
   @override
@@ -52,11 +52,7 @@ class ExploreList extends StatelessWidget {
                             onTap: user == null
                                 ? null
                                 : () {
-                                    navigateTo(
-                                        context,
-                                        ProfilePage(
-                                          user: user,
-                                        ),
+                                    navigateTo(context, const ProfilePage(),
                                         transition:
                                             TransitionType.slideInFromRight);
                                   },
