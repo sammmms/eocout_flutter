@@ -1,5 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
+import 'package:eocout_flutter/features/add_event/add_event_page.dart';
+import 'package:eocout_flutter/features/homepage/event_organizer_home_page.dart';
 import 'package:eocout_flutter/features/homepage/home_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
@@ -79,9 +81,11 @@ class _DashboardPageState extends State<DashboardPage> {
           body: PageView(
             controller: _pageController,
             children: [
-              const Homepage(),
-              if (user.role == UserRole.eventOrganizer)
-                const Center(child: Text('Add Event')),
+              if (user.role == UserRole.user)
+                const Homepage()
+              else
+                const EventOrganizerHomePage(),
+              if (user.role == UserRole.eventOrganizer) const AddEventPage(),
               const Center(child: Text('Cart')),
               const Center(child: Text('Chat')),
             ],
