@@ -184,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
       if (status == null) {
         if (!mounted) return;
         navigateTo(context, const DashboardPage(),
-            transition: TransitionType.fadeIn, replace: true);
+            transition: TransitionType.fadeIn, clearStack: true);
         return;
       }
       if (!mounted) return;
