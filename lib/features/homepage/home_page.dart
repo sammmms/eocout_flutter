@@ -14,7 +14,7 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  final _selectedBusiness = BehaviorSubject<BusinessType>();
+  final _selectedBusiness = BehaviorSubject<BusinessType?>();
   late AuthBloc bloc;
 
   @override
@@ -28,11 +28,11 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      body: StreamBuilder<BusinessType>(
+      body: StreamBuilder<BusinessType?>(
           stream: _selectedBusiness,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return SeeAllPage(selectedBusiness: snapshot.data!);
+              return SeeAllPage(selectedBusiness: _selectedBusiness);
             }
             return ExploreList(selectedBusiness: _selectedBusiness);
           }),
