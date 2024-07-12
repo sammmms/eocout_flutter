@@ -11,14 +11,19 @@ void printError(Object err) {
         print('Tidak ada internet koneksi');
         return;
       }
-      if (err.response?.data?['message'] == null) {
-        print('Unknown Error');
-        return;
+
+      if (err.response is Map) {
+        if (err.response?.data?['message'] == null) {
+          print('Unknown Error');
+          return;
+        }
+        String message = err.response?.data?['message'];
+        int code = err.response?.data?['status'];
+        print(ServerErrorParser.parseMessage(message));
+        print(ServerErrorParser.parseCode(code.toString()));
+      } else {
+        print(err.response);
       }
-      String message = err.response?.data?['message'];
-      String code = err.response?.data?['status'];
-      print(ServerErrorParser.parseMessage(message));
-      print(ServerErrorParser.parseCode(code));
       return;
     }
     print('Unknown Error');

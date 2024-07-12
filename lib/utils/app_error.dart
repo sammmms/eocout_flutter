@@ -18,13 +18,18 @@ class AppError extends Error {
       if (err is SocketException) {
         return AppError('Tidak ada internet koneksi', null);
       }
-      if (err.response?.data?['message'] == null) {
-        return AppError('Unknown Error', null);
+
+      if (err.response?.data is Map) {
+        if (err.response?.data?['message'] == null) {
+          return AppError('Unknown Error', null);
+        }
+        String message = err.response?.data?['message'];
+        String code = err.response?.data?['status'];
+        return AppError(ServerErrorParser.parseMessage(message),
+            ServerErrorParser.parseCode(code));
+      } else {
+        return AppError(err.response.toString(), err.response?.statusCode);
       }
-      String message = err.response?.data?['message'];
-      String code = err.response?.data?['status'];
-      return AppError(ServerErrorParser.parseMessage(message),
-          ServerErrorParser.parseCode(code));
     }
     return AppError('Unknown Error', null);
   }
