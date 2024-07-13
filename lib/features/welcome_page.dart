@@ -93,6 +93,9 @@ class _WelcomePageState extends State<WelcomePage> {
                   ],
                 ),
               ),
+              const SizedBox(
+                height: 10,
+              ),
               StreamBuilder<int>(
                   stream: pageStream,
                   initialData: 0,
