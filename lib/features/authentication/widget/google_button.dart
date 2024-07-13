@@ -13,10 +13,10 @@ class GoogleAuthButton extends StatelessWidget {
       height: 60,
       child: OutlinedButton(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(
+          backgroundColor: WidgetStateProperty.all(
             colorScheme.secondary,
           ),
-          side: MaterialStateProperty.all(
+          side: WidgetStateProperty.all(
             BorderSide(
               color: colorScheme.outline,
             ),

@@ -65,16 +65,16 @@ class _ProfilePageState extends State<ProfilePage> {
             Navigator.pop(context);
           },
           style: const ButtonStyle(
-            shape: MaterialStatePropertyAll(CircleBorder()),
-            backgroundColor: MaterialStatePropertyAll(Colors.transparent),
+            shape: WidgetStatePropertyAll(CircleBorder()),
+            backgroundColor: WidgetStatePropertyAll(Colors.transparent),
           ),
           icon: const Icon(Icons.arrow_back),
         ),
         actions: [
           IconButton(
               style: const ButtonStyle(
-                shape: MaterialStatePropertyAll(CircleBorder()),
-                backgroundColor: MaterialStatePropertyAll(Colors.transparent),
+                shape: WidgetStatePropertyAll(CircleBorder()),
+                backgroundColor: WidgetStatePropertyAll(Colors.transparent),
               ),
               onPressed: !isEdit
                   ? () {
@@ -252,7 +252,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Text(
                         "Keluar",
                         style: textStyle.labelLarge!.copyWith(
-                            color: colorScheme.onBackground,
+                            color: colorScheme.onSurface,
                             fontWeight: FontWeight.w400),
                       ))
                 ],

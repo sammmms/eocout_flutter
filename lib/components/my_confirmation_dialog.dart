@@ -60,7 +60,7 @@ class MyConfirmationDialog extends StatelessWidget {
                     ElevatedButton(
                         style: ButtonStyle(
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.red.shade400)),
+                                WidgetStateProperty.all(Colors.red.shade400)),
                         onPressed: () {
                           Navigator.pop(context, Confirmation.negative);
                         },
@@ -70,8 +70,8 @@ class MyConfirmationDialog extends StatelessWidget {
                   if (noAnswerLabel != null) ...[
                     ElevatedButton(
                         style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                                Colors.grey.shade400)),
+                            backgroundColor:
+                                WidgetStateProperty.all(Colors.grey.shade400)),
                         onPressed: () {
                           Navigator.pop(context, Confirmation.noAnswer);
                         },
@@ -81,8 +81,8 @@ class MyConfirmationDialog extends StatelessWidget {
                   if (positiveLabel != null)
                     ElevatedButton(
                         style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                                Colors.green.shade400)),
+                            backgroundColor:
+                                WidgetStateProperty.all(Colors.green.shade400)),
                         onPressed: () {
                           Navigator.pop(context, Confirmation.positive);
                         },

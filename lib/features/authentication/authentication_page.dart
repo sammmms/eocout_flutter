@@ -15,7 +15,7 @@ class AuthenticationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         if (Navigator.canPop(context)) {
           Navigator.pop(context);

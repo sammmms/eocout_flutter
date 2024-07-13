@@ -9,7 +9,7 @@ class MyBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: colorScheme.background,
+      color: colorScheme.surface,
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: Stack(
