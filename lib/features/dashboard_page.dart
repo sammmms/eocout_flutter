@@ -1,8 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/features/add_event/add_event_page.dart';
-import 'package:eocout_flutter/features/homepage/event_organizer_home_page.dart';
-import 'package:eocout_flutter/features/homepage/home_page.dart';
+import 'package:eocout_flutter/features/chat_page/chat_page.dart';
+import 'package:eocout_flutter/features/homepage_eo/event_organizer_home_page.dart';
+import 'package:eocout_flutter/features/homepage_user/user_home_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
@@ -59,7 +60,8 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     bloc = context.read<AuthBloc>();
-    user = bloc.stream.value.user!;
+    user =
+        bloc.stream.value.user ?? UserData.dummy(role: UserRole.eventOrganizer);
     if (user.role != UserRole.eventOrganizer) {
       pageItem.remove(NavigationItem.addEvent);
     }
@@ -87,7 +89,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 const EventOrganizerHomePage(),
               if (user.role == UserRole.eventOrganizer) const AddEventPage(),
               const Center(child: Text('Cart')),
-              const Center(child: Text('Chat')),
+              const ChatPage(),
             ],
           ),
           resizeToAvoidBottomInset: false,

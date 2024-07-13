@@ -83,6 +83,21 @@ class UserData {
         'is_email_verified': isEmailVerified,
         'profile_pic_media_id': pictureId,
       };
+
+  factory UserData.dummy({UserRole role = UserRole.user}) {
+    return UserData(
+      userId: '1',
+      username: 'username',
+      fullname: 'fullname',
+      email: 'email',
+      phone: 'phone',
+      address: 'address',
+      role: role,
+      profilePicture: null,
+      isEmailVerified: true,
+      pictureId: '1',
+    );
+  }
 }
 
 class EditableUserData {
