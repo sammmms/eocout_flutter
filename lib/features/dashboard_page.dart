@@ -1,9 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
-import 'package:eocout_flutter/features/add_event/add_event_page.dart';
+import 'package:eocout_flutter/features/create_service/create_service_page.dart';
 import 'package:eocout_flutter/features/chat_page/chat_page.dart';
 import 'package:eocout_flutter/features/homepage_eo/event_organizer_home_page.dart';
 import 'package:eocout_flutter/features/homepage_user/user_home_page.dart';
+import 'package:eocout_flutter/features/transaction_eo/event_organizer_transaction_page.dart';
+import 'package:eocout_flutter/features/transaction_user/user_transaction_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
@@ -88,7 +90,10 @@ class _DashboardPageState extends State<DashboardPage> {
               else
                 const EventOrganizerHomePage(),
               if (user.role == UserRole.eventOrganizer) const AddEventPage(),
-              const Center(child: Text('Cart')),
+              if (user.role == UserRole.user)
+                const UserTransactionPage()
+              else
+                const EventOrganizerTransactionPage(),
               const ChatPage(),
             ],
           ),
