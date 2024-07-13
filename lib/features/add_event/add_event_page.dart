@@ -49,6 +49,7 @@ class _AddEventPageState extends State<AddEventPage> {
   );
 
   List<File> images = [];
+  bool _isChecked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -73,59 +74,61 @@ class _AddEventPageState extends State<AddEventPage> {
               const SizedBox(
                 height: 10,
               ),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        border: Border.all(color: colorScheme.outline),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: SvgPicture.asset(
-                          'assets/svg/camera_icon.svg',
-                          height: 30,
-                          color: colorScheme.onSurface,
+              SizedBox(
+                height: 180,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          border: Border.all(color: colorScheme.outline),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: SvgPicture.asset(
+                            'assets/svg/camera_icon.svg',
+                            height: 30,
+                            color: colorScheme.onSurface,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        AspectRatio(
-                          aspectRatio: 1 / 1,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: colorScheme.outline),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        AspectRatio(
-                          aspectRatio: 1 / 1,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: colorScheme.outline),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
-                      ],
+                    const SizedBox(
+                      width: 10,
                     ),
-                  )
-                ],
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: colorScheme.outline),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: colorScheme.outline),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
               const Divider(
-                height: 40,
+                height: 50,
               ),
               Text(
                 "Informasi Layanan",
@@ -234,8 +237,12 @@ class _AddEventPageState extends State<AddEventPage> {
                     ),
                     visualDensity: VisualDensity.compact,
                     activeColor: colorScheme.tertiary,
-                    value: true,
-                    onChanged: (_) {},
+                    value: _isChecked,
+                    onChanged: (_) {
+                      setState(() {
+                        _isChecked = !_isChecked;
+                      });
+                    },
                   ),
                 ],
               ),
