@@ -45,75 +45,91 @@ TextTheme textStyle = const TextTheme(
   // Body Text
   bodySmall: TextStyle(
     fontSize: 12,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.normal,
   ),
   bodyMedium: TextStyle(
     fontSize: 14,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.normal,
   ),
   bodyLarge: TextStyle(
     fontSize: 16,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.normal,
   ),
 
   // Headline Text
   headlineSmall: TextStyle(
     fontSize: 18,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.bold,
   ),
   headlineMedium: TextStyle(
     fontSize: 20,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.bold,
   ),
   headlineLarge: TextStyle(
     fontSize: 24,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.bold,
   ),
 
   // Title Text
   titleSmall: TextStyle(
     fontSize: 12,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.bold,
   ),
   titleMedium: TextStyle(
     fontSize: 14,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.bold,
   ),
   titleLarge: TextStyle(
     fontSize: 16,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.bold,
   ),
 
   // Label Text
   labelSmall: TextStyle(
     fontSize: 10,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.normal,
   ),
   labelMedium: TextStyle(
     fontSize: 12,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.normal,
   ),
   labelLarge: TextStyle(
     fontSize: 14,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.normal,
   ),
 
   // Display Text
   displaySmall: TextStyle(
     fontSize: 10,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.bold,
   ),
   displayMedium: TextStyle(
     fontSize: 12,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.bold,
   ),
   displayLarge: TextStyle(
     fontSize: 14,
+    fontFamily: 'Poppins',
     fontWeight: FontWeight.bold,
   ),
 ).apply(
   bodyColor: colorScheme.onSurface,
   displayColor: colorScheme.onSurface,
+  fontFamily: 'Poppins',
 );
 
 ThemeData lightThemeData = ThemeData(
@@ -190,6 +206,7 @@ ThemeData lightThemeData = ThemeData(
   appBarTheme: AppBarTheme(
     backgroundColor: colorScheme.surface,
     elevation: 0,
+    titleTextStyle: textStyle.headlineSmall,
     iconTheme: IconThemeData(
       color: colorScheme.onSurface,
     ),

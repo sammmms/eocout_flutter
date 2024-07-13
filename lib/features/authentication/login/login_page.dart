@@ -14,8 +14,8 @@ import 'package:eocout_flutter/features/authentication/widget/logo_with_title.da
 import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
 import 'package:eocout_flutter/features/dashboard_page.dart';
 import 'package:eocout_flutter/models/login_data.dart';
+import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/data.dart';
-import 'package:eocout_flutter/utils/error_status.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -180,11 +180,11 @@ class _LoginPageState extends State<LoginPage> {
       if (kDebugMode) {
         print("Login data : ${loginData.toJson()}");
       }
-      ErrorStatus? status = await bloc.login(loginData);
+      AppError? status = await bloc.login(loginData);
       if (status == null) {
         if (!mounted) return;
         navigateTo(context, const DashboardPage(),
-            transition: TransitionType.fadeIn, replace: true);
+            transition: TransitionType.fadeIn, clearStack: true);
         return;
       }
       if (!mounted) return;

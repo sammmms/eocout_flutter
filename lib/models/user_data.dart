@@ -83,6 +83,21 @@ class UserData {
         'is_email_verified': isEmailVerified,
         'profile_pic_media_id': pictureId,
       };
+
+  factory UserData.dummy({UserRole role = UserRole.user}) {
+    return UserData(
+      userId: '1',
+      username: 'username',
+      fullname: 'fullname',
+      email: 'email',
+      phone: 'phone',
+      address: 'address',
+      role: role,
+      profilePicture: null,
+      isEmailVerified: true,
+      pictureId: '1',
+    );
+  }
 }
 
 class EditableUserData {
@@ -110,12 +125,29 @@ class EditableUserData {
 
   bool isEquals(UserData user) {
     return fullname == user.fullname &&
-            address == user.address &&
-            phone == user.phone &&
-            username == user.username &&
-            (picture == null || user.profilePicture == null)
-        ? true
-        : picture! == user.profilePicture!;
+        address == user.address &&
+        phone == user.phone &&
+        username == user.username &&
+        ((picture == null || user.profilePicture == null)
+            ? true
+            : picture! == user.profilePicture!);
+  }
+
+  factory EditableUserData.getDifference(
+      UserData user, EditableUserData editableUserData) {
+    return EditableUserData(
+      fullname: editableUserData.fullname == user.fullname
+          ? ""
+          : editableUserData.fullname,
+      address: editableUserData.address == user.address
+          ? ""
+          : editableUserData.address,
+      phone: editableUserData.phone == user.phone ? "" : editableUserData.phone,
+      username: editableUserData.username == user.username
+          ? ""
+          : editableUserData.username,
+      picture: editableUserData.picture,
+    );
   }
 
   factory EditableUserData.fromUserData(UserData user) {

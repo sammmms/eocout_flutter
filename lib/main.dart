@@ -47,6 +47,7 @@ class _MainAppState extends State<MainApp> {
         home: StreamBuilder<AuthState>(
             stream: _authBloc.stream,
             builder: (context, snapshot) {
+              return const DashboardPage();
               if (snapshot.hasData) {
                 if (snapshot.data!.user != null) {
                   return const DashboardPage();

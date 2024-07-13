@@ -5,8 +5,9 @@ import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
 import 'package:eocout_flutter/models/login_data.dart';
 import 'package:eocout_flutter/models/register_data.dart';
 import 'package:eocout_flutter/models/user_data.dart';
+import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/dio_interceptor.dart';
-import 'package:eocout_flutter/utils/error_status.dart';
+import 'package:eocout_flutter/utils/print_error.dart';
 import 'package:eocout_flutter/utils/store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -17,7 +18,13 @@ class AuthBloc {
   final dio = Dio(BaseOptions(baseUrl: dotenv.env['BASE_URL']!));
   final controller = BehaviorSubject<AuthState>.seeded(AuthState());
 
+  AuthBloc() {
+    dio.interceptors.add(TokenInterceptor());
+  }
+
   BehaviorSubject<AuthState> get stream => controller;
+
+  AuthState? get state => controller.valueOrNull;
 
   void _updateStream(AuthState state) {
     if (controller.isClosed) {
@@ -27,6 +34,12 @@ class AuthBloc {
 
     if (kDebugMode) print('AuthenticationBloc: ${state.status}');
     controller.add(state);
+  }
+
+  AppError _updateError(Object err) {
+    AppError error = AppError.fromErr(err);
+    _updateStream(AuthState.failed(error));
+    return error;
   }
 
   void dispose() {
@@ -41,7 +54,7 @@ class AuthBloc {
     });
   }
 
-  Future<ErrorStatus?> login(LoginData data) async {
+  Future<AppError?> login(LoginData data) async {
     try {
       _updateStream(AuthState.authenticating());
 
@@ -72,29 +85,18 @@ class AuthBloc {
       await Store.saveUser(userData);
       _updateStream(AuthState(user: userData));
     } catch (err) {
-      if (err is DioException) {
-        if (err.response?.statusCode == 403) {
-          if (kDebugMode) {
-            print("Error: ${err.response}");
-          }
-          _updateStream(AuthState.failed());
-          return ErrorStatus("Email atau password salah.", 403);
-        }
-      }
-      if (kDebugMode) {
-        print("Error: $err");
-      }
-      _updateStream(AuthState.failed());
-      return ErrorStatus("Terjadi kesalahan.", 500);
+      printError(err);
+      return _updateError(err);
     }
     return null;
   }
 
   void logout() {
+    Store.clearStore();
     _updateStream(AuthState());
   }
 
-  Future<ErrorStatus?> register(RegisterData data) async {
+  Future<AppError?> register(RegisterData data) async {
     try {
       _updateStream(AuthState.authenticating());
 
@@ -103,23 +105,13 @@ class AuthBloc {
       _updateStream(AuthState.resetState());
       return null;
     } catch (err) {
-      if (err is DioException) {
-        if (err.response?.statusCode == 409) {
-          _updateStream(AuthState.failed());
-          return ErrorStatus("Akun telah terdaftar.", 409);
-        }
-      }
-      if (kDebugMode) {
-        print("Error: $err");
-      }
-      _updateStream(AuthState.failed());
-      return ErrorStatus("Terjadi kesalahan.", 500);
+      printError(err);
+      return _updateError(err);
     }
   }
 
   Future refreshProfile() async {
     try {
-      dio.interceptors.add(TokenInterceptor());
       var response = await dio.get('/profile');
       var responseData = response.data['data'];
 
@@ -141,19 +133,8 @@ class AuthBloc {
       await Store.saveUser(userData);
       _updateStream(AuthState(user: userData));
     } catch (err) {
-      if (err is DioException) {
-        if (err.response?.statusCode == 401) {
-          if (kDebugMode) {
-            print("Error: ${err.response}");
-          }
-          _updateStream(AuthState.failed());
-          return;
-        }
-      }
-      if (kDebugMode) {
-        print("Error: $err");
-      }
-      _updateStream(AuthState.failed());
+      printError(err);
+      return _updateError(err);
     }
   }
 
@@ -168,9 +149,7 @@ class AuthBloc {
       await file.writeAsBytes(responseData);
       return file;
     } catch (err) {
-      if (kDebugMode) {
-        print("Error in obtaining image: $err");
-      }
+      printError(err);
       return null;
     }
   }
