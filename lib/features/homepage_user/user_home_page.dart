@@ -1,6 +1,6 @@
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
-import 'package:eocout_flutter/features/homepage/widgets/explore_list.dart';
-import 'package:eocout_flutter/features/homepage/see_all_page.dart';
+import 'package:eocout_flutter/features/homepage_user/explore_list.dart';
+import 'package:eocout_flutter/features/homepage_user/see_all_page.dart';
 import 'package:eocout_flutter/utils/business_type_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
