@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
+import 'package:eocout_flutter/bloc/category/category_state.dart';
 import 'package:eocout_flutter/bloc/profile/profile_bloc.dart';
 import 'package:eocout_flutter/components/my_confirmation_dialog.dart';
 import 'package:eocout_flutter/components/my_error_component.dart';
@@ -12,6 +13,7 @@ import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/welcome_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
+import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,9 +21,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({
-    super.key,
-  });
+  final List<EOCategory> categories;
+  const ProfilePage({super.key, this.categories = const []});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -29,19 +30,26 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late EditableUserData editableUserData;
-  late AuthBloc authBloc;
-  late ProfileBloc bloc;
   final _formKey = GlobalKey<FormState>();
+
+  late ProfileBloc bloc;
+  late AuthBloc _authBloc;
 
   bool isEdit = false;
 
   @override
   void initState() {
-    authBloc = context.read<AuthBloc>();
-    bloc = ProfileBloc(authBloc);
+    _authBloc = context.read<AuthBloc>();
+    bloc = ProfileBloc(_authBloc);
 
-    if (authBloc.state?.user != null) {
-      editableUserData = EditableUserData.fromUserData(authBloc.state!.user!);
+    _authBloc.controller.listen((event) {
+      if (event.user != null) {
+        editableUserData = EditableUserData.fromUserData(event.user!);
+      }
+    });
+
+    if (_authBloc.state?.user != null) {
+      editableUserData = EditableUserData.fromUserData(_authBloc.state!.user!);
     } else {
       editableUserData = EditableUserData();
     }
@@ -55,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         scrolledUnderElevation: 0,
         leading: StreamBuilder<AuthState>(
-            stream: authBloc.controller,
+            stream: _authBloc.controller,
             builder: (context, snapshot) {
               UserData? user = snapshot.data?.user;
               return IconButton(
@@ -91,7 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
             }),
         actions: [
           StreamBuilder<AuthState>(
-              stream: authBloc.controller,
+              stream: _authBloc.controller,
               builder: (context, snapshot) {
                 UserData? user = snapshot.data?.user;
                 if (user == null) {
@@ -130,19 +138,19 @@ class _ProfilePageState extends State<ProfilePage> {
         onRefresh: isEdit
             ? () async {}
             : () async {
-                await authBloc.refreshProfile();
+                await _authBloc.refreshProfile();
               },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: StreamBuilder<AuthState>(
-                stream: authBloc.controller,
+                stream: _authBloc.controller,
                 builder: (context, snapshot) {
                   if (snapshot.data?.user == null || !snapshot.hasData) {
                     return MyErrorComponent(
                       onRefresh: () {
-                        authBloc.refreshProfile();
+                        _authBloc.refreshProfile();
                       },
                       label:
                           "Terjadi kesalahan dalam mendapatkan informasi profil, silahkan coba lagi.",
@@ -284,12 +292,46 @@ class _ProfilePageState extends State<ProfilePage> {
                         isEdit
                             ? _editTextField(
                                 label: "Nomor Telepon",
-                                value: user.phone,
+                                value: user.profileData?.phoneNumber ?? "",
                                 onChanged: (value) {
-                                  editableUserData.phone = value;
+                                  editableUserData.profileData.phoneNumber =
+                                      value;
                                 })
                             : _showLabel(
-                                label: "Nomor Telepon", value: user.phone),
+                                label: "Nomor Telepon",
+                                value: user.profileData?.phoneNumber ?? ""),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        if (user.role == UserRole.eventOrganizer)
+                          ExpansionTile(
+                              dense: true,
+                              tilePadding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              expandedCrossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              expandedAlignment: Alignment.centerLeft,
+                              title: Row(
+                                children: [
+                                  Text("Data Bisnis",
+                                      style: textStyle.headlineSmall),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Expanded(child: Divider()),
+                                ],
+                              ),
+                              childrenPadding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              collapsedShape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  side:
+                                      BorderSide(color: colorScheme.secondary)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  side:
+                                      BorderSide(color: colorScheme.secondary)),
+                              children: _showBusinessField(user)),
                         const SizedBox(
                           height: 40,
                         ),
@@ -300,7 +342,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           GestureDetector(
                               onTap: () {
-                                authBloc.logout();
+                                _authBloc.logout();
                                 navigateTo(context, const WelcomePage(),
                                     clearStack: true);
                               },
@@ -319,6 +361,63 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+
+  List<Widget> _showBusinessField(UserData user) {
+    return [
+      isEdit
+          ? _editTextField(
+              label: "Nomor Identitas",
+              value: user.profileData?.identityNumber ?? "",
+              onChanged: (value) {
+                editableUserData.profileData.identityNumber = value;
+              })
+          : _showLabel(
+              label: "Nomor Identitas",
+              value: user.profileData?.identityNumber ?? ""),
+      const SizedBox(
+        height: 10,
+      ),
+      isEdit
+          ? _editTextField(
+              label: "Nomor Rekening",
+              value: user.profileData?.bankNumber ?? "",
+              onChanged: (value) {
+                editableUserData.profileData.bankNumber = value;
+              })
+          : _showLabel(
+              label: "Nomor Rekening",
+              value: user.profileData?.bankNumber ?? ""),
+      const SizedBox(
+        height: 10,
+      ),
+      isEdit
+          ? _editTextField(
+              label: "Nomor NPWP",
+              value: user.profileData?.taxIdentityNumber ?? "",
+              onChanged: (value) {
+                editableUserData.profileData.taxIdentityNumber = value;
+              })
+          : _showLabel(
+              label: "Nomor NPWP",
+              value: user.profileData?.taxIdentityNumber ?? ""),
+      const SizedBox(
+        height: 10,
+      ),
+      isEdit
+          ? _editTextField(
+              label: "Nomor NIB",
+              value: user.profileData?.businessIdentityNumber ?? "",
+              onChanged: (value) {
+                editableUserData.profileData.businessIdentityNumber = value;
+              })
+          : _showLabel(
+              label: "Nomor NIB",
+              value: user.profileData?.businessIdentityNumber ?? ""),
+      const SizedBox(
+        height: 10,
+      ),
+    ];
   }
 
   Widget _showLabel({required String label, required String value}) {
