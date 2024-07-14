@@ -1,12 +1,16 @@
 import 'dart:async';
 
+import 'package:eocout_flutter/bloc/service/service_bloc.dart';
+import 'package:eocout_flutter/bloc/service/service_state.dart';
 import 'package:eocout_flutter/components/my_searchbar.dart';
+import 'package:eocout_flutter/features/homepage_user/widget/business_card.dart';
+import 'package:eocout_flutter/models/business_data.dart';
 import 'package:eocout_flutter/utils/business_type_util.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 class SeeAllPage extends StatefulWidget {
-  final StreamController<BusinessType?> selectedBusiness;
+  final BehaviorSubject<String?> selectedBusiness;
   const SeeAllPage({super.key, required this.selectedBusiness});
 
   @override
@@ -15,13 +19,16 @@ class SeeAllPage extends StatefulWidget {
 
 class _SeeAllPageState extends State<SeeAllPage> {
   final _searchStream = BehaviorSubject<String>.seeded("");
+  final _serviceBloc = ServiceBloc();
 
   @override
-  void dispose() {
+  void initState() {
+    final String? categoryId = widget.selectedBusiness.valueOrNull;
+    _serviceBloc.getServices(categoryId: categoryId!);
     _searchStream
         .debounceTime(const Duration(milliseconds: 500))
         .listen((event) {});
-    super.dispose();
+    super.initState();
   }
 
   @override
@@ -53,20 +60,44 @@ class _SeeAllPageState extends State<SeeAllPage> {
                 ),
               ],
             ),
-            StreamBuilder(
-                stream: _searchStream,
+            const SizedBox(
+              height: 20,
+            ),
+            StreamBuilder<ServiceState>(
+                stream: _serviceBloc.stream,
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
+                  bool isLoading =
+                      snapshot.data?.isLoading ?? false || !snapshot.hasData;
+
+                  if (isLoading) {
                     return const Center(
-                        child: Text("Tidak ada data yang ditemukan."));
+                      child: CircularProgressIndicator(),
+                    );
                   }
+
+                  bool hasError = snapshot.data?.hasError ?? false;
+
+                  if (hasError) {
+                    return const Center(
+                      child: Text("Terjadi kesalahan"),
+                    );
+                  }
+
+                  List<BusinessData> businessData =
+                      snapshot.data?.businessData ?? [];
+
+                  if (businessData.isEmpty) {
+                    return const Center(
+                      child: Text("Data tidak ditemukan"),
+                    );
+                  }
+
                   return ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 10,
+                      itemCount: businessData.length,
                       itemBuilder: (context, index) {
-                        return const ListTile(
-                          title: Text("Data"),
-                        );
+                        BusinessData data = businessData[index];
+                        return BusinessCard(businessData: data);
                       });
                 })
           ],
