@@ -8,10 +8,6 @@ class TokenInterceptor extends InterceptorsWrapper {
     // Do something before request is sent
     // Get token from storage
     String? token = await Store.getToken();
-    if (token == null) {
-      return handler.reject(
-          DioException(requestOptions: options, error: "Token is null"));
-    }
     // Add token to header
     options.headers["Authorization"] = "Bearer $token";
     return handler.next(options); //continue
