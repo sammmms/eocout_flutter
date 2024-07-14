@@ -1,35 +1,18 @@
 import 'dart:io';
 
+import 'package:eocout_flutter/bloc/service/service_bloc.dart';
+import 'package:eocout_flutter/components/my_loading_dialog.dart';
+import 'package:eocout_flutter/components/my_pick_image.dart';
+import 'package:eocout_flutter/components/my_snackbar.dart';
+import 'package:eocout_flutter/features/create_service/widget/picture_viewer.dart';
+import 'package:eocout_flutter/models/business_data.dart';
+import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-class NewEvent {
-  String eventOrganizerName;
-  String eventName;
-  int eventPrice;
-  String eventDescription;
-  String eventLocation;
-
-  NewEvent({
-    required this.eventOrganizerName,
-    required this.eventName,
-    required this.eventPrice,
-    required this.eventDescription,
-    required this.eventLocation,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'eventOrganizerName': eventOrganizerName,
-      'eventName': eventName,
-      'eventPrice': eventPrice,
-      'eventDescription': eventDescription,
-      'eventLocation': eventLocation,
-    };
-  }
-}
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class AddEventPage extends StatefulWidget {
   const AddEventPage({super.key});
@@ -40,26 +23,34 @@ class AddEventPage extends StatefulWidget {
 
 class _AddEventPageState extends State<AddEventPage> {
   final _formKey = GlobalKey<FormState>();
-  final newEvent = NewEvent(
-    eventOrganizerName: '',
-    eventName: '',
-    eventPrice: 0,
-    eventDescription: '',
-    eventLocation: '',
-  );
+  final _nameTEC = TextEditingController();
+  final _priceTEC = TextEditingController();
+  final _descriptionTEC = TextEditingController();
+  final _locationTEC = TextEditingController();
+  final _companyNameTEC = TextEditingController();
+  final _scrollController = ScrollController();
 
-  List<File> images = [];
+  final editableBusinessData = EditableBusinessData();
   bool _isChecked = false;
+
+  final ServiceBloc _serviceBloc = ServiceBloc();
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         body: Scrollbar(
+          controller: _scrollController,
           thumbVisibility: true,
           thickness: 1,
           child: Center(
               child: SingleChildScrollView(
+            controller: _scrollController,
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
             child: Form(
               key: _formKey,
@@ -86,18 +77,58 @@ class _AddEventPageState extends State<AddEventPage> {
                       children: [
                         Expanded(
                           flex: 3,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              border: Border.all(color: colorScheme.outline),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Center(
-                              child: SvgPicture.asset(
-                                'assets/svg/camera_icon.svg',
-                                height: 30,
-                                color: colorScheme.onSurface,
+                          child: GestureDetector(
+                            onTap: () async {
+                              ImageSource? source = await showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => const MyPickImage());
+
+                              if (source == null) return;
+
+                              final image = await ImagePicker().pickImage(
+                                source: source,
+                              );
+
+                              if (image != null) {
+                                setState(() {
+                                  editableBusinessData.images
+                                      .add(File(image.path));
+                                });
+                              }
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                border: Border.all(color: colorScheme.outline),
+                                borderRadius: BorderRadius.circular(10),
                               ),
+                              child: editableBusinessData.images.length == 3
+                                  ? _smallContainerPicture(
+                                      editableBusinessData.images[2])
+                                  : Center(
+                                      child: Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/svg/camera_icon.svg',
+                                            height: 30,
+                                            color: colorScheme.onSurface,
+                                          ),
+                                          Positioned(
+                                            bottom: -5,
+                                            right: -5,
+                                            child: CircleAvatar(
+                                                radius: 8,
+                                                backgroundColor:
+                                                    colorScheme.tertiary,
+                                                child: const Icon(
+                                                  Icons.add,
+                                                  size: 10,
+                                                )),
+                                          )
+                                        ],
+                                      ),
+                                    ),
                             ),
                           ),
                         ),
@@ -109,26 +140,16 @@ class _AddEventPageState extends State<AddEventPage> {
                           child: Column(
                             children: [
                               Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: colorScheme.outline),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                              ),
+                                  child: _smallContainerPicture(
+                                      editableBusinessData.images.firstOrNull)),
                               const SizedBox(
                                 height: 10,
                               ),
                               Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: colorScheme.outline),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                              ),
+                                  child: _smallContainerPicture(
+                                      editableBusinessData.images.length > 1
+                                          ? editableBusinessData.images[1]
+                                          : null)),
                             ],
                           ),
                         )
@@ -146,7 +167,9 @@ class _AddEventPageState extends State<AddEventPage> {
                     height: 20,
                   ),
                   TextFormField(
+                    controller: _companyNameTEC,
                     decoration: const InputDecoration(labelText: "Nama EO"),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Nama EO tidak boleh kosong";
@@ -154,13 +177,15 @@ class _AddEventPageState extends State<AddEventPage> {
                       return null;
                     },
                     onChanged: (value) {
-                      newEvent.eventOrganizerName = value;
+                      editableBusinessData.companyName = value;
                     },
                   ),
                   const SizedBox(
                     height: 20,
                   ),
                   TextFormField(
+                    controller: _nameTEC,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration:
                         const InputDecoration(labelText: "Nama Layanan"),
                     validator: (value) {
@@ -170,13 +195,15 @@ class _AddEventPageState extends State<AddEventPage> {
                       return null;
                     },
                     onChanged: (value) {
-                      newEvent.eventName = value;
+                      editableBusinessData.name = value;
                     },
                   ),
                   const SizedBox(
                     height: 20,
                   ),
                   TextFormField(
+                    controller: _priceTEC,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: const InputDecoration(labelText: "Harga"),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
@@ -189,13 +216,19 @@ class _AddEventPageState extends State<AddEventPage> {
                       return null;
                     },
                     onChanged: (value) {
-                      newEvent.eventPrice = int.parse(value);
+                      if (value.isEmpty) {
+                        editableBusinessData.price = 0;
+                        return;
+                      }
+                      editableBusinessData.price = int.parse(value);
                     },
                   ),
                   const SizedBox(
                     height: 20,
                   ),
                   TextFormField(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    controller: _descriptionTEC,
                     decoration: const InputDecoration(labelText: "Deskripsi"),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -204,13 +237,15 @@ class _AddEventPageState extends State<AddEventPage> {
                       return null;
                     },
                     onChanged: (value) {
-                      newEvent.eventDescription = value;
+                      editableBusinessData.description = value;
                     },
                   ),
                   const SizedBox(
                     height: 20,
                   ),
                   TextFormField(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    controller: _locationTEC,
                     decoration: const InputDecoration(labelText: "Lokasi"),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -219,7 +254,7 @@ class _AddEventPageState extends State<AddEventPage> {
                       return null;
                     },
                     onChanged: (value) {
-                      newEvent.eventLocation = value;
+                      editableBusinessData.location = value;
                     },
                   ),
                   const Divider(
@@ -250,6 +285,8 @@ class _AddEventPageState extends State<AddEventPage> {
                         onChanged: (_) {
                           setState(() {
                             _isChecked = !_isChecked;
+                            editableBusinessData
+                                .isAcceptPartyPromotionOrMarketing = _isChecked;
                           });
                         },
                       ),
@@ -262,7 +299,41 @@ class _AddEventPageState extends State<AddEventPage> {
                     height: 54,
                     width: double.infinity,
                     child: OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        if (!_formKey.currentState!.validate()) return;
+
+                        FocusScope.of(context).unfocus();
+
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const MyLoadingDialog();
+                            });
+
+                        AppError? error = await _serviceBloc.createService(
+                            editableBusinessData: editableBusinessData);
+
+                        if (!context.mounted) return;
+                        Navigator.pop(context);
+
+                        if (error != null) {
+                          showMySnackBar(
+                              context, error.message, SnackbarStatus.error);
+                          return;
+                        }
+
+                        showMySnackBar(context, "Layanan berhasil didaftarkan",
+                            SnackbarStatus.success);
+
+                        _nameTEC.clear();
+                        _priceTEC.clear();
+                        _descriptionTEC.clear();
+                        _locationTEC.clear();
+                        _companyNameTEC.clear();
+
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        context.read<PageController>().jumpToPage(0);
+                      },
                       child: const Text("Daftarkan Layanan"),
                     ),
                   )
@@ -273,5 +344,38 @@ class _AddEventPageState extends State<AddEventPage> {
         ),
       ),
     );
+  }
+
+  Widget _smallContainerPicture(File? image) {
+    return GestureDetector(
+      onTap: image == null ? null : () => _showDeletePicture(image),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: colorScheme.outline),
+          borderRadius: BorderRadius.circular(10),
+          image: image == null
+              ? null
+              : DecorationImage(
+                  image: MemoryImage(image.readAsBytesSync()),
+                  fit: BoxFit.cover,
+                ),
+        ),
+      ),
+    );
+  }
+
+  void _showDeletePicture(File image) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return PictureViewer(
+              onRemove: () {
+                setState(() {
+                  editableBusinessData.images.remove(image);
+                });
+                Navigator.pop(context);
+              },
+              image: image);
+        });
   }
 }
