@@ -97,7 +97,7 @@ class _OtpPageState extends State<OtpPage> {
                               stream: _timer.timer,
                               builder: (context, snapshot) {
                                 return TextButton(
-                                  onPressed: snapshot.data! > 0
+                                  onPressed: (snapshot.data ?? 0) > 0
                                       ? null
                                       : () {
                                           _timer.startTimer(30);
