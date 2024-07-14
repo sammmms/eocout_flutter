@@ -14,7 +14,8 @@ void printError(Object err) {
 
       if (err.response is Map) {
         if (err.response?.data?['message'] == null) {
-          print('Unknown Error');
+          print("message is null");
+          print(err.response);
           return;
         }
         String message = err.response?.data?['message'];
@@ -22,10 +23,11 @@ void printError(Object err) {
         print(ServerErrorParser.parseMessage(message));
         print(ServerErrorParser.parseCode(code.toString()));
       } else {
-        print(err.response);
+        print("response is not a map");
+        print(err);
       }
       return;
     }
-    print('Unknown Error');
+    print(err);
   }
 }
