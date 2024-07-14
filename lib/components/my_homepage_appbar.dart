@@ -1,5 +1,7 @@
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
+import 'package:eocout_flutter/bloc/category/category_bloc.dart';
+import 'package:eocout_flutter/bloc/category/category_state.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/profile_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
@@ -57,7 +59,17 @@ class _MyHomepageAppBarState extends State<MyHomepageAppBar> {
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
                     onTap: () {
-                      navigateTo(context, const ProfilePage(),
+                      List<EOCategory>? category = context
+                          .read<CategoryBloc>()
+                          .controller
+                          .valueOrNull
+                          ?.categories;
+
+                      navigateTo(
+                          context,
+                          ProfilePage(
+                            categories: category ?? [],
+                          ),
                           transition: TransitionType.slideInFromRight);
                     },
                     child: ClipRRect(
