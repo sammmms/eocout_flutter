@@ -1,6 +1,6 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
+import 'package:eocout_flutter/bloc/image_handle/image_bloc.dart';
 import 'package:eocout_flutter/bloc/profile/profile_state.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
@@ -47,29 +47,19 @@ class ProfileBloc {
     try {
       String? mediaId;
       if (user.picture != null) {
-        mediaId = await uploadImage(user.picture!);
+        mediaId = await ImageBloc().uploadImage(user.picture!);
       }
-      await dio.put('/profile', data: user.toJson(mediaId));
+
+      Map<String, dynamic> data = user.toJson(mediaId);
+
+      print(data);
+
+      await dio.put('/profile', data: data);
       await authBloc.refreshProfile();
       return null;
     } catch (err) {
       printError(err);
       return _updateError(err);
-    }
-  }
-
-  Future uploadImage(File image) async {
-    try {
-      FormData formData = FormData.fromMap({
-        "picture": await MultipartFile.fromFile(image.path),
-      });
-      var response = await dio.post('/image/upload', data: formData);
-      var responseData = response.data['data'];
-      var mediaId = responseData['media_id'];
-      return mediaId;
-    } catch (err) {
-      printError(err);
-      return null;
     }
   }
 }

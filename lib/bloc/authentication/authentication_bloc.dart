@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
+import 'package:eocout_flutter/bloc/image_handle/image_bloc.dart';
 import 'package:eocout_flutter/models/login_data.dart';
 import 'package:eocout_flutter/models/register_data.dart';
 import 'package:eocout_flutter/models/user_data.dart';
@@ -11,7 +10,6 @@ import 'package:eocout_flutter/utils/print_error.dart';
 import 'package:eocout_flutter/utils/store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 class AuthBloc {
@@ -78,8 +76,8 @@ class AuthBloc {
       }
 
       if (userData.pictureId.isNotEmpty) {
-        userData =
-            userData.copyWith(profilePicture: await _loadImage(userData));
+        userData = userData.copyWith(
+            profilePicture: await ImageBloc().loadImage(userData.pictureId));
       }
 
       await Store.saveUser(userData);
@@ -126,8 +124,8 @@ class AuthBloc {
       }
 
       if (userData.pictureId.isNotEmpty) {
-        userData =
-            userData.copyWith(profilePicture: await _loadImage(userData));
+        userData = userData.copyWith(
+            profilePicture: await ImageBloc().loadImage(userData.pictureId));
       }
 
       await Store.saveUser(userData);
@@ -135,22 +133,6 @@ class AuthBloc {
     } catch (err) {
       printError(err);
       return _updateError(err);
-    }
-  }
-
-  Future<File?> _loadImage(UserData userData) async {
-    try {
-      var responsePicture = await dio.get('/image/${userData.pictureId}',
-          options: Options(responseType: ResponseType.bytes));
-      Uint8List responseData = responsePicture.data;
-
-      final tempDir = await getTemporaryDirectory();
-      File file = File('${tempDir.path}/profile_picture.jpg');
-      await file.writeAsBytes(responseData);
-      return file;
-    } catch (err) {
-      printError(err);
-      return null;
     }
   }
 }
