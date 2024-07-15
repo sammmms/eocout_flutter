@@ -6,6 +6,7 @@ import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/chat_page/chat_detail_page.dart';
 import 'package:eocout_flutter/models/chat_data.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ChatPage extends StatefulWidget {
@@ -93,8 +94,11 @@ class _ChatPageState extends State<ChatPage> {
                               onTap: () {
                                 navigateTo(
                                     context,
-                                    ChatDetailPage(
-                                      conversationId: chatData.conversationId,
+                                    Provider<ChatBloc>.value(
+                                      value: bloc,
+                                      child: ChatDetailPage(
+                                        conversationId: chatData.conversationId,
+                                      ),
                                     ),
                                     transition:
                                         TransitionType.slideInFromRight);
