@@ -53,6 +53,35 @@ class BusinessData {
       'name': name,
     };
   }
+
+  factory BusinessData.dummy() {
+    return BusinessData(
+      id: "1",
+      companyName: "PT. Eocout",
+      description:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi.",
+      images: [],
+      isAcceptPartyPromotionOrMarketing: true,
+      location: "Jakarta",
+      name: "Eocout",
+      price: 1000000,
+      profile: UserData.dummy(),
+    );
+  }
+
+  factory BusinessData.empty() {
+    return BusinessData(
+      id: "",
+      companyName: "",
+      description: "",
+      images: [],
+      isAcceptPartyPromotionOrMarketing: false,
+      location: "",
+      name: "",
+      price: 0,
+      profile: UserData.empty(),
+    );
+  }
 }
 
 class EditableBusinessData {
