@@ -1,5 +1,6 @@
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
+import 'package:eocout_flutter/bloc/profile/profile_bloc.dart';
 import 'package:eocout_flutter/features/dashboard_page.dart';
 import 'package:eocout_flutter/features/welcome_page.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
@@ -29,10 +30,12 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   final AuthBloc _authBloc = AuthBloc();
+  late ProfileBloc _profileBloc;
 
   @override
   void initState() {
     _authBloc.checkLogin();
+    _profileBloc = ProfileBloc(_authBloc);
     super.initState();
   }
 
@@ -41,6 +44,9 @@ class _MainAppState extends State<MainApp> {
     return MultiProvider(
       providers: [
         Provider<AuthBloc>.value(value: _authBloc),
+        Provider<ProfileBloc>.value(
+          value: _profileBloc,
+        )
       ],
       child: MaterialApp(
         theme: lightThemeData,
