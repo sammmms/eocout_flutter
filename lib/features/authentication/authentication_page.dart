@@ -2,8 +2,8 @@ import 'package:eocout_flutter/components/my_background.dart';
 import 'package:eocout_flutter/components/my_logo.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/login/login_page.dart';
-import 'package:eocout_flutter/features/authentication/register/eo_register/eo_register_page.dart';
-import 'package:eocout_flutter/features/authentication/register/user_register/user_register_page.dart';
+import 'package:eocout_flutter/features/authentication/register/eo_register_page.dart';
+import 'package:eocout_flutter/features/authentication/register/user_register_page.dart';
 import 'package:eocout_flutter/features/welcome_page.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +15,7 @@ class AuthenticationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
+      onPopInvoked: (didPop) {
         if (didPop) return;
         if (Navigator.canPop(context)) {
           Navigator.pop(context);
