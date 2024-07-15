@@ -83,7 +83,15 @@ class ServiceBloc {
           }
         }
 
-        businessData.add(BusinessData.fromJson(business, images));
+        File? profilePic;
+
+        if (business['profile']['profile_pic_media_id'] != null) {
+          profilePic = await ImageBloc()
+              .loadImage(business['profile']['profile_pic_media_id']);
+        }
+
+        businessData.add(BusinessData.fromJson(business,
+            images: images, profilePic: profilePic));
       }
 
       _updateStream(ServiceState.success(businessData));
@@ -156,7 +164,15 @@ class ServiceBloc {
           }
         }
 
-        businessData.add(BusinessData.fromJson(business, images));
+        File? profilePic;
+
+        if (business['profile']['profile_pic_media_id'] != null) {
+          profilePic = await ImageBloc()
+              .loadImage(business['profile']['profile_pic_media_id']);
+        }
+
+        businessData.add(BusinessData.fromJson(business,
+            images: images, profilePic: profilePic));
       }
 
       _updateStream(ServiceState.success(businessData));
