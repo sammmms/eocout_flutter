@@ -41,7 +41,7 @@ class ImageBloc {
       Uint8List responseData = responsePicture.data;
 
       final tempDir = await getTemporaryDirectory();
-      File file = File('${tempDir.path}/profile_picture.jpg');
+      File file = File('${tempDir.path}/$imageId.jpg');
       await file.writeAsBytes(responseData);
       return file;
     } catch (err) {
