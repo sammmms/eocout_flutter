@@ -1,11 +1,16 @@
 import 'package:collection/collection.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
+import 'package:eocout_flutter/bloc/profile/profile_bloc.dart';
+import 'package:eocout_flutter/components/my_snackbar.dart';
+import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/profile/eo_edit_detail_page.dart';
 import 'package:eocout_flutter/features/create_service/create_service_page.dart';
 import 'package:eocout_flutter/features/chat_page/chat_page.dart';
 import 'package:eocout_flutter/features/homepage_eo/event_organizer_home_page.dart';
 import 'package:eocout_flutter/features/homepage_user/user_home_page.dart';
 import 'package:eocout_flutter/features/transaction_eo/event_organizer_transaction_page.dart';
 import 'package:eocout_flutter/features/transaction_user/user_transaction_page.dart';
+import 'package:eocout_flutter/features/welcome_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
@@ -67,6 +72,35 @@ class _DashboardPageState extends State<DashboardPage> {
     if (user.role != UserRole.eventOrganizer) {
       pageItem.remove(NavigationItem.addEvent);
     }
+    // Check for profile data validity
+    else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        UserData? userData =
+            context.read<ProfileBloc>().controller.valueOrNull?.profile;
+
+        if (userData == null) {
+          showMySnackBar(
+              context,
+              "Terjadi kesalahan autentikasi, harap login kembali.",
+              SnackbarStatus.error);
+          navigateTo(context, const WelcomePage(),
+              transition: TransitionType.slideInFromBottom, clearStack: true);
+          return;
+        }
+
+        bool isRequiredFilled =
+            userData.profileData?.isRequiredFilled() ?? false;
+
+        if (!isRequiredFilled || userData.profileData == null) {
+          showMySnackBar(context, "Detail bisnis kamu belum lengkap",
+              SnackbarStatus.error);
+          navigateTo(context, const EOEditDetailDataPage(),
+              transition: TransitionType.slideInFromBottom);
+          return;
+        }
+      });
+    }
+
     _pageController.addListener(() {
       if (_selectedPage.value != _pageController.page!.round()) {
         _selectedPage.add(_pageController.page!.round());
