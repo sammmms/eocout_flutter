@@ -125,4 +125,44 @@ class ServiceBloc {
       return _updateError(err);
     }
   }
+
+  Future<void> getOwnService() async {
+    _updateStream(ServiceState.loading());
+    try {
+      final response = await dio.get("/eo-service/my");
+
+      if (kDebugMode) {
+        print('manage to get own services');
+        print(response.data);
+      }
+
+      final data = response.data['data'];
+
+      List<BusinessData> businessData = [];
+
+      for (var business in data) {
+        List responseImages = business['images'] ?? [];
+
+        if (responseImages.isEmpty) continue;
+
+        List<File> images = [];
+
+        for (var imageId in responseImages) {
+          File? image = await ImageBloc().loadImage(imageId);
+
+          if (image != null) {
+            images.add(image);
+          }
+        }
+
+        businessData.add(BusinessData.fromJson(business, images));
+      }
+
+      _updateStream(ServiceState.success(businessData));
+    } catch (err) {
+      printError(err);
+      _updateError(err);
+    }
+  }
+
 }
