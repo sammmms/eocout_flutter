@@ -40,6 +40,22 @@ class ServerErrorParser {
     if (message == "wrong credentials") {
       return "Email atau password salah";
     }
+
+    if (message == "email or username has already exist") {
+      return "Email atau username sudah terdaftar";
+    }
+
+    if (message == "invalid image ids") {
+      return "ID gambar tidak valid";
+    }
+
+    if (message == "invalid username") {
+      return "Username tidak valid";
+    }
+
+    if (message.contains("cannot send to myself")) {
+      return "Tidak bisa mengirim pesan ke diri sendiri";
+    }
     return message;
   }
 
