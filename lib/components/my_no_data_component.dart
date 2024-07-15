@@ -7,22 +7,16 @@ class MyNoDataComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      scrollDirection: Axis.vertical,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Lottie.asset("assets/lottie/empty_animation.json", height: 200),
-            const SizedBox(
-              height: 20,
-            ),
-            Text(
-              label ?? 'Tidak ada data',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ],
+        Lottie.asset("assets/lottie/empty_animation.json", height: 200),
+        const SizedBox(
+          height: 20,
+        ),
+        Text(
+          label ?? 'Tidak ada data',
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
       ],
     );
