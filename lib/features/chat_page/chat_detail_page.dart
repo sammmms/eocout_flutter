@@ -10,6 +10,7 @@ import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ChatDetailPage extends StatefulWidget {
@@ -22,23 +23,26 @@ class ChatDetailPage extends StatefulWidget {
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
-  final ChatBloc bloc = ChatBloc();
+  late ChatBloc bloc;
   final TextEditingController _messageController = TextEditingController();
-  late UserData? withUser;
+  UserData? withUser;
   String? conversationId;
 
   @override
   void initState() {
+    bloc =
+        widget.conversationId == null ? ChatBloc() : context.read<ChatBloc>();
     if (widget.conversationId != null) {
       SchedulerBinding.instance.addPostFrameCallback((_) async {
-        await bloc.getChatMessageHistory(chatId: widget.conversationId!);
-
         withUser = bloc.state?.chatList
             ?.firstWhereOrNull(
                 (element) => element.conversationId == widget.conversationId)
             ?.withUser;
 
+        await bloc.getChatMessageHistory(chatId: widget.conversationId!);
+
         conversationId = widget.conversationId;
+        setState(() {});
       });
     } else {
       withUser = widget.withUser;
@@ -59,6 +63,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             bloc.createNewChat();
           }
         }
+        setState(() {});
       });
     }
     super.initState();
@@ -66,7 +71,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   void dispose() {
-    bloc.dispose();
     _messageController.dispose();
     super.dispose();
   }
@@ -81,6 +85,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           },
           child: const Icon(Icons.arrow_back),
         ),
+        scrolledUnderElevation: 0,
         title: Row(
           children: [
             CircleAvatar(
@@ -107,7 +112,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           }
         },
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
           child: StreamBuilder<DetailChatState>(
             stream: bloc.detailChatController,
             builder: (context, snapshot) {
@@ -186,11 +191,33 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 ),
                 IconButton(
                   onPressed: () async {
-                    await bloc.sendMessage(
-                        toUsername: withUser?.username ?? "",
-                        message: _messageController.text);
-
+                    String text = _messageController.text;
                     _messageController.clear();
+                    await bloc.sendMessage(
+                        toUsername: withUser?.username ?? "", message: text);
+
+                    if (conversationId == null) {
+                      await bloc.getChatList();
+
+                      final chatList = bloc.state?.chatList;
+
+                      if (chatList != null) {
+                        final chat = chatList.firstWhereOrNull((element) =>
+                            element.withUser.username ==
+                            widget.withUser!.username);
+
+                        // When chat is not found, create new chat
+                        if (chat != null) {
+                          bloc.getChatMessageHistory(
+                              chatId: chat.conversationId, needLoading: false);
+                          conversationId = chat.conversationId;
+                        }
+                      }
+                      setState(() {});
+                    } else {
+                      bloc.getChatMessageHistory(
+                          chatId: conversationId!, needLoading: false);
+                    }
                   },
                   icon: const Icon(Icons.send),
                 ),
