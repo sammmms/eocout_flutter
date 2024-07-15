@@ -8,6 +8,7 @@ import 'package:eocout_flutter/components/my_error_component.dart';
 import 'package:eocout_flutter/components/my_homepage_appbar.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/balance_card.dart';
+import 'package:eocout_flutter/features/homepage_eo/widget/eo_recommendation_carousel.dart';
 import 'package:eocout_flutter/features/service_detail/service_detail_page.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/models/business_data.dart';
@@ -118,6 +119,10 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                   "Pengumuman Mitra",
                   style: textTheme.headlineMedium,
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const EoRecommendationCarousel(),
                 const SizedBox(
                   height: 20,
                 ),
