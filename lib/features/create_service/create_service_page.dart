@@ -229,6 +229,7 @@ class _AddEventPageState extends State<AddEventPage> {
                   TextFormField(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: _descriptionTEC,
+                    maxLines: 5,
                     decoration: const InputDecoration(labelText: "Deskripsi"),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
