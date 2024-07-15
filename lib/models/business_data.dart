@@ -26,7 +26,7 @@ class BusinessData {
   }) : profile = profile ?? UserData();
 
   factory BusinessData.fromJson(Map<String, dynamic> json,
-      [List<File>? images]) {
+      {List<File>? images, File? profilePic}) {
     return BusinessData(
       id: json['id'],
       companyName: json['company_name'],
@@ -37,7 +37,7 @@ class BusinessData {
       location: json['location'],
       name: json['name'],
       price: int.tryParse(json['price']) ?? 0,
-      profile: UserData.fromJson(json['profile']),
+      profile: UserData.fromJson(json['profile'], profilePicture: profilePic),
     );
   }
 
