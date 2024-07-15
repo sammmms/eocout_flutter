@@ -12,7 +12,7 @@ class MyErrorComponent extends StatelessWidget {
         child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(Icons.refresh),
+        GestureDetector(onTap: onRefresh, child: const Icon(Icons.refresh)),
         const SizedBox(
           height: 20,
         ),
