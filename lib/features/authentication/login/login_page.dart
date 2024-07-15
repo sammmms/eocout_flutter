@@ -5,8 +5,8 @@ import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/authentication_page.dart';
 import 'package:eocout_flutter/features/authentication/forgot_password/forgot_password_page.dart';
-import 'package:eocout_flutter/features/authentication/register/eo_register/eo_register_page.dart';
-import 'package:eocout_flutter/features/authentication/register/user_register/user_register_page.dart';
+import 'package:eocout_flutter/features/authentication/register/eo_register_page.dart';
+import 'package:eocout_flutter/features/authentication/register/user_register_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/button_divider.dart';
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
+      onPopInvoked: (didPop) {
         if (didPop) return;
 
         if (widget.from == null) {

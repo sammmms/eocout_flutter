@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:collection/collection.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
 import 'package:eocout_flutter/bloc/category/category_state.dart';
@@ -10,9 +10,12 @@ import 'package:eocout_flutter/components/my_loading_dialog.dart';
 import 'package:eocout_flutter/components/my_pick_image.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/profile/eo_edit_detail_page.dart';
 import 'package:eocout_flutter/features/welcome_page.dart';
+import 'package:eocout_flutter/models/profile_data.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
+import 'package:eocout_flutter/utils/business_type_util.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -39,8 +42,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
-    _authBloc = context.read<AuthBloc>();
-    bloc = ProfileBloc(_authBloc);
+    bloc = context.read<ProfileBloc>();
+    _authBloc = bloc.authBloc;
 
     _authBloc.controller.listen((event) {
       if (event.user != null) {
@@ -152,8 +155,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       onRefresh: () {
                         _authBloc.refreshProfile();
                       },
-                      label:
-                          "Terjadi kesalahan dalam mendapatkan informasi profil, silahkan coba lagi.",
+                      error: snapshot.data?.error,
                     );
                   }
 
@@ -243,14 +245,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                               BorderSide(color: Colors.black),
                                         ),
                                       ),
-                                      style: textStyle.headlineMedium!,
+                                      style: textTheme.headlineMedium!,
                                       textAlign: TextAlign.center,
                                     )
                                   : Text(
                                       user.username.isEmpty
                                           ? "Username"
                                           : user.username,
-                                      style: textStyle.headlineMedium!.copyWith(
+                                      style: textTheme.headlineMedium!.copyWith(
                                         color: user.username.isEmpty
                                             ? Colors.grey
                                             : Colors.black,
@@ -301,37 +303,35 @@ class _ProfilePageState extends State<ProfilePage> {
                                 label: "Nomor Telepon",
                                 value: user.profileData?.phoneNumber ?? ""),
                         const SizedBox(
-                          height: 10,
+                          height: 20,
                         ),
                         if (user.role == UserRole.eventOrganizer)
-                          ExpansionTile(
-                              dense: true,
-                              tilePadding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              expandedCrossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              expandedAlignment: Alignment.centerLeft,
-                              title: Row(
-                                children: [
-                                  Text("Data Bisnis",
-                                      style: textStyle.headlineSmall),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Expanded(child: Divider()),
-                                ],
-                              ),
-                              childrenPadding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              collapsedShape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  side:
-                                      BorderSide(color: colorScheme.secondary)),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  side:
-                                      BorderSide(color: colorScheme.secondary)),
-                              children: _showBusinessField(user)),
+                          Theme(
+                            data: Theme.of(context).copyWith(
+                              highlightColor: Colors.transparent,
+                              splashColor: Colors.transparent,
+                            ),
+                            child: ExpansionTile(
+                                dense: true,
+                                tilePadding: EdgeInsets.zero,
+                                expandedCrossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                expandedAlignment: Alignment.centerLeft,
+                                title: Row(
+                                  children: [
+                                    Text("Data Bisnis",
+                                        style: textTheme.headlineSmall),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Expanded(child: Divider()),
+                                  ],
+                                ),
+                                childrenPadding: EdgeInsets.zero,
+                                collapsedShape: const RoundedRectangleBorder(),
+                                shape: const RoundedRectangleBorder(),
+                                children: _showBusinessField(user)),
+                          ),
                         const SizedBox(
                           height: 40,
                         ),
@@ -348,7 +348,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               },
                               child: Text(
                                 "Keluar",
-                                style: textStyle.labelLarge!.copyWith(
+                                style: textTheme.labelLarge!.copyWith(
                                     color: colorScheme.onSurface,
                                     fontWeight: FontWeight.w400),
                               ))
@@ -364,59 +364,59 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   List<Widget> _showBusinessField(UserData user) {
+    ProfileData profileData = user.profileData ?? ProfileData.empty();
+    BusinessType? businessType = widget.categories
+        .firstWhereOrNull(
+            (element) => element.id == profileData.preferredBusinessCategoryId)
+        ?.businessType;
     return [
-      isEdit
-          ? _editTextField(
-              label: "Nomor Identitas",
-              value: user.profileData?.identityNumber ?? "",
-              onChanged: (value) {
-                editableUserData.profileData.identityNumber = value;
-              })
-          : _showLabel(
-              label: "Nomor Identitas",
-              value: user.profileData?.identityNumber ?? ""),
+      const SizedBox(
+        height: 10,
+      ),
+      _showLabel(label: "Nomor Identitas", value: profileData.identityNumber),
+      const SizedBox(
+        height: 10,
+      ),
+      _showLabel(label: "Nomor Rekening", value: profileData.bankNumber),
+      const SizedBox(
+        height: 10,
+      ),
+      _showLabel(label: "Nomor NPWP", value: profileData.taxIdentityNumber),
+      const SizedBox(
+        height: 10,
+      ),
+      _showLabel(label: "Nomor NIB", value: profileData.businessIdentityNumber),
+      const SizedBox(
+        height: 10,
+      ),
+      _showLabel(
+          label: "Lokasi saat ini",
+          value: profileData.province.isNotEmpty && profileData.city.isNotEmpty
+              ? "${profileData.province}, ${profileData.city}"
+              : ""),
+      const SizedBox(
+        height: 10,
+      ),
+      _showLabel(
+          label: "Kategori Bisnis",
+          value: businessType == null
+              ? ""
+              : BusinessTypeUtil.textOf(businessType)),
       const SizedBox(
         height: 10,
       ),
       isEdit
-          ? _editTextField(
-              label: "Nomor Rekening",
-              value: user.profileData?.bankNumber ?? "",
-              onChanged: (value) {
-                editableUserData.profileData.bankNumber = value;
-              })
-          : _showLabel(
-              label: "Nomor Rekening",
-              value: user.profileData?.bankNumber ?? ""),
-      const SizedBox(
-        height: 10,
-      ),
-      isEdit
-          ? _editTextField(
-              label: "Nomor NPWP",
-              value: user.profileData?.taxIdentityNumber ?? "",
-              onChanged: (value) {
-                editableUserData.profileData.taxIdentityNumber = value;
-              })
-          : _showLabel(
-              label: "Nomor NPWP",
-              value: user.profileData?.taxIdentityNumber ?? ""),
-      const SizedBox(
-        height: 10,
-      ),
-      isEdit
-          ? _editTextField(
-              label: "Nomor NIB",
-              value: user.profileData?.businessIdentityNumber ?? "",
-              onChanged: (value) {
-                editableUserData.profileData.businessIdentityNumber = value;
-              })
-          : _showLabel(
-              label: "Nomor NIB",
-              value: user.profileData?.businessIdentityNumber ?? ""),
-      const SizedBox(
-        height: 10,
-      ),
+          ? OutlinedButton(
+              onPressed: () {
+                navigateTo(
+                    context,
+                    const EOEditDetailDataPage(
+                      canPop: true,
+                    ),
+                    transition: TransitionType.slideInFromBottom);
+              },
+              child: const Text("Ubah Data Bisnis"))
+          : const SizedBox()
     ];
   }
 
@@ -425,11 +425,11 @@ class _ProfilePageState extends State<ProfilePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: textStyle.labelLarge!.copyWith(
+            style: textTheme.labelLarge!.copyWith(
                 color: Colors.grey.shade600, fontWeight: FontWeight.bold)),
         Text(
           value.isEmpty ? "-" : value,
-          style: textStyle.titleMedium!.copyWith(
+          style: textTheme.titleMedium!.copyWith(
             color: value.isEmpty ? Colors.grey : Colors.black,
           ),
         ),
@@ -502,14 +502,14 @@ class _ProfilePageState extends State<ProfilePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: textStyle.labelLarge!.copyWith(
+            style: textTheme.labelLarge!.copyWith(
                 color: Colors.grey.shade600, fontWeight: FontWeight.bold)),
         TextFormField(
           controller: TextEditingController(text: value),
           decoration: InputDecoration(
               contentPadding: EdgeInsets.zero,
               hintText: value.isEmpty ? "-" : value,
-              hintStyle: textStyle.titleMedium!.copyWith(
+              hintStyle: textTheme.titleMedium!.copyWith(
                 color: value.isEmpty ? Colors.grey : Colors.black,
               ),
               enabledBorder: const UnderlineInputBorder(

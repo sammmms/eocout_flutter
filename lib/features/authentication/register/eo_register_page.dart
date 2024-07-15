@@ -1,15 +1,18 @@
+import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
+import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
 import 'package:eocout_flutter/components/my_background.dart';
+import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/login/login_page.dart';
-import 'package:eocout_flutter/features/authentication/register/eo_register/eo_register_detail_page.dart';
+import 'package:eocout_flutter/features/authentication/register/otp_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/button_divider.dart';
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
 import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
 import 'package:eocout_flutter/models/register_data.dart';
+import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/data.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,11 +25,13 @@ class EORegisterPage extends StatefulWidget {
 
 class _EORegisterPageState extends State<EORegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final registerSubject = EOREgisterData();
+  final registerSubject = RegisterData();
+  late AuthBloc bloc;
 
   @override
-  void dispose() {
-    super.dispose();
+  void initState() {
+    bloc = context.read<AuthBloc>();
+    super.initState();
   }
 
   @override
@@ -99,24 +104,17 @@ class _EORegisterPageState extends State<EORegisterPage> {
                     const SizedBox(
                       height: 60,
                     ),
-                    AuthActionButton(
-                      label: "Daftar",
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          if (kDebugMode) {
-                            print(
-                                'Register Data : ${registerSubject.toJson()}');
-                          }
-                          navigateTo(
-                            context,
-                            Provider<EOREgisterData>.value(
-                                value: registerSubject,
-                                child: const EODetailData()),
-                            transition: TransitionType.fadeIn,
+                    StreamBuilder<AuthState>(
+                        stream: bloc.stream,
+                        builder: (context, snapshot) {
+                          bool isLoading = snapshot.data?.isAuthenticating ??
+                              false || !snapshot.hasData;
+
+                          return AuthActionButton(
+                            label: "Daftar",
+                            onPressed: isLoading ? null : _registerEO,
                           );
-                        }
-                      },
-                    ),
+                        }),
                     const AuthButtonDivider(),
                     const GoogleAuthButton(),
                     Row(
@@ -145,5 +143,22 @@ class _EORegisterPageState extends State<EORegisterPage> {
         ),
       ),
     );
+  }
+
+  void _registerEO() async {
+    if (_formKey.currentState!.validate()) {
+      AppError? status = await bloc.register(registerSubject);
+      if (status == null) {
+        if (!mounted) return;
+        navigateTo(
+          context,
+          const OtpPage(),
+          transition: TransitionType.fadeIn,
+        );
+        return;
+      }
+      if (!mounted) return;
+      showMySnackBar(context, status.message, SnackbarStatus.error);
+    }
   }
 }
