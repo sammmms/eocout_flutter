@@ -3,7 +3,7 @@ import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
 import 'package:eocout_flutter/bloc/category/category_bloc.dart';
 import 'package:eocout_flutter/bloc/category/category_state.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
-import 'package:eocout_flutter/features/profile_page.dart';
+import 'package:eocout_flutter/features/profile/profile_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
@@ -44,9 +44,9 @@ class _MyHomepageAppBarState extends State<MyHomepageAppBar> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Hello, ${user.fullname}",
+                      "Hello, ${user.fullname.isEmpty ? user.username : user.fullname}",
                       overflow: TextOverflow.ellipsis,
-                      style: textStyle.headlineSmall,
+                      style: textTheme.headlineSmall,
                     ),
                     Text(user.role == UserRole.user
                         ? "Ayo lihat EO terbaru yang kami sediakan!"
