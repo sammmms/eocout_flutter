@@ -2,6 +2,8 @@ import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/bloc/service/service_bloc.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
+import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/chat_page/chat_detail_page.dart';
 import 'package:eocout_flutter/models/business_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
@@ -315,7 +317,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                     SizedBox(
                       height: 54,
                       child: OutlinedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            navigateTo(
+                                context,
+                                ChatDetailPage(
+                                  withUser: widget.businessData.profile,
+                                ),
+                                transition: TransitionType.slideInFromRight);
+                          },
                           style: OutlinedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
