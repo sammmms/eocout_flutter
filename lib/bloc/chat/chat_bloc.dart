@@ -183,10 +183,16 @@ class ChatBloc {
     _updateDetailChatStream(
         detailChatState!.copyWith(chatMessageList: chatMessageList));
     try {
-      final response = await dio.post('/chat', data: {
+      Map<String, dynamic> payload = {
         'to_username': toUsername,
         'message': chatMessageData.content
-      });
+      };
+
+      if (kDebugMode) {
+        print("payload : $payload");
+      }
+
+      final response = await dio.post('/chat', data: payload);
 
       final data = response.data['data'];
 
