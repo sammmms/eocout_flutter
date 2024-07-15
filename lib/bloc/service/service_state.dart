@@ -3,13 +3,13 @@ import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/business_type_util.dart';
 
 class ServiceState {
-  List<BusinessData> businessData;
+  List<BusinessData>? businessData;
   final bool isLoading;
   final bool hasError;
   final AppError? error;
 
   ServiceState({
-    this.businessData = const [],
+    this.businessData,
     this.isLoading = false,
     this.hasError = false,
     this.error,
