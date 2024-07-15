@@ -16,7 +16,6 @@ import 'package:eocout_flutter/features/dashboard_page.dart';
 import 'package:eocout_flutter/models/login_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/data.dart';
-import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -115,32 +114,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(
                         height: 10,
-                      ),
-                      Row(
-                        children: [
-                          const Expanded(child: Text("Masuk sebagai :")),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Flexible(
-                            child: DropdownButton<UserRole>(
-                              isExpanded: true,
-                              value: loginData.role,
-                              onChanged: (UserRole? value) {
-                                setState(() {
-                                  loginData.role = value!;
-                                });
-                              },
-                              items: UserRole.values.map((UserRole value) {
-                                return DropdownMenuItem<UserRole>(
-                                  value: value,
-                                  child:
-                                      Text(UserRoleUtil.readableTextOf(value)),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ],
                       ),
                       const SizedBox(
                         height: 60,
