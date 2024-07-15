@@ -1,5 +1,7 @@
 import 'package:eocout_flutter/bloc/service/service_bloc.dart';
 import 'package:eocout_flutter/bloc/service/service_state.dart';
+import 'package:eocout_flutter/components/my_error_component.dart';
+import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/components/my_searchbar.dart';
 import 'package:eocout_flutter/features/homepage_user/widget/business_card.dart';
 import 'package:eocout_flutter/models/business_data.dart';
@@ -62,38 +64,45 @@ class _SeeAllPageState extends State<SeeAllPage> {
           height: 20,
         ),
         Expanded(
-          child: StreamBuilder<ServiceState>(
-              stream: _serviceBloc.stream,
-              builder: (context, snapshot) {
-                bool isLoading =
-                    snapshot.data?.isLoading ?? false || !snapshot.hasData;
+          child: RefreshIndicator(
+            onRefresh: () async {
+              await _serviceBloc.getServices(categoryId: categoryId!);
+            },
+            child: StreamBuilder<ServiceState>(
+                stream: _serviceBloc.stream,
+                builder: (context, snapshot) {
+                  bool isLoading =
+                      snapshot.data?.isLoading ?? false || !snapshot.hasData;
 
-                bool hasError = snapshot.data?.hasError ?? false;
+                  bool hasError = snapshot.data?.hasError ?? false;
 
-                if (hasError) {
-                  return const Center(
-                    child: Text("Terjadi kesalahan"),
-                  );
-                }
+                  if (hasError) {
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
+                      child: MyErrorComponent(onRefresh: () async {
+                        await _serviceBloc.getServices(categoryId: categoryId!);
+                      }),
+                    );
+                  }
 
-                List<BusinessData> businessData = snapshot.data?.businessData ??
-                    List.generate(5, (_) => BusinessData.dummy());
+                  List<BusinessData> businessData =
+                      snapshot.data?.businessData ??
+                          List.generate(5, (_) => BusinessData.dummy());
 
-                if (businessData.isEmpty) {
-                  return const Center(
-                    child: Text("Data tidak ditemukan"),
-                  );
-                }
+                  if (businessData.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 80),
+                      child: MyNoDataComponent(
+                        label: "Tidak ada vendor yang ditemukan",
+                      ),
+                    );
+                  }
 
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    _serviceBloc.getServices(categoryId: categoryId!);
-                  },
-                  child: Skeletonizer(
+                  return Skeletonizer(
                     enabled: isLoading,
                     child: ListView.separated(
                         shrinkWrap: true,
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
                         itemCount: businessData.length,
                         separatorBuilder: (context, index) => const SizedBox(
                               height: 20,
@@ -102,9 +111,9 @@ class _SeeAllPageState extends State<SeeAllPage> {
                           BusinessData data = businessData[index];
                           return BusinessCard(businessData: data);
                         }),
-                  ),
-                );
-              }),
+                  );
+                }),
+          ),
         )
       ],
     );
