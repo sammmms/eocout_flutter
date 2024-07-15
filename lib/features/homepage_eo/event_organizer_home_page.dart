@@ -145,11 +145,11 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                         );
                       }
 
-                      List<BusinessData> business =
+                      List<BusinessData> businessData =
                           snapshot.data?.businessData ??
                               List.generate(5, (_) => BusinessData.dummy());
 
-                      if (business.isEmpty) {
+                      if (businessData.isEmpty) {
                         return const Center(
                             child: MyNoDataComponent(
                           label: "Tidak ada bisnis.",
@@ -159,13 +159,14 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                       return Skeletonizer(
                           enabled: isLoading,
                           child: CarouselSlider.builder(
-                              itemCount: business.length,
+                              itemCount: businessData.length,
                               options: CarouselOptions(
                                 autoPlay: true,
                                 aspectRatio: 16 / 9,
                                 enlargeCenterPage: true,
                               ),
                               itemBuilder: (context, index, _) {
+                                BusinessData business = businessData[index];
                                 return GestureDetector(
                                   onTap: () {
                                     showModalBottomSheet(
@@ -178,7 +179,7 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                                                     .vertical(
                                                     top: Radius.circular(20)),
                                                 child: ServiceDetailPage(
-                                                  businessData: business[index],
+                                                  businessData: business,
                                                 ),
                                               ),
                                             ));
@@ -189,21 +190,24 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                                       SizedBox(
                                           width: double.infinity,
                                           height: 400,
-                                          child: Image.memory(
-                                            business[index]
-                                                .images
-                                                .first
-                                                .readAsBytesSync(),
-                                            fit: BoxFit.cover,
-                                            width: double.infinity,
-                                          )),
+                                          child: business.images.isEmpty
+                                              ? Image.asset(
+                                                  "assets/images/placeholder.png",
+                                                  width: double.infinity,
+                                                )
+                                              : Image.memory(
+                                                  business.images.first
+                                                      .readAsBytesSync(),
+                                                  fit: BoxFit.cover,
+                                                  width: double.infinity,
+                                                )),
                                       Container(
                                         color: Colors.black.withOpacity(0.2),
                                       ),
                                       Positioned(
                                         bottom: 20,
                                         child: Text(
-                                          business[index].name,
+                                          business.name,
                                           style: textTheme.headlineMedium!
                                               .copyWith(color: Colors.white),
                                         ),
