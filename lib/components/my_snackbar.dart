@@ -24,6 +24,8 @@ void showMySnackBar(
     SnackBar(
       backgroundColor: SnackbarStatusUtil.getColor(status),
       padding: const EdgeInsets.all(25.0),
+      dismissDirection: DismissDirection.down,
+      duration: const Duration(seconds: 2),
       margin: const EdgeInsets.fromLTRB(10, 10, 10, 20),
       behavior: SnackBarBehavior.floating,
       content: Text(message,
