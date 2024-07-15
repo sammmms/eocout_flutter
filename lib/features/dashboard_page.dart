@@ -118,6 +118,7 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Scaffold(
           body: PageView(
             controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
             children: [
               if (user.role == UserRole.user)
                 const Homepage()
