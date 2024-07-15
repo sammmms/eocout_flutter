@@ -52,6 +52,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
+
+      // ignore: deprecated_member_use
       onPopInvoked: (didPop) {
         if (didPop) return;
 
@@ -150,6 +152,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _loginUser() async {
     if (_formKey.currentState!.validate()) {
+      FocusScope.of(context).requestFocus(FocusNode());
       if (kDebugMode) {
         print("Login data : ${loginData.toJson()}");
       }
