@@ -19,6 +19,7 @@ import 'package:eocout_flutter/utils/business_type_util.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -168,57 +169,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Center(
                           child: Column(
                             children: [
-                              Stack(
-                                children: [
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.only(bottom: 10.0),
-                                    child: GestureDetector(
-                                      onTap: isEdit ? _pickImage : null,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(200),
-                                        child: CircleAvatar(
-                                          radius: 60,
-                                          child: isEdit &&
-                                                  editableUserData.picture !=
-                                                      null
-                                              ? Image.file(
-                                                  editableUserData.picture!,
-                                                  fit: BoxFit.cover,
-                                                  height: 200,
-                                                  width: 200,
-                                                )
-                                              : user.profilePicture == null
-                                                  ? const Icon(
-                                                      Icons.person,
-                                                      size: 80,
-                                                    )
-                                                  : Image.file(
-                                                      user.profilePicture!,
-                                                      fit: BoxFit.cover,
-                                                      height: 200,
-                                                      width: 200,
-                                                    ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 0,
-                                    right: 15,
-                                    child: Container(
-                                        decoration: BoxDecoration(
-                                          color: colorScheme.tertiary,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        padding: const EdgeInsets.all(10),
-                                        child: SvgPicture.asset(
-                                            "assets/svg/camera_icon.svg")),
-                                  )
-                                ],
-                              ),
+                              _showProfilePicture(user),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -294,6 +245,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         isEdit
                             ? _editTextField(
                                 label: "Nomor Telepon",
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                keyboardType: TextInputType.phone,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Nomor telepon tidak boleh kosong";
+                                  }
+                                  if (value.length < 10) {
+                                    return "Nomor telepon minimal 10 digit";
+                                  }
+                                  return null;
+                                },
                                 value: user.profileData?.phoneNumber ?? "",
                                 onChanged: (value) {
                                   editableUserData.profileData.phoneNumber =
@@ -497,6 +461,9 @@ class _ProfilePageState extends State<ProfilePage> {
     required String label,
     required String value,
     required Function(String value) onChanged,
+    List<TextInputFormatter>? inputFormatters,
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -505,19 +472,30 @@ class _ProfilePageState extends State<ProfilePage> {
             style: textTheme.labelLarge!.copyWith(
                 color: Colors.grey.shade600, fontWeight: FontWeight.bold)),
         TextFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: TextEditingController(text: value),
+          inputFormatters: inputFormatters ?? [],
+          validator: validator,
+          keyboardType: keyboardType,
           decoration: InputDecoration(
-              contentPadding: EdgeInsets.zero,
-              hintText: value.isEmpty ? "-" : value,
-              hintStyle: textTheme.titleMedium!.copyWith(
-                color: value.isEmpty ? Colors.grey : Colors.black,
-              ),
-              enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-              )),
+            contentPadding: EdgeInsets.zero,
+            hintText: label,
+            hintStyle: textTheme.titleMedium!.copyWith(
+              color: Colors.grey,
+            ),
+            enabledBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey),
+            ),
+            focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+            ),
+            errorBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.red),
+            ),
+            focusedErrorBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.red),
+            ),
+          ),
           onChanged: onChanged,
         ),
       ],
@@ -554,5 +532,53 @@ class _ProfilePageState extends State<ProfilePage> {
 
     editableUserData.picture = image;
     setState(() {});
+  }
+
+  Widget _showProfilePicture(UserData user) {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: GestureDetector(
+            onTap: isEdit ? _pickImage : null,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(200),
+              child: CircleAvatar(
+                radius: 80,
+                child: isEdit && editableUserData.picture != null
+                    ? Image.file(
+                        editableUserData.picture!,
+                        fit: BoxFit.cover,
+                        height: 200,
+                        width: 200,
+                      )
+                    : user.profilePicture == null
+                        ? const Icon(
+                            Icons.person,
+                            size: 80,
+                          )
+                        : Image.file(
+                            user.profilePicture!,
+                            fit: BoxFit.cover,
+                            height: 200,
+                            width: 200,
+                          ),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          right: 15,
+          child: Container(
+              decoration: BoxDecoration(
+                color: colorScheme.tertiary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.all(10),
+              child: SvgPicture.asset("assets/svg/camera_icon.svg")),
+        )
+      ],
+    );
   }
 }
