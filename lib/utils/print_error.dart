@@ -4,8 +4,9 @@ import 'package:dio/dio.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:flutter/foundation.dart';
 
-void printError(Object err) {
+void printError(Object err, {String? method}) {
   if (kDebugMode) {
+    print("Error in $method");
     if (err is DioException) {
       if (err is SocketException) {
         print('Tidak ada internet koneksi');

@@ -102,7 +102,7 @@ class ChatBloc {
 
       _updateStream(ChatState.success(chatList));
     } catch (err) {
-      printError(err);
+      printError(err, method: "getChatList");
       _updateError(err);
     }
   }
@@ -124,7 +124,7 @@ class ChatBloc {
       _updateDetailChatStream(DetailChatState.success(chatMessageList));
     } catch (err) {
       final error = AppError.fromErr(err);
-      printError(err);
+      printError(err, method: "getChatMessageHistory");
       _updateDetailChatError(error);
     }
   }
@@ -153,7 +153,7 @@ class ChatBloc {
     //
     catch (err) {
       AppError error = AppError.fromErr(err);
-      printError(err);
+      printError(err, method: "sendMessage");
       return error;
     }
   }
@@ -173,7 +173,7 @@ class ChatBloc {
       return null;
     } catch (err) {
       AppError error = AppError.fromErr(err);
-      printError(err);
+      printError(err, method: "resendMessage");
       return error;
     }
   }
