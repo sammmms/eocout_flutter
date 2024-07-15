@@ -52,7 +52,9 @@ class ProfileBloc {
 
       Map<String, dynamic> data = user.toJson(mediaId);
 
-      print(data);
+      if (kDebugMode) {
+        print("update profile with $data");
+      }
 
       await dio.put('/profile', data: data);
       await authBloc.refreshProfile();
