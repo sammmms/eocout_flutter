@@ -47,13 +47,13 @@ class BalanceCard extends StatelessWidget {
                 children: [
                   Text(
                     "Dompet Penghasilanmu",
-                    style: textStyle.bodyLarge,
+                    style: textTheme.bodyLarge,
                   ),
                   Text(
                     NumberFormat.currency(
                             locale: 'id', symbol: 'Rp', decimalDigits: 0)
                         .format(2000000000),
-                    style: textStyle.headlineMedium,
+                    style: textTheme.headlineMedium,
                   ),
                   const SizedBox(
                     height: 10,

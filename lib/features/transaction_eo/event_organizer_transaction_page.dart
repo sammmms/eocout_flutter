@@ -44,7 +44,7 @@ class EventOrganizerTransactionPage extends StatelessWidget {
             ),
             Text(
               "Info Pembayaran",
-              style: textStyle.headlineSmall,
+              style: textTheme.headlineSmall,
             )
           ],
         ),

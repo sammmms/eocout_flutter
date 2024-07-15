@@ -37,7 +37,7 @@ class GoogleAuthButton extends StatelessWidget {
             Image.asset('assets/images/google_icon.png', width: 20, height: 20),
             const SizedBox(width: 10),
             Text('Google',
-                style: textStyle.titleLarge!
+                style: textTheme.titleLarge!
                     .copyWith(color: colorScheme.shadow.withOpacity(0.6))),
           ],
         ),

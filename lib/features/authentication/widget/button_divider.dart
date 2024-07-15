@@ -17,7 +17,7 @@ class AuthButtonDivider extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
               'atau',
-              style: textStyle.bodyLarge!.copyWith(
+              style: textTheme.bodyLarge!.copyWith(
                 color: colorScheme.shadow.withOpacity(0.4),
               ),
             ),

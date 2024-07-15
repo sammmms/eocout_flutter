@@ -1,3 +1,4 @@
+import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,7 @@ class MyErrorComponent extends StatelessWidget {
         ),
         Text(
           error?.message ?? 'Terjadi kesalahan, silahkan coba lagi',
-          style: textStyle.bodyLarge,
+          style: textTheme.bodyLarge,
         ),
       ],
     ));

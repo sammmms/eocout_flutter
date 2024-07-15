@@ -19,13 +19,13 @@ class LogoWithTitle extends StatelessWidget {
         ),
         Text(
           title,
-          style: textStyle.headlineLarge,
+          style: textTheme.headlineLarge,
           textAlign: TextAlign.center,
         ),
         if (subtitle != null)
           Text(
             subtitle!,
-            style: textStyle.titleLarge,
+            style: textTheme.titleLarge,
             textAlign: TextAlign.center,
           ),
         const SizedBox(

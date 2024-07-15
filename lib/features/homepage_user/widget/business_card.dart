@@ -56,7 +56,7 @@ class BusinessCard extends StatelessWidget {
                   Text(businessData.name,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: textStyle.headlineSmall),
+                      style: textTheme.headlineSmall),
                   Text(
                     businessData.description,
                     maxLines: 2,

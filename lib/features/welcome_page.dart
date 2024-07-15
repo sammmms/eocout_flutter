@@ -82,7 +82,7 @@ class _WelcomePageState extends State<WelcomePage> {
                               },
                               child: Text(
                                 'Mulai',
-                                style: textStyle.titleLarge!
+                                style: textTheme.titleLarge!
                                     .copyWith(color: colorScheme.onPrimary),
                               ),
                             ),

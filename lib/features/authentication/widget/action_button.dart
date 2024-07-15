@@ -20,7 +20,7 @@ class AuthActionButton extends StatelessWidget {
         onPressed: onPressed,
         child: Text(label,
             style:
-                textStyle.titleLarge!.copyWith(color: colorScheme.onPrimary)),
+                textTheme.titleLarge!.copyWith(color: colorScheme.onPrimary)),
       ),
     );
   }

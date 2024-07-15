@@ -50,7 +50,7 @@ class AuthenticationPage extends StatelessWidget {
                             transition: TransitionType.slideInFromBottom);
                       },
                       child: Text("Daftar Sebagai Pengguna",
-                          style: textStyle.titleLarge!
+                          style: textTheme.titleLarge!
                               .copyWith(color: colorScheme.onPrimary))),
                 ),
                 const SizedBox(height: 20),
@@ -64,7 +64,7 @@ class AuthenticationPage extends StatelessWidget {
                       },
                       child: Text(
                         "Daftar Sebagai EO atau Vendor",
-                        style: textStyle.titleLarge!
+                        style: textTheme.titleLarge!
                             .copyWith(color: colorScheme.onTertiary),
                       )),
                 ),

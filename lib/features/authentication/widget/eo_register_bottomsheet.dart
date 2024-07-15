@@ -31,7 +31,7 @@ class _EORegisterBottomsheetState extends State<EORegisterBottomsheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pilih Kota', style: textStyle.headlineSmall),
+            Text('Pilih Kota', style: textTheme.headlineSmall),
             const SizedBox(
               height: 15,
             ),
@@ -73,7 +73,7 @@ class _EORegisterBottomsheetState extends State<EORegisterBottomsheet> {
                               child: Padding(
                                   padding: const EdgeInsets.all(20),
                                   child: Text(cities[index],
-                                      style: textStyle.titleMedium)),
+                                      style: textTheme.titleMedium)),
                             ),
                           );
                         },
@@ -93,7 +93,7 @@ class _EORegisterBottomsheetState extends State<EORegisterBottomsheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Pilih Provinsi', style: textStyle.headlineSmall),
+          Text('Pilih Provinsi', style: textTheme.headlineSmall),
           const SizedBox(
             height: 15,
           ),
@@ -134,7 +134,7 @@ class _EORegisterBottomsheetState extends State<EORegisterBottomsheet> {
                             child: Padding(
                                 padding: const EdgeInsets.all(20),
                                 child: Text(provinces[index],
-                                    style: textStyle.titleMedium)),
+                                    style: textTheme.titleMedium)),
                           ),
                         );
                       },

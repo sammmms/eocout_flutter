@@ -27,7 +27,7 @@ void showMySnackBar(
       margin: const EdgeInsets.fromLTRB(10, 10, 10, 20),
       behavior: SnackBarBehavior.floating,
       content: Text(message,
-          style: textStyle.bodyLarge?.copyWith(
+          style: textTheme.bodyLarge?.copyWith(
             color: status == SnackbarStatus.error
                 ? colorScheme.onError
                 : colorScheme.onPrimary,

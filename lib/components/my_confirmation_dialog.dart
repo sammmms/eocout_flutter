@@ -34,18 +34,18 @@ class MyConfirmationDialog extends StatelessWidget {
               if (headingLabel != null)
                 Text(
                   headingLabel!,
-                  style: textStyle.headlineSmall,
+                  style: textTheme.headlineSmall,
                 ),
               const SizedBox(height: 10),
               Text(
                 label,
-                style: textStyle.bodyMedium,
+                style: textTheme.bodyMedium,
               ),
               if (subLabel != null) ...[
                 const SizedBox(height: 10),
                 Text(
                   subLabel!,
-                  style: textStyle.bodySmall,
+                  style: textTheme.bodySmall,
                 )
               ],
               const SizedBox(height: 20),

@@ -59,14 +59,14 @@ class _AddEventPageState extends State<AddEventPage> {
                 children: [
                   Text(
                     'Tambahkan Layanan Kamu',
-                    style: textStyle.headlineMedium,
+                    style: textTheme.headlineMedium,
                   ),
                   const SizedBox(
                     height: 20,
                   ),
                   Text(
                     "Upload Foto",
-                    style: textStyle.titleMedium,
+                    style: textTheme.titleMedium,
                   ),
                   const SizedBox(
                     height: 10,
@@ -161,7 +161,7 @@ class _AddEventPageState extends State<AddEventPage> {
                   ),
                   Text(
                     "Informasi Layanan",
-                    style: textStyle.titleMedium,
+                    style: textTheme.titleMedium,
                   ),
                   const SizedBox(
                     height: 20,
@@ -262,7 +262,7 @@ class _AddEventPageState extends State<AddEventPage> {
                   ),
                   Text(
                     "Pemasaran",
-                    style: textStyle.titleMedium,
+                    style: textTheme.titleMedium,
                   ),
                   const SizedBox(
                     height: 20,
@@ -272,7 +272,7 @@ class _AddEventPageState extends State<AddEventPage> {
                       Expanded(
                         child: Text(
                           "Apakah layanan anda memiliki promosi pemasaran atau promosi acara?",
-                          style: textStyle.titleSmall,
+                          style: textTheme.titleSmall,
                         ),
                       ),
                       Checkbox(

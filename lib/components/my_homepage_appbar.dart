@@ -109,7 +109,7 @@ class _MyHomepageAppBarState extends State<MyHomepageAppBar> {
               Text(
                 "Hello, ${user.fullname}",
                 overflow: TextOverflow.ellipsis,
-                style: textStyle.headlineSmall,
+                style: textTheme.headlineSmall,
               ),
               Text(user.role == UserRole.user
                   ? "Ayo lihat EO terbaru yang kami sediakan!"

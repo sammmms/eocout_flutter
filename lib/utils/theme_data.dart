@@ -41,7 +41,7 @@ ColorScheme colorScheme = ColorScheme(
   outline: const Color(0xFFA7A7A7),
 );
 
-TextTheme textStyle = const TextTheme(
+TextTheme textTheme = const TextTheme(
   // Body Text
   bodySmall: TextStyle(
     fontSize: 12,
@@ -134,7 +134,7 @@ TextTheme textStyle = const TextTheme(
 
 ThemeData lightThemeData = ThemeData(
   fontFamily: 'Poppins',
-  textTheme: textStyle,
+  textTheme: textTheme,
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       foregroundColor: colorScheme.onPrimary,
@@ -168,7 +168,7 @@ ThemeData lightThemeData = ThemeData(
         borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: Colors.red),
       ),
-      labelStyle: textStyle.bodyLarge!.copyWith(
+      labelStyle: textTheme.bodyLarge!.copyWith(
         color: colorScheme.outline,
       )),
   elevatedButtonTheme: ElevatedButtonThemeData(
@@ -206,7 +206,7 @@ ThemeData lightThemeData = ThemeData(
   appBarTheme: AppBarTheme(
     backgroundColor: colorScheme.surface,
     elevation: 0,
-    titleTextStyle: textStyle.headlineSmall,
+    titleTextStyle: textTheme.headlineSmall,
     iconTheme: IconThemeData(
       color: colorScheme.onSurface,
     ),

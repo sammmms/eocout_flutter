@@ -138,7 +138,7 @@ class _ChoosenMethodPageState extends State<ChoosenMethodPage> {
                 Text(
                   "Kode OTP akan dikirimkan ke email yang tersambung ke akun Anda.",
                   textAlign: TextAlign.center,
-                  style: textStyle.titleSmall,
+                  style: textTheme.titleSmall,
                 ),
               ],
             ),

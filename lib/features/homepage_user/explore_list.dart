@@ -75,13 +75,13 @@ class ExploreList extends StatelessWidget {
                                   children: [
                                     Text(
                                       "Lihat Semua",
-                                      style: textStyle.bodyLarge!.copyWith(
+                                      style: textTheme.bodyLarge!.copyWith(
                                           color: colorScheme.onPrimary),
                                     ),
                                     Text(
                                       BusinessTypeUtil.textOf(
                                           category.businessType),
-                                      style: textStyle.headlineLarge!.copyWith(
+                                      style: textTheme.headlineLarge!.copyWith(
                                           color: colorScheme.onPrimary),
                                     ),
                                   ],
