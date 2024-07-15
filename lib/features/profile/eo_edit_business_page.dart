@@ -1,4 +1,3 @@
-import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/bloc/profile/profile_bloc.dart';
 import 'package:eocout_flutter/bloc/profile/profile_state.dart';
 import 'package:eocout_flutter/components/my_background.dart';
@@ -15,7 +14,6 @@ import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/business_type_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/number_symbols_data.dart';
 import 'package:provider/provider.dart';
 
 class EOEditBusinessDataPage extends StatefulWidget {

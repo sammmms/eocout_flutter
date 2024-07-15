@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/dio_interceptor.dart';
 import 'package:eocout_flutter/utils/print_error.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

@@ -41,7 +41,10 @@ class _EOEditDetailDataPageState extends State<EOEditDetailDataPage> {
         context.read<ProfileBloc>().controller.valueOrNull?.profile ??
             UserData();
 
-    print(userData.toString());
+    if (kDebugMode) {
+      print(userData.toString());
+    }
+
     profileData = EditableProfileData.fromProfileData(userData.profileData);
 
     _nikTEC.text = profileData.identityNumber;

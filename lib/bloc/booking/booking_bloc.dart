@@ -70,7 +70,7 @@ class BookingBloc {
   Future<AppError?> confirmBooking({required String bookingId}) async {
     try {
       _updateStream(BookingState.loading());
-      var response = await dio.post('/booking/$bookingId/confirm');
+      await dio.post('/booking/$bookingId/confirm');
 
       getBookings();
 

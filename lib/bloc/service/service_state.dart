@@ -1,6 +1,5 @@
 import 'package:eocout_flutter/models/business_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
-import 'package:eocout_flutter/utils/business_type_util.dart';
 
 class ServiceState {
   List<BusinessData>? businessData;
