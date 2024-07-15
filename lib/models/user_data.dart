@@ -77,7 +77,7 @@ class UserData {
       profilePicture: profilePicture ?? this.profilePicture,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       pictureId: pictureId ?? this.pictureId,
-      profileData: profileData,
+      profileData: profileData ?? this.profileData,
     );
   }
 
@@ -107,6 +107,21 @@ class UserData {
       profileData: ProfileData.dummy(),
     );
   }
+
+  factory UserData.empty() {
+    return UserData(
+      userId: '',
+      username: '',
+      fullname: '',
+      email: '',
+      address: '',
+      role: UserRole.user,
+      profilePicture: null,
+      isEmailVerified: false,
+      pictureId: '',
+      profileData: ProfileData.empty(),
+    );
+  }
 }
 
 class EditableUserData {
@@ -128,7 +143,7 @@ class EditableUserData {
         if (address.isNotEmpty) 'address': address,
         if (mediaId != null) 'profile_pic_media_id': mediaId,
         if (username.isNotEmpty) 'username': username,
-        'profile': profileData.toJson(),
+        if (profileData.toJson().isNotEmpty) 'profile': profileData.toJson(),
       };
 
   bool isEquals(UserData user) {
