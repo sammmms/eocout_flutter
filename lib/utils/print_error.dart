@@ -24,7 +24,7 @@ void printError(Object err) {
         print(ServerErrorParser.parseCode(code.toString()));
       } else {
         print("response is not a map");
-        print(err);
+        print(err.response);
       }
       return;
     }
