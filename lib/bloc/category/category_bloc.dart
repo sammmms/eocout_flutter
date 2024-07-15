@@ -14,7 +14,7 @@ class CategoryBloc {
 
   Stream<CategoryState> get stream => controller.stream;
 
-  CategoryState? get currentState => controller.valueOrNull;
+  CategoryState? get state => controller.valueOrNull;
 
   void dispose() {
     controller.close();
