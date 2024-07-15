@@ -1,3 +1,5 @@
+import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/service_detail/service_detail_page.dart';
 import 'package:eocout_flutter/models/business_data.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +11,7 @@ class BusinessCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 140,
+      height: 150,
       decoration: BoxDecoration(
         color: colorScheme.secondary,
         borderRadius: BorderRadius.circular(10),
@@ -17,8 +19,8 @@ class BusinessCard extends StatelessWidget {
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
+            blurRadius: 2,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -66,7 +68,12 @@ class BusinessCard extends StatelessWidget {
                   SizedBox(
                     height: 30,
                     child: OutlinedButton(
-                        onPressed: () {}, child: const Text("Lihat Detail")),
+                        onPressed: () {
+                          navigateTo(context,
+                              ServiceDetailPage(businessData: businessData),
+                              transition: TransitionType.slideInFromRight);
+                        },
+                        child: const Text("Lihat Detail")),
                   )
                 ],
               ),
