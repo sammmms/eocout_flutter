@@ -45,11 +45,15 @@ class AuthBloc {
   }
 
   Future checkLogin() async {
-    await Store.getUser().then((user) {
-      if (user != null) {
-        _updateStream(AuthState(user: user));
+    try {
+      var token = await Store.getToken();
+      if (token != null && token.isNotEmpty) {
+        refreshProfile();
       }
-    });
+    } catch (err) {
+      printError(err);
+      return _updateError(err);
+    }
   }
 
   Future<AppError?> login(LoginData data) async {
@@ -98,7 +102,13 @@ class AuthBloc {
     try {
       _updateStream(AuthState.authenticating());
 
-      await dio.post('/auth/register', data: data.toJson());
+      Map<String, dynamic> dataMap = data.toJson();
+
+      if (kDebugMode) {
+        print(dataMap);
+      }
+
+      await dio.post('/auth/register', data: dataMap);
 
       _updateStream(AuthState.resetState());
       return null;
