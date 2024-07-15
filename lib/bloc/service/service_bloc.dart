@@ -62,6 +62,7 @@ class ServiceBloc {
       if (data == null) throw "No data found";
 
       if (kDebugMode) {
+        print('manage to get services');
         print(data);
       }
 
@@ -165,4 +166,25 @@ class ServiceBloc {
     }
   }
 
+  Future<AppError?> deleteService({required String eoServiceId}) async {
+    _updateStream(ServiceState.loading());
+    try {
+      final response =
+          await dio.delete("/eo-service?eo_service_id=$eoServiceId");
+
+      if (kDebugMode) {
+        print('manage to delete service');
+        print(response.data);
+      }
+
+      if (response.statusCode == 200) {
+        _updateStream(ServiceState.success([]));
+      }
+
+      return null;
+    } catch (err) {
+      printError(err);
+      return _updateError(err);
+    }
+  }
 }
