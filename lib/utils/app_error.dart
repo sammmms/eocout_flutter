@@ -6,7 +6,7 @@ class AppError extends Error {
   final String message;
   final int? code;
 
-  AppError(this.message, this.code);
+  AppError(this.message, [this.code]);
 
   @override
   String toString() {
@@ -51,6 +51,18 @@ class ServerErrorParser {
 
     if (message == "invalid username") {
       return "Username tidak valid";
+    }
+
+    if (message == "email not verified") {
+      return "Email belum diverifikasi";
+    }
+
+    if (message == "wrong verification code") {
+      return "Kode verifikasi salah";
+    }
+
+    if (message == "email already verified") {
+      return "Email sudah diverifikasi";
     }
 
     if (message.contains("cannot send to myself")) {
