@@ -1,5 +1,6 @@
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
+import 'package:eocout_flutter/bloc/booking/booking_bloc.dart';
 import 'package:eocout_flutter/bloc/service/service_bloc.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
@@ -28,7 +29,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
   final _carouselController = CarouselControllerPlus();
   bool _isChecked = false;
   bool isEOOwner = false;
+  final _choosenDate = BehaviorSubject<DateTime>();
   final _serviceBloc = ServiceBloc();
+  final _bookingBloc = BookingBloc();
+  final _datePickerKey = GlobalKey();
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -46,6 +51,16 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
     }
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _choosenDate.close();
+    _currentIndex.close();
+    _serviceBloc.dispose();
+    _bookingBloc.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -76,6 +91,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
         child: SingleChildScrollView(
+          controller: _scrollController,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -167,6 +183,17 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                 style: textTheme.bodyMedium,
               ),
 
+              // LOCATION
+              if (!isEOOwner) ...[
+                const SizedBox(height: 20),
+                Text(
+                  "Tanggal dan Waktu",
+                  style: textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 10),
+                _buildDatePicker()
+              ],
+
               // PROMOTION
               if (!isEOOwner) ...[
                 const SizedBox(height: 20),
@@ -208,6 +235,51 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDatePicker() {
+    return Theme(
+      data: Theme.of(context).copyWith(
+          datePickerTheme: DatePickerThemeData(
+        headerForegroundColor: Colors.white,
+        headerBackgroundColor: colorScheme.tertiary,
+      )),
+      child: StreamBuilder<DateTime>(
+          stream: _choosenDate,
+          builder: (context, snapshot) {
+            return Row(
+              key: _datePickerKey,
+              children: [
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20))),
+                    onPressed: () {
+                      showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime(DateTime.now().year + 2))
+                          .then((value) {
+                        if (value != null) {
+                          _choosenDate.add(value);
+                        }
+                      });
+                    },
+                    child: const Text("Pilih tanggal")),
+                const SizedBox(
+                  width: 10,
+                ),
+                if (snapshot.data != null)
+                  Text(
+                    DateFormat("dd MMMM yyyy").format(snapshot.data!),
+                    style: textTheme.bodyMedium,
+                  ),
+              ],
+            );
+          }),
     );
   }
 
@@ -296,7 +368,37 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                     SizedBox(
                       height: 54,
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          if (_choosenDate.valueOrNull == null) {
+                            showMySnackBar(
+                                context,
+                                "Pilih tanggal terlebih dahulu",
+                                SnackbarStatus.error);
+                            RenderBox box = _datePickerKey.currentContext
+                                ?.findRenderObject() as RenderBox;
+                            Offset position = box.localToGlobal(Offset.zero);
+                            _scrollController.animateTo(position.dy,
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeInOut);
+                            return;
+                          }
+
+                          AppError? error = await _bookingBloc.createBooking(
+                            serviceId: widget.businessData.id,
+                            bookingDate: _choosenDate.value,
+                          );
+
+                          if (!mounted) return;
+                          if (error != null) {
+                            showMySnackBar(
+                                context, error.message, SnackbarStatus.error);
+                          } else {
+                            showMySnackBar(
+                                context,
+                                "Berhasil membuat pesanan terhadap layanan",
+                                SnackbarStatus.success);
+                          }
+                        },
                         style: OutlinedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
