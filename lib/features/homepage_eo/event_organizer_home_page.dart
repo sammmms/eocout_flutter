@@ -11,7 +11,6 @@ import 'package:eocout_flutter/features/homepage_eo/widget/balance_card.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/eo_recommendation_carousel.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/eo_business_carousel_items.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/today_booking_card.dart';
-import 'package:eocout_flutter/features/service_detail/service_detail_page.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/models/business_data.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
