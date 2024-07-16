@@ -304,17 +304,21 @@ class _ProfilePageState extends State<ProfilePage> {
                           const SizedBox(
                             height: 20,
                           ),
-                          GestureDetector(
+                          InkWell(
                               onTap: () {
                                 _authBloc.logout();
                                 navigateTo(context, const WelcomePage(),
                                     clearStack: true);
                               },
-                              child: Text(
-                                "Keluar",
-                                style: textTheme.labelLarge!.copyWith(
-                                    color: colorScheme.onSurface,
-                                    fontWeight: FontWeight.w400),
+                              child: Container(
+                                width: double.infinity,
+                                color: Colors.transparent,
+                                child: Text(
+                                  "Keluar",
+                                  style: textTheme.labelLarge!.copyWith(
+                                      color: colorScheme.error,
+                                      fontWeight: FontWeight.w400),
+                                ),
                               ))
                         ]
                       ],
