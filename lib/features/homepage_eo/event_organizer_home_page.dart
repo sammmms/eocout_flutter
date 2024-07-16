@@ -1,4 +1,6 @@
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
+import 'package:eocout_flutter/bloc/balance/balance_bloc.dart';
+import 'package:eocout_flutter/bloc/balance/balance_state.dart';
 import 'package:eocout_flutter/bloc/booking/booking_bloc.dart';
 import 'package:eocout_flutter/bloc/booking/booking_state.dart';
 import 'package:eocout_flutter/bloc/category/category_bloc.dart';
@@ -29,12 +31,14 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
   final _categoryBloc = CategoryBloc();
   final _bookingBloc = BookingBloc();
   final _serviceBloc = ServiceBloc();
+  final _balanceBloc = BalanceBloc();
 
   @override
   void initState() {
     _categoryBloc.getCategories();
     _bookingBloc.getBookingRequest();
     _serviceBloc.getOwnService();
+    _balanceBloc.getBalance();
     super.initState();
   }
 
@@ -59,7 +63,20 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                 const SizedBox(
                   height: 40,
                 ),
-                const BalanceCard(),
+                StreamBuilder<BalanceState>(
+                    stream: _balanceBloc.stream,
+                    builder: (context, snapshot) {
+                      bool isLoading = snapshot.data?.isLoading ??
+                          false || !snapshot.hasData;
+
+                      bool hasError = snapshot.data?.hasError ?? false;
+                      return Skeletonizer(
+                          enabled: isLoading,
+                          child: BalanceCard(
+                            hasError: hasError,
+                            onRefreshBalance: () => _balanceBloc.getBalance(),
+                          ));
+                    }),
                 const SizedBox(
                   height: 20,
                 ),
