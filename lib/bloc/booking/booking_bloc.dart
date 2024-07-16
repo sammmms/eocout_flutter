@@ -101,9 +101,20 @@ class BookingBloc {
   Future<AppError?> confirmBooking({required String bookingId}) async {
     try {
       _updateStream(BookingState.loading());
-      await dio.post('/booking/$bookingId/confirm');
+      var response = await dio.post('/booking/$bookingId/confirm');
 
-      getBookings();
+      if (kDebugMode) {
+        print(response);
+      }
+
+      getBookingRequest();
+
+      return null;
+    } catch (err) {
+      printError(err);
+      return _updateError(err);
+    }
+  }
 
       return null;
     } catch (err) {
