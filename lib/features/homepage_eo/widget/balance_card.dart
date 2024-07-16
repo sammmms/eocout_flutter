@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class BalanceCard extends StatelessWidget {
-  const BalanceCard({super.key});
+  final bool hasError;
+  final Function() onRefreshBalance;
+  const BalanceCard(
+      {super.key, required this.hasError, required this.onRefreshBalance});
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +52,25 @@ class BalanceCard extends StatelessWidget {
                     "Dompet Penghasilanmu",
                     style: textTheme.bodyLarge,
                   ),
-                  Text(
-                    NumberFormat.currency(
-                            locale: 'id', symbol: 'Rp', decimalDigits: 0)
-                        .format(2000000000),
-                    style: textTheme.headlineMedium,
+                  Row(
+                    children: [
+                      Text(
+                        hasError
+                            ? "-"
+                            : NumberFormat.currency(
+                                    locale: 'id',
+                                    symbol: 'Rp',
+                                    decimalDigits: 0)
+                                .format(2000000000),
+                        style: textTheme.headlineMedium,
+                      ),
+                      GestureDetector(
+                          onTap: onRefreshBalance,
+                          child: Icon(
+                            Icons.refresh,
+                            color: colorScheme.onSurface,
+                          ))
+                    ],
                   ),
                   const SizedBox(
                     height: 10,
