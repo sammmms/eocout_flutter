@@ -9,6 +9,7 @@ import 'package:eocout_flutter/components/my_homepage_appbar.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/balance_card.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/eo_recommendation_carousel.dart';
+import 'package:eocout_flutter/features/homepage_eo/widget/eo_business_carousel_items.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/today_booking_card.dart';
 import 'package:eocout_flutter/features/service_detail/service_detail_page.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
@@ -168,60 +169,14 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                           child: CarouselSlider.builder(
                               itemCount: businessData.length,
                               options: CarouselOptions(
-                                autoPlay: true,
-                                aspectRatio: 16 / 9,
-                                enlargeCenterPage: true,
-                              ),
+                                  autoPlay: true,
+                                  aspectRatio: 16 / 9,
+                                  viewportFraction: 1,
+                                  enableInfiniteScroll: false),
                               itemBuilder: (context, index, _) {
                                 BusinessData business = businessData[index];
-                                return GestureDetector(
-                                  onTap: () {
-                                    showModalBottomSheet(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        useSafeArea: true,
-                                        builder: (context) => SafeArea(
-                                              child: ClipRRect(
-                                                borderRadius: const BorderRadius
-                                                    .vertical(
-                                                    top: Radius.circular(20)),
-                                                child: ServiceDetailPage(
-                                                  businessData: business,
-                                                ),
-                                              ),
-                                            ));
-                                  },
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      SizedBox(
-                                          width: double.infinity,
-                                          height: 400,
-                                          child: business.images.isEmpty
-                                              ? Image.asset(
-                                                  "assets/images/placeholder.png",
-                                                  width: double.infinity,
-                                                )
-                                              : Image.memory(
-                                                  business.images.first
-                                                      .readAsBytesSync(),
-                                                  fit: BoxFit.cover,
-                                                  width: double.infinity,
-                                                )),
-                                      Container(
-                                        color: Colors.black.withOpacity(0.2),
-                                      ),
-                                      Positioned(
-                                        bottom: 20,
-                                        child: Text(
-                                          business.name,
-                                          style: textTheme.headlineMedium!
-                                              .copyWith(color: Colors.white),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                );
+                                return EOBusinessCarouselItem(
+                                    business: business);
                               }));
                     })
               ],
