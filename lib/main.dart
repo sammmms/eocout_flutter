@@ -3,6 +3,7 @@ import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
 import 'package:eocout_flutter/bloc/profile/profile_bloc.dart';
 import 'package:eocout_flutter/features/dashboard_page.dart';
 import 'package:eocout_flutter/features/welcome_page.dart';
+import 'package:eocout_flutter/utils/my_firebase_messaging.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,9 @@ void main() async {
       print('The BASE URL is ${dotenv.env['BASE_URL']}');
     }
   }
-  // await Store.clearStore();
+
+  await MyFirebaseMessaging.initialize();
+
   runApp(const MainApp());
 }
 

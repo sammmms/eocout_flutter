@@ -42,4 +42,9 @@ class Store {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
   }
+
+  static Future<void> saveFCMToken(String token) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("fcmToken", token);
+  }
 }
