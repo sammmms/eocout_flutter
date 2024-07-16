@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:eocout_flutter/utils/store.dart';
 import 'package:rxdart/rxdart.dart';
 
 class CountdownTimer {
@@ -7,17 +8,19 @@ class CountdownTimer {
   late Timer _countdownTimer;
 
   void startTimer(int duration) {
+    Store.saveResendOTPTime(DateTime.now());
     timer.add(duration);
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (timer.value > 0) {
         timer.add(timer.value - 1);
       } else {
-        _countdownTimer.cancel();
+        cancelTimer();
       }
     });
   }
 
   void cancelTimer() {
     _countdownTimer.cancel();
+    Store.removeResendOTPTime();
   }
 }

@@ -47,4 +47,26 @@ class Store {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("fcmToken", token);
   }
+
+  static Future<String> getFCMToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString("fcmToken") ?? "";
+  }
+
+  static Future<void> saveResendOTPTime(DateTime time) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("resendOTPTime", time.toIso8601String());
+  }
+
+  static Future<DateTime?> getResendOTPTime() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? time = prefs.getString("resendOTPTime");
+    if (time == null) return null;
+    return DateTime.parse(time);
+  }
+
+  static Future<void> removeResendOTPTime() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("resendOTPTime");
+  }
 }
