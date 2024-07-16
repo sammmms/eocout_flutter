@@ -7,8 +7,10 @@ import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/dio_interceptor.dart';
 import 'package:eocout_flutter/utils/print_error.dart';
+import 'package:eocout_flutter/utils/status_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BookingBloc {
@@ -115,6 +117,78 @@ class BookingBloc {
       return _updateError(err);
     }
   }
+
+  Future<AppError?> getAllBooking({Status? status}) async {
+    try {
+      _updateStream(BookingState.loading());
+
+      var response = await dio.get('/booking', queryParameters: {
+        if (status != null) 'booking_status': StatusUtil.textOf(status)
+      });
+
+      var data = response.data['data'];
+
+      if (kDebugMode) print(data);
+
+      if (data == null) {
+        return _updateError('Data not found');
+      }
+
+      List<BookingData> bookings = [];
+
+      for (var booking in data) {
+        List? images = booking['service']['images'];
+
+        List<File> loadedServiceImage = [];
+        if (images != null && images.isNotEmpty) {
+          for (var imageId in images) {
+            File? image = await ImageBloc().loadImage(imageId);
+
+            if (image != null) {
+              loadedServiceImage.add(image);
+            }
+          }
+        }
+
+        String? profilePicId =
+            booking['service']['profile']['profile_pic_media_id'];
+        File? profilePic;
+        if (profilePicId != null) {
+          profilePic = await ImageBloc().loadImage(profilePicId);
+        }
+
+        BookingData bookingData = BookingData.fromJson(booking,
+            serviceImage: loadedServiceImage, profilePic: profilePic);
+
+        bookings.add(bookingData);
+      }
+
+      _updateStream(BookingState.success(bookings));
+
+      return null;
+    } catch (err) {
+      printError(err);
+      return _updateError(err);
+    }
+  }
+
+  Future<AppError?> createBooking(
+      {required String serviceId, DateTime? bookingDate}) async {
+    try {
+      _updateStream(BookingState.loading());
+
+      bookingDate ??= DateTime.now();
+
+      Map<String, dynamic> data = {
+        'service_id': serviceId,
+        'booking_date': DateFormat('yyyy-MM-dd').format(bookingDate)
+      };
+
+      if (kDebugMode) {
+        print(data);
+      }
+
+      await dio.post('/booking', data: data);
 
       return null;
     } catch (err) {
