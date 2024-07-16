@@ -145,4 +145,42 @@ class AuthBloc {
       return _updateError(err);
     }
   }
+
+  Future<AppError?> verifyEmail(String otpCode) async {
+    try {
+      UserData? currentUser = state?.user;
+
+      if (currentUser == null) {
+        return AppError('User not found', 401);
+      }
+      var response = await dio.post('/auth/verify-email',
+          data: {'email': currentUser.email, 'verification_code': otpCode});
+      if (response.statusCode == 200) {
+        return null;
+      }
+      return AppError('Failed to verify email');
+    } catch (err) {
+      printError(err);
+      return _updateError(err);
+    }
+  }
+
+  Future<AppError?> resendOTPCode() async {
+    try {
+      UserData? currentUser = state?.user;
+
+      if (currentUser == null) {
+        return AppError('User not found', 401);
+      }
+      var response = await dio
+          .post('/auth/resend-code', data: {'email': currentUser.email});
+      if (response.statusCode == 200) {
+        return null;
+      }
+      return AppError('Failed to resend OTP code');
+    } catch (err) {
+      printError(err);
+      return _updateError(err);
+    }
+  }
 }
