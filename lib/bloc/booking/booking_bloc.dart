@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:eocout_flutter/bloc/booking/booking_state.dart';
+import 'package:eocout_flutter/bloc/image_handle/image_bloc.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/dio_interceptor.dart';
@@ -44,19 +47,47 @@ class BookingBloc {
 
   BookingState? get state => controller.valueOrNull;
 
-  Future<AppError?> getBookings() async {
+  Future<AppError?> getBookingRequest() async {
     try {
       _updateStream(BookingState.loading());
       var response = await dio.get('/booking/request');
 
       var data = response.data['data'];
 
+      if (kDebugMode) print(data);
+
       if (data == null) {
         return _updateError('Data not found');
       }
 
-      List<BookingData> bookings = List<BookingData>.from(
-          data.map((json) => BookingData.fromJson(json)));
+      List<BookingData> bookings = [];
+
+      for (var booking in data) {
+        List? images = booking['service']['images'];
+
+        List<File> loadedServiceImage = [];
+        if (images != null && images.isNotEmpty) {
+          for (var imageId in images) {
+            File? image = await ImageBloc().loadImage(imageId);
+
+            if (image != null) {
+              loadedServiceImage.add(image);
+            }
+          }
+        }
+
+        String? profilePicId =
+            booking['service']['profile']['profile_pic_media_id'];
+        File? profilePic;
+        if (profilePicId != null) {
+          profilePic = await ImageBloc().loadImage(profilePicId);
+        }
+
+        BookingData bookingData = BookingData.fromJson(booking,
+            serviceImage: loadedServiceImage, profilePic: profilePic);
+
+        bookings.add(bookingData);
+      }
 
       _updateStream(BookingState.success(bookings));
 

@@ -9,6 +9,7 @@ import 'package:eocout_flutter/components/my_homepage_appbar.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/balance_card.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/eo_recommendation_carousel.dart';
+import 'package:eocout_flutter/features/homepage_eo/widget/today_booking_card.dart';
 import 'package:eocout_flutter/features/service_detail/service_detail_page.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/models/business_data.dart';
@@ -32,7 +33,7 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
   @override
   void initState() {
     _categoryBloc.getCategories();
-    _bookingBloc.getBookings();
+    _bookingBloc.getBookingRequest();
     _serviceBloc.getOwnService();
     super.initState();
   }
@@ -44,7 +45,7 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
         body: RefreshIndicator(
           onRefresh: () async {
             await _categoryBloc.getCategories();
-            await _bookingBloc.getBookings();
+            await _bookingBloc.getBookingRequest();
             await _serviceBloc.getOwnService();
           },
           child: SingleChildScrollView(
@@ -80,7 +81,7 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                       if (hasError) {
                         return MyErrorComponent(
                           onRefresh: () {
-                            _bookingBloc.getBookings();
+                            _bookingBloc.getBookingRequest();
                           },
                           error: snapshot.data?.error,
                         );
@@ -98,17 +99,18 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
 
                       return Skeletonizer(
                         enabled: isLoading,
-                        child: ListView.builder(
+                        child: ListView.separated(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount:
                                 bookings.length > 5 ? 5 : bookings.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(
+                                  height: 10,
+                                ),
                             itemBuilder: (context, index) {
                               BookingData booking = bookings[index];
-                              return ListTile(
-                                title: Text(booking.businessData.name),
-                                subtitle: Text(booking.bookingDate.toString()),
-                              );
+                              return TodayBookingCard(bookingData: booking);
                             }),
                       );
                     }),
