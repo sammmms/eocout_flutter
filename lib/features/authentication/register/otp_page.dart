@@ -1,13 +1,18 @@
+import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/components/my_background.dart';
 import 'package:eocout_flutter/components/my_duration_countdown.dart';
+import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
-import 'package:eocout_flutter/features/authentication/forgot_password/choosen_method_page.dart';
-import 'package:eocout_flutter/features/authentication/forgot_password/reset_password_page.dart';
-import 'package:eocout_flutter/features/authentication/login/login_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
+import 'package:eocout_flutter/features/dashboard_page.dart';
+import 'package:eocout_flutter/features/welcome_page.dart';
+import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/countdown_timer.dart';
+import 'package:eocout_flutter/utils/store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:pinput/pinput.dart';
+import 'package:provider/provider.dart';
 
 class OtpPage extends StatefulWidget {
   final Widget? from;
@@ -21,6 +26,41 @@ class _OtpPageState extends State<OtpPage> {
   final _formKey = GlobalKey<FormState>();
   final _pinInput = TextEditingController();
   final _timer = CountdownTimer();
+  late AuthBloc _authBloc;
+
+  @override
+  void initState() {
+    _authBloc = context.read<AuthBloc>();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      DateTime? resendTime = await Store.getResendOTPTime();
+
+      // Check if resend time is not null
+      if (resendTime != null) {
+        int diff = DateTime.now().difference(resendTime).inSeconds;
+        if (diff < 60) {
+          _timer.startTimer(60 - diff);
+        }
+        return;
+      }
+
+      AppError? error = await _authBloc.resendOTPCode();
+
+      if (!mounted) return;
+
+      if (error != null) {
+        if (error.code == 401) {
+          showMySnackBar(context, error.message, SnackbarStatus.error);
+          navigateTo(context, const WelcomePage(), clearStack: true);
+        }
+        showMySnackBar(context, error.message, SnackbarStatus.error);
+      }
+
+      _timer.startTimer(60);
+    });
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -52,9 +92,10 @@ class _OtpPageState extends State<OtpPage> {
                       ),
                       Pinput(
                         controller: _pinInput,
+                        length: 6,
                         onChanged: (value) {
-                          if (value.length == 4) {
-                            FocusScope.of(context).unfocus();
+                          if (value.length == 6) {
+                            FocusScope.of(context).requestFocus(FocusNode());
                             _validateAndNavigate();
                           }
                         },
@@ -118,18 +159,19 @@ class _OtpPageState extends State<OtpPage> {
     );
   }
 
-  void _validateAndNavigate() {
+  void _validateAndNavigate() async {
     if (_formKey.currentState!.validate()) {
-      if (widget.from is ChoosenMethodPage) {
-        navigateTo(context, const ResetPasswordPage(), replace: true);
-      } else {
-        navigateTo(
-            context,
-            LoginPage(
-              from: widget,
-            ),
-            clearStack: true);
+      AppError? error = await _authBloc.verifyEmail(_pinInput.text);
+
+      if (!mounted) return;
+      if (error != null) {
+        showMySnackBar(context, error.message, SnackbarStatus.error);
+        return;
       }
+
+      showMySnackBar(
+          context, "Email berhasil diverfiikasi", SnackbarStatus.success);
+      navigateTo(context, const DashboardPage(), clearStack: true);
     }
   }
 }
