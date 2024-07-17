@@ -159,7 +159,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
 
               // DETAIL
               const SizedBox(height: 20),
-              Text(widget.businessData.name, style: textTheme.headlineMedium),
+              Text(widget.businessData.companyName,
+                  style: textTheme.headlineMedium),
               const SizedBox(height: 20),
               Text(
                 widget.businessData.name,
