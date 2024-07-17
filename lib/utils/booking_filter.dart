@@ -18,4 +18,14 @@ class BookingFilter {
     }
     return query.join('&');
   }
+
+  factory BookingFilter.pending() {
+    return BookingFilter(
+        status: Status.pending, paymentStatus: PaymentStatus.pending);
+  }
+
+  factory BookingFilter.completed() {
+    return BookingFilter(
+        status: Status.completed, paymentStatus: PaymentStatus.completed);
+  }
 }
