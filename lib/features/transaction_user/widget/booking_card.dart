@@ -46,14 +46,17 @@ class BookingCard extends StatelessWidget {
                         ),
                 ),
                 const SizedBox(width: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(bookingData.businessData.name,
-                        style: textTheme.headlineSmall),
-                    Text(DateFormat('dd MMMM yyyy')
-                        .format(bookingData.bookingDate))
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(bookingData.businessData.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.headlineSmall),
+                      Text(DateFormat('dd MMMM yyyy')
+                          .format(bookingData.bookingDate))
+                    ],
+                  ),
                 ),
               ],
             ),
