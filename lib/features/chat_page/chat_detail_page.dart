@@ -311,6 +311,27 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     if (conversationId == null) {
       await bloc.sendNewMessage(
           toUsername: _withUser.valueOrNull?.username ?? "", content: text);
+      await bloc.getChatList();
+      final chatList = bloc.state?.chatList;
+      if (chatList != null) {
+        final chat = chatList.firstWhereOrNull((element) =>
+            element.withUser.username == _withUser.valueOrNull?.username);
+        if (chat != null) {
+          await bloc.getChatMessageHistory(chatId: chat.conversationId);
+          conversationId = chat.conversationId;
+        }
+      }
+
+      if (conversationId != null) {
+        await _tryConnectingToChat();
+      }
+
+      if (_scrollController.hasClients) {
+        Future.delayed(
+            Durations.long1,
+            () => _scrollController
+                .jumpTo(_scrollController.position.maxScrollExtent));
+      }
     } else {
       await bloc.sendMessage(chatId: conversationId!, content: text);
     }
