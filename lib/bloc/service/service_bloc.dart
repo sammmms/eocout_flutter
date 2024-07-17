@@ -96,7 +96,7 @@ class ServiceBloc {
 
       _updateStream(ServiceState.success(businessData));
     } catch (err) {
-      printError(err);
+      printError(err, method: 'getServices');
       _updateError(err);
     }
   }
@@ -130,7 +130,7 @@ class ServiceBloc {
 
       return null;
     } catch (err) {
-      printError(err);
+      printError(err, method: 'createService');
       return _updateError(err);
     }
   }
@@ -177,7 +177,7 @@ class ServiceBloc {
 
       _updateStream(ServiceState.success(businessData));
     } catch (err) {
-      printError(err);
+      printError(err, method: 'getOwnService');
       _updateError(err);
     }
   }
@@ -199,7 +199,7 @@ class ServiceBloc {
 
       return null;
     } catch (err) {
-      printError(err);
+      printError(err, method: 'deleteService');
       return _updateError(err);
     }
   }

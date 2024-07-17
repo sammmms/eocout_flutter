@@ -28,7 +28,7 @@ class ImageBloc {
       var mediaId = responseData['media_id'];
       return mediaId;
     } catch (err) {
-      printError(err);
+      printError(err, method: "uploadImage");
       return null;
     }
   }
@@ -44,7 +44,7 @@ class ImageBloc {
       await file.writeAsBytes(responseData);
       return file;
     } catch (err) {
-      printError(err);
+      printError(err, method: "loadImage");
       return null;
     }
   }

@@ -95,7 +95,7 @@ class BookingBloc {
 
       return null;
     } catch (err) {
-      printError(err);
+      printError(err, method: 'getBookingRequest');
       return _updateError(err);
     }
   }
@@ -113,7 +113,7 @@ class BookingBloc {
 
       return null;
     } catch (err) {
-      printError(err);
+      printError(err, method: 'confirmBooking');
       return _updateError(err);
     }
   }
@@ -167,7 +167,7 @@ class BookingBloc {
 
       return null;
     } catch (err) {
-      printError(err);
+      printError(err, method: 'getAllBooking');
       return _updateError(err);
     }
   }
@@ -192,7 +192,7 @@ class BookingBloc {
 
       return null;
     } catch (err) {
-      printError(err);
+      printError(err, method: 'createBooking');
       return _updateError(err);
     }
   }
