@@ -190,6 +190,8 @@ class ChatBloc {
         "message": chatMessageData.content
       });
 
+      await channel?.ready;
+
       if (response.statusCode == 200) {
         chatMessageData.isLoading = false;
         _updateDetailChatStream(
@@ -250,11 +252,7 @@ class ChatBloc {
     chatMessageData.isLoading = true;
     chatMessageData.hasError = false;
 
-    _updateDetailChatStream(detailChatState!
-        .copyWith(chatMessageList: detailChatState!.chatMessageList));
-
     List<ChatMessageData> chatMessageList = detailChatState!.chatMessageList!;
-
     try {
       await _trySendMessage(
           chatMessageData: chatMessageData,
@@ -275,8 +273,11 @@ class ChatBloc {
     _updateDetailChatStream(
         detailChatState!.copyWith(chatMessageList: chatMessageList));
     try {
-      if (channel == null) {
-        throw "Kamu tidak terkoneksi ke chat";
+      if (channel == null || channel?.closeReason != null) {
+        AppError? error = await connectToChat(chatId, loading: false);
+        if (error != null) {
+          throw error;
+        }
       }
 
       Map<String, dynamic> data = {
@@ -302,9 +303,9 @@ class ChatBloc {
     }
   }
 
-  Future<AppError?> connectToChat(String chatId) async {
+  Future<AppError?> connectToChat(String chatId, {loading = true}) async {
     try {
-      _updateDetailChatStream(detailChatState!.copyWith(isLoading: true));
+      _updateDetailChatStream(detailChatState!.copyWith(isLoading: loading));
 
       String webSocketUrl = dotenv.env['WS_URL']!;
 
@@ -315,6 +316,11 @@ class ChatBloc {
       }
 
       String token = await Store.getToken();
+
+      if (channel != null) {
+        channel?.sink.close();
+        channel = null;
+      }
 
       channel = IOWebSocketChannel.connect(uri,
           headers: {'Authorization': 'Bearer $token'});
@@ -368,6 +374,8 @@ class ChatBloc {
 
       return null;
     } catch (err) {
+      channel?.sink.close();
+      channel = null;
       printError(err, method: "connectToChat");
       return AppError("Gagal terhubung ke chat", 400);
     } finally {

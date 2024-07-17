@@ -1,5 +1,6 @@
 import 'package:eocout_flutter/bloc/chat/chat_bloc.dart';
 import 'package:eocout_flutter/bloc/chat/chat_state.dart';
+import 'package:eocout_flutter/components/my_error_component.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/components/my_searchbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
@@ -62,7 +63,11 @@ class _ChatPageState extends State<ChatPage> {
                           false || !snapshot.hasData;
 
                       if (snapshot.data?.hasError ?? false) {
-                        return const Center(child: Text("Terjadi kesalahan"));
+                        return MyErrorComponent(
+                            onRefresh: () {
+                              bloc.getChatList();
+                            },
+                            error: snapshot.data?.error);
                       }
 
                       List<ChatData> chatList = snapshot.data?.chatList ??
