@@ -19,6 +19,11 @@ class CountdownTimer {
     });
   }
 
+  void restartTimer() {
+    cancelTimer();
+    startTimer(60);
+  }
+
   void cancelTimer() {
     _countdownTimer.cancel();
     Store.removeResendOTPTime();
