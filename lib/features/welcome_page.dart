@@ -57,38 +57,42 @@ class _WelcomePageState extends State<WelcomePage> {
                       "Dapatkan solusi terbaik!",
                       'Dengan Event Organizer dan Vendor terbaik, kami akan membantu kamu mendapatkan solusi terbaik untuk menyelesaikan permasalahan acaramu!',
                     ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _iconWithHeadline(
-                            context,
-                            "Buat acaramu tak terlupakan!",
-                            'Dengan Event Organizer dan Vendor terbaik, kami akan membantu kamu membuat acaramu menjadi tak terlupakan!',
-                            Image.asset("assets/images/meeting_logo.png")),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 60,
-                            child: OutlinedButton(
-                              onPressed: () {
-                                navigateTo(context, const AuthenticationPage(),
-                                    transition:
-                                        TransitionType.slideInFromBottom);
-                              },
-                              child: Text(
-                                'Mulai',
-                                style: textTheme.titleLarge!
-                                    .copyWith(color: colorScheme.onPrimary),
+                    SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _iconWithHeadline(
+                              context,
+                              "Buat acaramu tak terlupakan!",
+                              'Dengan Event Organizer dan Vendor terbaik, kami akan membantu kamu membuat acaramu menjadi tak terlupakan!',
+                              Image.asset("assets/images/meeting_logo.png")),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 60,
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  navigateTo(
+                                      context, const AuthenticationPage(),
+                                      transition:
+                                          TransitionType.slideInFromBottom);
+                                },
+                                child: Text(
+                                  'Mulai',
+                                  style: textTheme.titleLarge!
+                                      .copyWith(color: colorScheme.onPrimary),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -151,7 +155,7 @@ class _WelcomePageState extends State<WelcomePage> {
             children: [
               Text(
                 headline,
-                style: Theme.of(context).textTheme.headlineLarge,
+                style: Theme.of(context).textTheme.headlineMedium,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(
@@ -159,7 +163,7 @@ class _WelcomePageState extends State<WelcomePage> {
               ),
               Text(
                 subheadline,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(context).textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
             ],
