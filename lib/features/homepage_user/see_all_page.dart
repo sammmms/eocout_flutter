@@ -34,88 +34,95 @@ class _SeeAllPageState extends State<SeeAllPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  widget.selectedBusiness.add(null);
-                },
-                child: const Icon(Icons.arrow_back),
-              ),
-              const SizedBox(
-                width: 20,
-              ),
-              Expanded(
-                child: MySearchBar(
-                    isRounded: true,
-                    onChanged: (value) {
-                      _searchStream.add(value);
-                    },
-                    label: "Cari EO atau Vendor yang kamu inginkan!"),
-              ),
-            ],
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        widget.selectedBusiness.add(null);
+      },
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    widget.selectedBusiness.add(null);
+                  },
+                  child: const Icon(Icons.arrow_back),
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+                Expanded(
+                  child: MySearchBar(
+                      isRounded: true,
+                      onChanged: (value) {
+                        _searchStream.add(value);
+                      },
+                      label: "Cari EO atau Vendor yang kamu inginkan!"),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              await _serviceBloc.getServices(categoryId: categoryId!);
-            },
-            child: StreamBuilder<ServiceState>(
-                stream: _serviceBloc.stream,
-                builder: (context, snapshot) {
-                  bool isLoading =
-                      snapshot.data?.isLoading ?? false || !snapshot.hasData;
+          const SizedBox(
+            height: 20,
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                await _serviceBloc.getServices(categoryId: categoryId!);
+              },
+              child: StreamBuilder<ServiceState>(
+                  stream: _serviceBloc.stream,
+                  builder: (context, snapshot) {
+                    bool isLoading =
+                        snapshot.data?.isLoading ?? false || !snapshot.hasData;
 
-                  bool hasError = snapshot.data?.hasError ?? false;
+                    bool hasError = snapshot.data?.hasError ?? false;
 
-                  if (hasError) {
-                    return Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
-                      child: MyErrorComponent(onRefresh: () async {
-                        await _serviceBloc.getServices(categoryId: categoryId!);
-                      }),
-                    );
-                  }
-
-                  List<BusinessData> businessData =
-                      snapshot.data?.businessData ??
-                          List.generate(5, (_) => BusinessData.dummy());
-
-                  if (businessData.isEmpty) {
-                    return const Padding(
-                      padding: EdgeInsets.fromLTRB(20, 20, 20, 80),
-                      child: MyNoDataComponent(
-                        label: "Tidak ada vendor yang ditemukan",
-                      ),
-                    );
-                  }
-
-                  return Skeletonizer(
-                    enabled: isLoading,
-                    child: ListView.separated(
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
-                        itemCount: businessData.length,
-                        separatorBuilder: (context, index) => const SizedBox(
-                              height: 20,
-                            ),
-                        itemBuilder: (context, index) {
-                          BusinessData data = businessData[index];
-                          return BusinessCard(businessData: data);
+                    if (hasError) {
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
+                        child: MyErrorComponent(onRefresh: () async {
+                          await _serviceBloc.getServices(
+                              categoryId: categoryId!);
                         }),
-                  );
-                }),
-          ),
-        )
-      ],
+                      );
+                    }
+
+                    List<BusinessData> businessData =
+                        snapshot.data?.businessData ??
+                            List.generate(5, (_) => BusinessData.dummy());
+
+                    if (businessData.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.fromLTRB(20, 20, 20, 80),
+                        child: MyNoDataComponent(
+                          label: "Tidak ada vendor yang ditemukan",
+                        ),
+                      );
+                    }
+
+                    return Skeletonizer(
+                      enabled: isLoading,
+                      child: ListView.separated(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
+                          itemCount: businessData.length,
+                          separatorBuilder: (context, index) => const SizedBox(
+                                height: 20,
+                              ),
+                          itemBuilder: (context, index) {
+                            BusinessData data = businessData[index];
+                            return BusinessCard(businessData: data);
+                          }),
+                    );
+                  }),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
