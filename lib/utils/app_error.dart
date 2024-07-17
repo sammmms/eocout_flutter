@@ -21,17 +21,25 @@ class AppError extends Error {
 
       if (err.response?.data is Map) {
         if (err.response?.data?['message'] == null) {
-          return AppError('Unknown Error', null);
+          return AppError('Terjadi kesalahan', null);
         }
         String message = err.response?.data?['message'];
         String code = err.response?.data?['status'];
         return AppError(ServerErrorParser.parseMessage(message),
             ServerErrorParser.parseCode(code));
       } else {
-        return AppError(err.response.toString(), err.response?.statusCode);
+        if (err.response != null) {
+          return AppError(
+              ServerErrorParser.parseMessage(err.response.toString()),
+              ServerErrorParser.parseCode(err.response.toString()));
+        }
+        return AppError("Terjadi kesalahan", null);
       }
     }
-    return AppError('Unknown Error', null);
+    if (err is String) {
+      return AppError(err, null);
+    }
+    return AppError('Terjadi kesalahan', null);
   }
 }
 
@@ -67,6 +75,14 @@ class ServerErrorParser {
 
     if (message.contains("cannot send to myself")) {
       return "Tidak bisa mengirim pesan ke diri sendiri";
+    }
+
+    if (message == "you have already booked into same service id") {
+      return "Anda sudah melakukan booking pada layanan ini";
+    }
+
+    if (message == "error code: 502") {
+      return "Terjadi kesalahan pada server";
     }
     return message;
   }
