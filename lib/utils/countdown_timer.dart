@@ -5,7 +5,7 @@ import 'package:rxdart/rxdart.dart';
 
 class CountdownTimer {
   final BehaviorSubject<int> timer = BehaviorSubject<int>.seeded(0);
-  late Timer _countdownTimer;
+  Timer? _countdownTimer;
 
   void startTimer(int duration) {
     Store.saveResendOTPTime(DateTime.now());
@@ -25,7 +25,10 @@ class CountdownTimer {
   }
 
   void cancelTimer() {
-    _countdownTimer.cancel();
+    if (_countdownTimer != null) {
+      _countdownTimer!.cancel();
+      _countdownTimer = null;
+    }
     Store.removeResendOTPTime();
   }
 }
