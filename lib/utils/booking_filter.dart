@@ -5,6 +5,12 @@ class BookingFilter {
   final Status status;
   final PaymentStatus paymentStatus;
 
+  bool get isPendingPayment =>
+      status == Status.pending && paymentStatus == PaymentStatus.all;
+
+  bool get isCompletePayment =>
+      status == Status.all && paymentStatus == PaymentStatus.completed;
+
   BookingFilter(
       {this.status = Status.all, this.paymentStatus = PaymentStatus.all});
 
@@ -27,5 +33,17 @@ class BookingFilter {
   factory BookingFilter.completed() {
     return BookingFilter(
         status: Status.completed, paymentStatus: PaymentStatus.completed);
+  }
+
+  factory BookingFilter.pendingPayment() {
+    return BookingFilter(status: Status.pending);
+  }
+
+  factory BookingFilter.completedPayment() {
+    return BookingFilter(paymentStatus: PaymentStatus.completed);
+  }
+
+  factory BookingFilter.all() {
+    return BookingFilter();
   }
 }

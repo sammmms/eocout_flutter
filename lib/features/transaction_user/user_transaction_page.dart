@@ -19,17 +19,17 @@ class _UserTransactionPageState extends State<UserTransactionPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final BookingBloc _bookingBloc = BookingBloc();
-  BookingFilter _bookingFilter = BookingFilter.pending();
+  BookingFilter _bookingFilter = BookingFilter.pendingPayment();
 
   @override
   void initState() {
-    _bookingBloc.getAllBooking(filter: BookingFilter.pending());
+    _bookingBloc.getAllBooking(filter: BookingFilter.pendingPayment());
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
         _bookingFilter = _tabController.index == 0
-            ? BookingFilter.pending()
-            : BookingFilter.completed();
+            ? BookingFilter.pendingPayment()
+            : BookingFilter.completedPayment();
 
         _bookingBloc.getAllBooking(filter: _bookingFilter);
       }

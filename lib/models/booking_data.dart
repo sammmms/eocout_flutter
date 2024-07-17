@@ -19,6 +19,11 @@ class BookingData {
     required this.status,
   });
 
+  bool get isNotPaid =>
+      status == Status.confirmed && paymentStatus == PaymentStatus.pending;
+
+  bool get isPaid => paymentStatus == PaymentStatus.completed;
+
   factory BookingData.fromJson(Map<String, dynamic> json,
       {List<File>? serviceImage, File? profilePic}) {
     return BookingData(
