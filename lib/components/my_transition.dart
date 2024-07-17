@@ -1,3 +1,4 @@
+import 'package:eocout_flutter/main.dart';
 import 'package:flutter/material.dart';
 
 Route<T> slideInFromBottom<T>(Widget page) {
@@ -149,4 +150,12 @@ Future<T> navigateTo<T>(BuildContext context, Widget page,
   } else {
     return await Navigator.push(context, animation(page));
   }
+}
+
+Future navigatorNavigateTo(Widget page,
+    {bool replace = false,
+    TransitionType transition = TransitionType.fadeIn,
+    bool clearStack = false}) async {
+  await navigateTo(navigatorKey.currentState!.context, page,
+      replace: replace, transition: transition, clearStack: clearStack);
 }

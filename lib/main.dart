@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
+final navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   await dotenv.load(fileName: ".env");
   if (dotenv.isInitialized) {
@@ -50,6 +51,7 @@ class _MainAppState extends State<MainApp> {
         Provider<NotificationBloc>.value(value: _notificationBloc),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         theme: lightThemeData,
         home: const SplashPage(),
       ),
