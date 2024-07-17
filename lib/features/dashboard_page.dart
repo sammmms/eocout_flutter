@@ -71,9 +71,19 @@ class _DashboardPageState extends State<DashboardPage> {
     user =
         bloc.stream.value.user ?? UserData.dummy(role: UserRole.eventOrganizer);
 
+    bool isEmailVerified = user.isEmailVerified;
+
     // Check for profile data validity
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!isEmailVerified) {
+        showMySnackBar(
+            context, "Email kamu belum terverifikasi.", SnackbarStatus.error);
+        navigateTo(context, const OtpPage(),
+            transition: TransitionType.slideInFromBottom, clearStack: true);
+        return;
+      }
+
       UserData? userData =
           context.read<ProfileBloc>().controller.valueOrNull?.profile;
 
@@ -84,16 +94,6 @@ class _DashboardPageState extends State<DashboardPage> {
             SnackbarStatus.error);
         navigateTo(context, const WelcomePage(),
             transition: TransitionType.slideInFromBottom, clearStack: true);
-        return;
-      }
-
-      bool isEmailVerified = user.isEmailVerified;
-
-      if (!isEmailVerified) {
-        showMySnackBar(
-            context, "Email kamu belum terverifikasi.", SnackbarStatus.error);
-        navigateTo(context, const OtpPage(),
-            transition: TransitionType.slideInFromBottom);
         return;
       }
 
