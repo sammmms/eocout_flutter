@@ -1,4 +1,5 @@
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
+import 'package:eocout_flutter/bloc/notification/notification_bloc.dart';
 import 'package:eocout_flutter/bloc/profile/profile_bloc.dart';
 import 'package:eocout_flutter/splash_page.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
@@ -30,6 +31,7 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   final AuthBloc _authBloc = AuthBloc();
   late ProfileBloc _profileBloc;
+  final NotificationBloc _notificationBloc = NotificationBloc();
 
   @override
   void initState() {
@@ -44,7 +46,8 @@ class _MainAppState extends State<MainApp> {
         Provider<AuthBloc>.value(value: _authBloc),
         Provider<ProfileBloc>.value(
           value: _profileBloc,
-        )
+        ),
+        Provider<NotificationBloc>.value(value: _notificationBloc),
       ],
       child: MaterialApp(
         theme: lightThemeData,
