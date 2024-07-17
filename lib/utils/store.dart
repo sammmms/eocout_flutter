@@ -34,8 +34,9 @@ class Store {
     return prefs.getString("fcmToken") ?? "";
   }
 
-  static Future<void> saveResendOTPTime(DateTime time) async {
+  static Future<void> saveResendOTPTime() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    DateTime time = DateTime.now().add(const Duration(seconds: 60));
     prefs.setString("resendOTPTime", time.toIso8601String());
   }
 

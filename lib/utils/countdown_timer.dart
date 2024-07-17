@@ -8,7 +8,7 @@ class CountdownTimer {
   Timer? _countdownTimer;
 
   void startTimer(int duration) {
-    Store.saveResendOTPTime(DateTime.now());
+    Store.saveResendOTPTime();
     timer.add(duration);
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (timer.value > 0) {
