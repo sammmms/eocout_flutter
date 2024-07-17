@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:eocout_flutter/bloc/notification/notification_bloc.dart';
+import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/chat_page/chat_detail_page.dart';
 import 'package:eocout_flutter/firebase_options.dart';
+import 'package:eocout_flutter/utils/notification_type_util.dart';
 import 'package:eocout_flutter/utils/print_error.dart';
 import 'package:eocout_flutter/utils/store.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -64,6 +69,9 @@ class MyFirebaseMessaging {
       }
 
       RemoteNotification? notification = message.notification;
+      if (kDebugMode) {
+        print("Data : ${message.data}");
+      }
 
       if (notification != null) {
         String? title = notification.title;
@@ -75,7 +83,7 @@ class MyFirebaseMessaging {
         }
 
         if (title != null && body != null) {
-          showNotification(title, body);
+          showNotification(title, body, message.data);
         }
       }
     });
@@ -119,13 +127,15 @@ class MyFirebaseMessaging {
 
       flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
+        onDidReceiveNotificationResponse: handleNotificationClick,
       );
     } catch (err) {
       printError(err, method: "initializing local notification");
     }
   }
 
-  Future<void> showNotification(String title, String body) async {
+  Future<void> showNotification(
+      String title, String body, Map<String, dynamic>? data) async {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
 
@@ -146,6 +156,28 @@ class MyFirebaseMessaging {
       title,
       body,
       notificationDetails,
+      payload: jsonEncode(data),
     );
+  }
+
+  Future<void> handleNotificationClick(NotificationResponse details) async {
+    Map<String, dynamic> data = jsonDecode(details.payload ?? "{}");
+
+    if (kDebugMode) {
+      print("Notification data: $data");
+    }
+
+    NotificationType? type =
+        NotificationTypeUtil.fromString(data["notification_type"]);
+
+    if (type == NotificationType.chat) {
+      String? chatId = data["ref_id"];
+      navigatorNavigateTo(
+        ChatDetailPage(
+          conversationId: chatId,
+        ),
+        transition: TransitionType.slideInFromBottom,
+      );
+    }
   }
 }
