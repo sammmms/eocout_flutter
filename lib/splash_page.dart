@@ -1,4 +1,5 @@
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
+import 'package:eocout_flutter/bloc/notification/notification_bloc.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/dashboard_page.dart';
 import 'package:eocout_flutter/features/welcome_page.dart';
@@ -25,7 +26,8 @@ class _SplashPageState extends State<SplashPage> {
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       try {
-        await MyFirebaseMessaging.initialize();
+        MyFirebaseMessaging(notificationBloc: context.read<NotificationBloc>())
+            .initialize();
       } catch (err) {
         printError(err, method: "initialize myFirebaseMessaging");
       }

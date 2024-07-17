@@ -1,3 +1,4 @@
+import 'package:eocout_flutter/bloc/notification/notification_bloc.dart';
 import 'package:eocout_flutter/firebase_options.dart';
 import 'package:eocout_flutter/utils/print_error.dart';
 import 'package:eocout_flutter/utils/store.dart';
@@ -14,8 +15,12 @@ class MyFirebaseMessaging {
     importance: Importance.high,
   );
 
+  final NotificationBloc notificationBloc;
+
+  MyFirebaseMessaging({required this.notificationBloc});
+
   /// Initialize Firebase Messaging
-  static Future<void> initialize() async {
+  Future<void> initialize() async {
     // Initialize Firebase
 
     try {
@@ -55,23 +60,37 @@ class MyFirebaseMessaging {
         String? title = notification.title;
         String? body = notification.body;
 
+        if (kDebugMode) {
+          print(notification.toMap());
+          print(notification.toString());
+        }
+
         if (title != null && body != null) {
           showNotification(title, body);
         }
       }
     });
+    try {
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        if (kDebugMode) {
+          print("onMessageOpenedApp: $message");
+        }
+        notificationBloc.fetchNotifications();
+      });
+    } catch (e) {
+      printError(e, method: "onMessageOpenedApp");
+    }
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      if (kDebugMode) {
-        print("onMessageOpenedApp: $message");
-      }
-    });
-
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    try {
+      FirebaseMessaging.onBackgroundMessage(
+          _firebaseMessagingBackgroundHandler);
+    } catch (e) {
+      printError(e, method: "onBackgroundMessage");
+    }
   }
 
   /// Initialize local notification
-  static Future<void> _initializeLocalNotification() async {
+  Future<void> _initializeLocalNotification() async {
     try {
       FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
           FlutterLocalNotificationsPlugin();
@@ -97,7 +116,7 @@ class MyFirebaseMessaging {
     }
   }
 
-  static Future<void> showNotification(String title, String body) async {
+  Future<void> showNotification(String title, String body) async {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
 
@@ -122,7 +141,7 @@ class MyFirebaseMessaging {
   }
 
   @pragma('vm:entry-point')
-  static Future<void> _firebaseMessagingBackgroundHandler(
+  Future<void> _firebaseMessagingBackgroundHandler(
     RemoteMessage message,
   ) async {
     if (kDebugMode) {
