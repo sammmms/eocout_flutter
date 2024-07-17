@@ -111,10 +111,10 @@ enum TransitionType {
   noAnimation,
 }
 
-void navigateTo(BuildContext context, Widget page,
+Future<T> navigateTo<T>(BuildContext context, Widget page,
     {bool replace = false,
     TransitionType transition = TransitionType.fadeIn,
-    bool clearStack = false}) {
+    bool clearStack = false}) async {
   late Route Function(Widget) animation;
 
   switch (transition) {
@@ -142,10 +142,11 @@ void navigateTo(BuildContext context, Widget page,
   }
 
   if (clearStack) {
-    Navigator.pushAndRemoveUntil(context, animation(page), (route) => false);
+    return await Navigator.pushAndRemoveUntil(
+        context, animation(page), (route) => false);
   } else if (replace) {
-    Navigator.pushReplacement(context, animation(page));
+    return await Navigator.pushReplacement(context, animation(page));
   } else {
-    Navigator.push(context, animation(page));
+    return await Navigator.push(context, animation(page));
   }
 }
