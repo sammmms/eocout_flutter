@@ -124,7 +124,7 @@ class AuthBloc {
 
       await dio.post('/auth/register', data: dataMap);
 
-      _updateStream(AuthState.resetState());
+      _updateStream(AuthState(user: UserData.fromRegisterData(data)));
       return null;
     } catch (err) {
       printError(err, method: "register");
@@ -187,6 +187,10 @@ class AuthBloc {
 
       if (currentUser == null) {
         return AppError('Terjadi kesalahan autentikasi', 401);
+      }
+
+      if (kDebugMode) {
+        print("requesting otp code...");
       }
       var response = await dio
           .post('/auth/resend-code', data: {'email': currentUser.email});
