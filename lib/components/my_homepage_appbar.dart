@@ -2,6 +2,7 @@ import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
 import 'package:eocout_flutter/bloc/category/category_bloc.dart';
 import 'package:eocout_flutter/bloc/category/category_state.dart';
+import 'package:eocout_flutter/components/my_avatar_loader.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/profile/profile_page.dart';
 import 'package:eocout_flutter/models/user_data.dart';
@@ -33,25 +34,28 @@ class _MyHomepageAppBarState extends State<MyHomepageAppBar> {
         stream: authBloc.stream,
         builder: (context, snapshot) {
           UserData? user = snapshot.data?.user;
-          if (user == null) {
-            return _appBarShimmerLoading();
-          }
+          bool isLoading = snapshot.data?.isAuthenticating ??
+              false || user == null || !snapshot.hasData;
+          user ??= UserData.dummy();
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Hello, ${user.fullname.isEmpty ? user.username : user.fullname}",
-                      overflow: TextOverflow.ellipsis,
-                      style: textTheme.headlineSmall,
-                    ),
-                    Text(user.role == UserRole.user
-                        ? "Ayo lihat EO terbaru yang kami sediakan!"
-                        : "Ayo lihat informasi terbaru terkait usaha kamu!")
-                  ],
+                child: Skeletonizer(
+                  enabled: isLoading,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Hello, ${user.fullname.isEmpty ? user.username : user.fullname}",
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.headlineSmall,
+                      ),
+                      Text(user.role == UserRole.user
+                          ? "Ayo lihat EO terbaru yang kami sediakan!"
+                          : "Ayo lihat informasi terbaru terkait usaha kamu!")
+                    ],
+                  ),
                 ),
               ),
               Expanded(
@@ -73,67 +77,15 @@ class _MyHomepageAppBarState extends State<MyHomepageAppBar> {
                           transition: TransitionType.slideInFromRight);
                     },
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: CircleAvatar(
-                        child: user.profilePicture != null
-                            ? Image.file(
-                                user.profilePicture!,
-                                height: 200,
-                                width: 200,
-                                fit: BoxFit.cover,
-                              )
-                            : const Icon(
-                                Icons.person,
-                              ),
-                      ),
-                    ),
+                        borderRadius: BorderRadius.circular(100),
+                        child: MyAvatarLoader(
+                          user: user,
+                        )),
                   ),
                 ),
               )
             ],
           );
         });
-  }
-
-  Widget _appBarShimmerLoading() {
-    UserData user = UserData.dummy();
-
-    return Skeletonizer(
-        child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Hello, ${user.fullname}",
-                overflow: TextOverflow.ellipsis,
-                style: textTheme.headlineSmall,
-              ),
-              Text(user.role == UserRole.user
-                  ? "Ayo lihat EO terbaru yang kami sediakan!"
-                  : "Ayo lihat informasi terbaru terkait usaha kamu!")
-            ],
-          ),
-        ),
-        Expanded(
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: GestureDetector(
-              onTap: null,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: const CircleAvatar(
-                  child: Icon(
-                    Icons.person,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        )
-      ],
-    ));
   }
 }
