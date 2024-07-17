@@ -32,33 +32,35 @@ class _TodayBookingCardState extends State<TodayBookingCard> {
     UserData userData = widget.bookingData.businessData.profile;
     BusinessData serviceData = widget.bookingData.businessData;
     return GestureDetector(
-      onTap: () async {
-        Confirmation? confirmOrder = await showDialog(
-            context: context,
-            builder: (context) {
-              return const MyConfirmationDialog(
-                label: "Konfirmasi pesanan ini?",
-                subLabel:
-                    "Konfirmasi bahwa pesanan ini dapat dilakukan pada jadwal yang ditentukan?",
-                positiveLabel: "Konfirmasi",
-                negativeLabel: "Batalkan",
-              );
-            });
+      onTap: widget.bookingData.status != Status.pending
+          ? null
+          : () async {
+              Confirmation? confirmOrder = await showDialog(
+                  context: context,
+                  builder: (context) {
+                    return const MyConfirmationDialog(
+                      label: "Konfirmasi pesanan ini?",
+                      subLabel:
+                          "Konfirmasi bahwa pesanan ini dapat dilakukan pada jadwal yang ditentukan?",
+                      positiveLabel: "Konfirmasi",
+                      negativeLabel: "Batalkan",
+                    );
+                  });
 
-        if (confirmOrder == Confirmation.positive) {
-          AppError? error =
-              await bloc.confirmBooking(bookingId: widget.bookingData.id);
+              if (confirmOrder == Confirmation.positive) {
+                AppError? error =
+                    await bloc.confirmBooking(bookingId: widget.bookingData.id);
 
-          if (!context.mounted) return;
+                if (!context.mounted) return;
 
-          if (error != null) {
-            showMySnackBar(context, error.message, SnackbarStatus.error);
-          } else {
-            showMySnackBar(context, "Berhasil mengonfirmasi pesanan.",
-                SnackbarStatus.success);
-          }
-        }
-      },
+                if (error != null) {
+                  showMySnackBar(context, error.message, SnackbarStatus.error);
+                } else {
+                  showMySnackBar(context, "Berhasil mengonfirmasi pesanan.",
+                      SnackbarStatus.success);
+                }
+              }
+            },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -112,7 +114,6 @@ class _TodayBookingCardState extends State<TodayBookingCard> {
                       Expanded(
                           child: Text(
                         serviceData.name,
-                        textAlign: TextAlign.center,
                       )),
                       Expanded(
                         child: Text(
