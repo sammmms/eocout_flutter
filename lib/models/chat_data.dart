@@ -18,8 +18,8 @@ class ChatData {
     return ChatData(
         conversationId: json['conversation_id'],
         latestMessage: json['latest_message'],
-        latestMessageTimestamp:
-            DateTime.parse(json['latest_message_timestamp']),
+        latestMessageTimestamp: DateTime.parse(json['latest_message_timestamp'])
+            .add(const Duration(hours: 7)),
         withUser:
             UserData.fromJson(json['with_user'], profilePicture: profilePic));
   }
