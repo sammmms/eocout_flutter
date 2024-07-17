@@ -57,6 +57,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       // If bringing conversation id from outside (from chat list)
       if (widget.conversationId != null) {
+        await bloc.getChatList();
         await bloc.getChatMessageHistory(chatId: widget.conversationId!);
 
         UserData? user = widget.withUser ??
