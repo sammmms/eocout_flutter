@@ -122,8 +122,6 @@ class ChatBloc {
     try {
       final response = await dio.get('/chat/$chatId');
 
-      print(response);
-
       final data = response.data['data'];
 
       if (kDebugMode) {
@@ -201,12 +199,14 @@ class ChatBloc {
     //
     catch (err) {
       chatMessageData.hasError = true;
-      chatMessageData.isLoading = false;
-      _updateDetailChatStream(
-          detailChatState!.copyWith(chatMessageList: chatMessageList));
+
       AppError error = AppError.fromErr(err);
       printError(err, method: "resendNewMessage");
       return error;
+    } finally {
+      chatMessageData.isLoading = false;
+      _updateDetailChatStream(
+          detailChatState!.copyWith(chatMessageList: chatMessageList));
     }
     return null;
   }
@@ -292,11 +292,13 @@ class ChatBloc {
       return;
     } catch (err) {
       printError(err, method: "trySendMessage");
-      chatMessageData.isLoading = false;
       chatMessageData.hasError = true;
+
+      rethrow;
+    } finally {
+      chatMessageData.isLoading = false;
       _updateDetailChatStream(
           detailChatState!.copyWith(chatMessageList: chatMessageList));
-      rethrow;
     }
   }
 
