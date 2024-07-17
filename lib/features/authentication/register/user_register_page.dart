@@ -168,11 +168,10 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
       AppError? status = await bloc.register(registerData);
       if (status == null) {
         if (!mounted) return;
-        navigateTo(
-          context,
-          const OtpPage(),
-          transition: TransitionType.fadeIn,
-        );
+        showMySnackBar(context, "Berhasil registrasi, silahkan login.",
+            SnackbarStatus.success);
+        navigateTo(context, const LoginPage(),
+            transition: TransitionType.slideInFromBottom, replace: true);
         return;
       }
       if (!mounted) return;
