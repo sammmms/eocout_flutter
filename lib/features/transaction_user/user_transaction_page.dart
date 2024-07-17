@@ -23,6 +23,7 @@ class _UserTransactionPageState extends State<UserTransactionPage>
 
   @override
   void initState() {
+    // TODO : FILTER TOMORROW USING PASSING NEW PAGE SAJA, DECLARE INIT DISANA BIAR GAK TABRAKAN, DUA BOOKING BLOC JADINYA
     _bookingBloc.getAllBooking(filter: BookingFilter.pendingPayment());
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
@@ -62,6 +63,7 @@ class _UserTransactionPageState extends State<UserTransactionPage>
           Expanded(
             child: TabBarView(
               controller: _tabController,
+              physics: const NeverScrollableScrollPhysics(),
               children: [
                 _buildTransactionList(),
                 _buildTransactionList(),
