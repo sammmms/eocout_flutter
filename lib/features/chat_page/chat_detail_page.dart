@@ -143,14 +143,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 enabled: isLoading,
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      backgroundImage: withUser.profilePicture != null
-                          ? FileImage(withUser.profilePicture!)
-                          : null,
-                      child: withUser.profilePicture == null
-                          ? const Icon(Icons.person)
-                          : null,
-                    ),
+                    MyAvatarLoader(user: withUser),
                     const SizedBox(
                       width: 10,
                     ),
