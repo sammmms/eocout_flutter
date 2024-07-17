@@ -73,6 +73,7 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                       return Skeletonizer(
                           enabled: isLoading,
                           child: BalanceCard(
+                            balance: snapshot.data?.currentBalance,
                             hasError: hasError,
                             onRefreshBalance: () => _balanceBloc.getBalance(),
                           ));
