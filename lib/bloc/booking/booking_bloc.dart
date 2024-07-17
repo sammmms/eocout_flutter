@@ -7,6 +7,7 @@ import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/booking_filter.dart';
 import 'package:eocout_flutter/utils/dio_interceptor.dart';
+import 'package:eocout_flutter/utils/payment_status_util.dart';
 import 'package:eocout_flutter/utils/print_error.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -127,16 +128,9 @@ class BookingBloc {
   Future<AppError?> getAllBooking({BookingFilter? filter}) async {
     try {
       _updateStream(BookingState.loading());
-
-      String url = '/booking';
-
-      if (filter != null) {
-        url += '?${filter.toQuery()}';
-      }
-
-      if (kDebugMode) print(url);
-
-      var response = await dio.get(url);
+      var response = await dio.get('/booking', queryParameters: {
+        if (filter?.isCompletePayment ?? false) 'payment_status': 'completed'
+      });
 
       var data = response.data['data'];
 
@@ -150,6 +144,13 @@ class BookingBloc {
 
       for (var booking in data) {
         List? images = booking['service']['images'];
+
+        if (filter?.isPendingPayment ?? false) {
+          PaymentStatus paymentStatus =
+              PaymentStatusUtil.fromString(booking['payment_status']);
+
+          if (paymentStatus != PaymentStatus.pending) continue;
+        }
 
         List<File> loadedServiceImage = [];
         if (images != null && images.isNotEmpty) {
@@ -205,6 +206,38 @@ class BookingBloc {
       return null;
     } catch (err) {
       printError(err, method: 'createBooking');
+      return _updateError(err);
+    }
+  }
+
+  Future<dynamic> paymentBooking(String bookingId) async {
+    try {
+      _updateStream(BookingState.loading());
+      var response = await dio.post('/payment/pay', data: {
+        "booking_id": bookingId,
+        "success_redirect_url": "https://recrav.com"
+      });
+
+      if (kDebugMode) {
+        print(response);
+      }
+
+      var data = response.data['data'];
+
+      if (data == null) {
+        return _updateError('Tidak ada data');
+      }
+
+      String? link = data['action']['mobile_web_checkout_url'];
+
+      if (link == null) {
+        return _updateError('Tidak ada link pembayaran');
+      }
+
+      _updateStream(BookingState.initial());
+      return link;
+    } catch (err) {
+      printError(err, method: 'paymentBooking');
       return _updateError(err);
     }
   }
