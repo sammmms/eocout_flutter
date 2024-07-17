@@ -109,7 +109,7 @@ class _ChatPageState extends State<ChatPage> {
                                       ),
                                       transition:
                                           TransitionType.slideInFromRight);
-                                  bloc.getChatList();
+                                  bloc.getChatList(needLoading: false);
                                 },
                                 chatData: chatData,
                                 needUnread: !isLoading,
