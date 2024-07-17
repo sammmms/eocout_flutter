@@ -21,7 +21,6 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     bloc = context.read<AuthBloc>();
-    bloc.refreshProfile();
     _categoryBloc.getCategories();
     super.initState();
   }
