@@ -1,10 +1,8 @@
 import 'package:eocout_flutter/bloc/booking/booking_bloc.dart';
-import 'package:eocout_flutter/components/my_confirmation_dialog.dart';
-import 'package:eocout_flutter/components/my_snackbar.dart';
+import 'package:eocout_flutter/components/my_avatar_loader.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/models/business_data.dart';
 import 'package:eocout_flutter/models/user_data.dart';
-import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/status_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +10,9 @@ import 'package:intl/intl.dart';
 
 class TodayBookingCard extends StatefulWidget {
   final BookingData bookingData;
-  const TodayBookingCard({super.key, required this.bookingData});
+  final Function() onTap;
+  const TodayBookingCard(
+      {super.key, required this.bookingData, required this.onTap});
 
   @override
   State<TodayBookingCard> createState() => _TodayBookingCardState();
@@ -76,14 +76,7 @@ class _TodayBookingCardState extends State<TodayBookingCard> {
         padding: const EdgeInsets.all(20),
         child: Row(
           children: [
-            CircleAvatar(
-              backgroundImage: userData.profilePicture != null
-                  ? FileImage(userData.profilePicture!)
-                  : null,
-              child: userData.profilePicture == null
-                  ? const Icon(Icons.person)
-                  : null,
-            ),
+            MyAvatarLoader(user: userData),
             const SizedBox(width: 20),
             Expanded(
               child: Column(

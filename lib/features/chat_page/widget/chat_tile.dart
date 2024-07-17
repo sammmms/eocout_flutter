@@ -1,6 +1,6 @@
-import 'package:eocout_flutter/components/my_transition.dart';
-import 'package:eocout_flutter/features/chat_page/chat_detail_page.dart';
+import 'package:eocout_flutter/components/my_avatar_loader.dart';
 import 'package:eocout_flutter/models/chat_data.dart';
+import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -8,8 +8,13 @@ import 'package:flutter/scheduler.dart';
 class ChatTile extends StatefulWidget {
   final ChatData chatData;
   final bool needUnread;
+  final Function() onTap;
 
-  const ChatTile({super.key, required this.chatData, this.needUnread = true});
+  const ChatTile(
+      {super.key,
+      required this.chatData,
+      this.needUnread = true,
+      required this.onTap});
 
   @override
   State<ChatTile> createState() => _ChatTileState();
@@ -45,32 +50,22 @@ class _ChatTileState extends State<ChatTile> {
 
   @override
   Widget build(BuildContext context) {
+    ChatData chatData = widget.chatData;
+    UserData withUser = chatData.withUser;
     return ListTile(
-        leading: CircleAvatar(
-          backgroundImage: widget.chatData.withUser.profilePicture != null
-              ? FileImage(widget.chatData.withUser.profilePicture!)
-              : null,
-          child: widget.chatData.withUser.profilePicture == null
-              ? const Icon(Icons.person)
-              : null,
+        leading: MyAvatarLoader(
+          user: withUser,
         ),
-        title: Text(widget.chatData.withUser.fullname),
-        subtitle: Text(widget.chatData.latestMessage),
-        onTap: () {
-          FocusScope.of(context).requestFocus(FocusNode());
-          navigateTo(
-              context,
-              ChatDetailPage(
-                conversationId: widget.chatData.conversationId,
-                withUser: widget.chatData.withUser,
-              ),
-              transition: TransitionType.slideInFromRight);
-        },
-        trailing: hasRead && widget.needUnread
-            ? null
-            : const CircleAvatar(
+        title: Text(withUser.fullname.isNotEmpty
+            ? withUser.fullname
+            : withUser.username),
+        subtitle: Text(chatData.latestMessage),
+        onTap: widget.onTap,
+        trailing: !hasRead && widget.needUnread
+            ? const CircleAvatar(
                 radius: 5,
                 backgroundColor: Colors.blue,
-              ));
+              )
+            : null);
   }
 }
