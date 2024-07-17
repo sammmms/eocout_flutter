@@ -85,8 +85,8 @@ class ChatBloc {
     return error;
   }
 
-  Future<void> getChatList() async {
-    _updateStream(ChatState.loading());
+  Future<void> getChatList({bool needLoading = true}) async {
+    if (needLoading) _updateStream(ChatState.loading());
     _updateDetailChatStream(DetailChatState.loading());
     try {
       final response = await dio.get('/chat');
@@ -118,7 +118,7 @@ class ChatBloc {
   }
 
   Future<void> getChatMessageHistory({required String chatId}) async {
-    detailChatController.add(DetailChatState.loading());
+    _updateDetailChatStream(DetailChatState.loading());
     try {
       final response = await dio.get('/chat/$chatId');
 
@@ -305,7 +305,7 @@ class ChatBloc {
 
   Future<AppError?> connectToChat(String chatId, {loading = true}) async {
     try {
-      _updateDetailChatStream(detailChatState!.copyWith(isLoading: loading));
+      // _updateDetailChatStream(detailChatState!.copyWith(isLoading: loading));
 
       String webSocketUrl = dotenv.env['WS_URL']!;
 
