@@ -1,6 +1,7 @@
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/bloc/category/category_bloc.dart';
 import 'package:eocout_flutter/bloc/category/category_state.dart';
+import 'package:eocout_flutter/bloc/notification/notification_bloc.dart';
 import 'package:eocout_flutter/components/my_homepage_appbar.dart';
 import 'package:eocout_flutter/utils/business_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
@@ -19,6 +20,7 @@ class ExploreList extends StatelessWidget {
     CategoryBloc categoryBloc = context.read<CategoryBloc>();
     return RefreshIndicator(
       onRefresh: () async {
+        await context.read<NotificationBloc>().fetchNotifications();
         await bloc.refreshProfile();
         await categoryBloc.getCategories();
       },

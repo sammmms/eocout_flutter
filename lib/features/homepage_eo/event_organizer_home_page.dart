@@ -4,6 +4,7 @@ import 'package:eocout_flutter/bloc/balance/balance_state.dart';
 import 'package:eocout_flutter/bloc/booking/booking_bloc.dart';
 import 'package:eocout_flutter/bloc/booking/booking_state.dart';
 import 'package:eocout_flutter/bloc/category/category_bloc.dart';
+import 'package:eocout_flutter/bloc/notification/notification_bloc.dart';
 import 'package:eocout_flutter/bloc/service/service_bloc.dart';
 import 'package:eocout_flutter/bloc/service/service_state.dart';
 import 'package:eocout_flutter/components/my_confirmation_dialog.dart';
@@ -53,6 +54,7 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: () async {
+            await context.read<NotificationBloc>().fetchNotifications();
             await _categoryBloc.getCategories();
             await _bookingBloc.getBookingRequest();
             await _serviceBloc.getOwnService();

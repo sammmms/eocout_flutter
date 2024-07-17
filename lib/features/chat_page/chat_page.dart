@@ -8,7 +8,6 @@ import 'package:eocout_flutter/features/chat_page/widget/chat_tile.dart';
 import 'package:eocout_flutter/models/chat_data.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ChatPage extends StatefulWidget {

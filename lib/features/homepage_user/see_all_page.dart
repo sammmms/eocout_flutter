@@ -36,6 +36,7 @@ class _SeeAllPageState extends State<SeeAllPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
+      // ignore: deprecated_member_use
       onPopInvoked: (didPop) {
         widget.selectedBusiness.add(null);
       },
