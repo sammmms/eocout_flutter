@@ -8,7 +8,6 @@ import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/booking_filter.dart';
 import 'package:eocout_flutter/utils/dio_interceptor.dart';
 import 'package:eocout_flutter/utils/print_error.dart';
-import 'package:eocout_flutter/utils/status_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
@@ -112,14 +111,11 @@ class BookingBloc {
 
   Future<AppError?> confirmBooking({required String bookingId}) async {
     try {
-      _updateStream(BookingState.loading());
       var response = await dio.post('/booking/$bookingId/confirm');
 
       if (kDebugMode) {
         print(response);
       }
-
-      getBookingRequest();
 
       return null;
     } catch (err) {
@@ -128,13 +124,19 @@ class BookingBloc {
     }
   }
 
-  Future<AppError?> getAllBooking({Status? status}) async {
+  Future<AppError?> getAllBooking({BookingFilter? filter}) async {
     try {
       _updateStream(BookingState.loading());
 
-      var response = await dio.get('/booking', queryParameters: {
-        if (status != null) 'booking_status': StatusUtil.textOf(status)
-      });
+      String url = '/booking';
+
+      if (filter != null) {
+        url += '?${filter.toQuery()}';
+      }
+
+      if (kDebugMode) print(url);
+
+      var response = await dio.get(url);
 
       var data = response.data['data'];
 
