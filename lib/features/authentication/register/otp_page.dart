@@ -3,6 +3,7 @@ import 'package:eocout_flutter/components/my_background.dart';
 import 'package:eocout_flutter/components/my_duration_countdown.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/authentication/login/login_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
 import 'package:eocout_flutter/features/dashboard_page.dart';
 import 'package:eocout_flutter/features/welcome_page.dart';
@@ -15,7 +16,8 @@ import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 
 class OtpPage extends StatefulWidget {
-  const OtpPage({super.key});
+  final Widget? from;
+  const OtpPage({super.key, required this.from});
 
   @override
   State<OtpPage> createState() => _OtpPageState();
@@ -32,17 +34,17 @@ class _OtpPageState extends State<OtpPage> {
   void initState() {
     _authBloc = context.read<AuthBloc>();
 
-    // Remove token on land to page OTP, to prevent user from going to this page on launch (when not verified)
-
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      // Remove token on land to page OTP, to prevent user from going to this page on launch (when not verified)
       token = await Store.removeToken();
+
       DateTime? resendTime = await Store.getResendOTPTime();
 
       // Check if resend time is not null
       if (resendTime != null) {
-        int diff = DateTime.now().difference(resendTime).inSeconds;
+        int diff = resendTime.difference(DateTime.now()).inSeconds;
         if (diff > 0) {
-          _timer.startTimer(60 - diff);
+          _timer.startTimer(diff);
           return;
         } else {
           await Store.removeResendOTPTime();
@@ -194,7 +196,11 @@ class _OtpPageState extends State<OtpPage> {
         return;
       }
 
-      navigateTo(context, const DashboardPage(), clearStack: true);
+      if (widget.from is DashboardPage) {
+        navigateTo(context, const DashboardPage(), clearStack: true);
+      } else {
+        navigateTo(context, const LoginPage(), replace: true);
+      }
     }
   }
 

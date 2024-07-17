@@ -79,8 +79,13 @@ class _DashboardPageState extends State<DashboardPage> {
       if (!isEmailVerified) {
         showMySnackBar(
             context, "Email kamu belum terverifikasi.", SnackbarStatus.error);
-        navigateTo(context, const OtpPage(),
-            transition: TransitionType.slideInFromBottom, clearStack: true);
+        navigateTo(
+            context,
+            const OtpPage(
+              from: DashboardPage(),
+            ),
+            transition: TransitionType.slideInFromBottom,
+            clearStack: true);
         return;
       }
 

@@ -4,6 +4,7 @@ import 'package:eocout_flutter/components/my_background.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/login/login_page.dart';
+import 'package:eocout_flutter/features/authentication/register/otp_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/button_divider.dart';
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
@@ -12,6 +13,8 @@ import 'package:eocout_flutter/features/authentication/widget/password_text_fiel
 import 'package:eocout_flutter/models/register_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/data.dart';
+import 'package:eocout_flutter/utils/role_type_util.dart';
+import 'package:eocout_flutter/utils/store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +27,7 @@ class EORegisterPage extends StatefulWidget {
 
 class _EORegisterPageState extends State<EORegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final registerSubject = RegisterData();
+  final registerSubject = RegisterData(role: UserRole.eventOrganizer);
   late AuthBloc bloc;
 
   @override
@@ -153,7 +156,9 @@ class _EORegisterPageState extends State<EORegisterPage> {
             context,
             "Registrasi berhasil, silahkan login kembali untuk verifikasi",
             SnackbarStatus.success);
-        navigateTo(context, const LoginPage(),
+        await Store.saveResendOTPTime();
+        if (!mounted) return;
+        navigateTo(context, const OtpPage(from: EORegisterPage()),
             transition: TransitionType.slideInFromBottom, replace: true);
         return;
       }

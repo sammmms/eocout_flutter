@@ -1,6 +1,4 @@
 import 'package:eocout_flutter/components/my_background.dart';
-import 'package:eocout_flutter/components/my_transition.dart';
-import 'package:eocout_flutter/features/authentication/register/otp_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
 import 'package:eocout_flutter/utils/data.dart';
@@ -122,9 +120,7 @@ class _ChoosenMethodPageState extends State<ChoosenMethodPage> {
                 AuthActionButton(
                   label: "Kirim kode OTP",
                   onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      navigateTo(context, const OtpPage());
-                    }
+                    if (_formKey.currentState?.validate() ?? false) {}
                   },
                 ),
                 const SizedBox(
