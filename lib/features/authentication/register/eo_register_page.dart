@@ -4,7 +4,6 @@ import 'package:eocout_flutter/components/my_background.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/login/login_page.dart';
-import 'package:eocout_flutter/features/authentication/register/otp_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/button_divider.dart';
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
@@ -148,16 +147,16 @@ class _EORegisterPageState extends State<EORegisterPage> {
   void _registerEO() async {
     if (_formKey.currentState!.validate()) {
       AppError? status = await bloc.register(registerSubject);
+      if (!mounted) return;
       if (status == null) {
-        if (!mounted) return;
-        navigateTo(
-          context,
-          const OtpPage(),
-          transition: TransitionType.fadeIn,
-        );
+        showMySnackBar(
+            context,
+            "Registrasi berhasil, silahkan login kembali untuk verifikasi",
+            SnackbarStatus.success);
+        navigateTo(context, const LoginPage(),
+            transition: TransitionType.slideInFromBottom, replace: true);
         return;
       }
-      if (!mounted) return;
       showMySnackBar(context, status.message, SnackbarStatus.error);
     }
   }

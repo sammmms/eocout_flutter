@@ -5,7 +5,6 @@ import 'package:eocout_flutter/components/my_logo.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/login/login_page.dart';
-import 'package:eocout_flutter/features/authentication/register/otp_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/button_divider.dart';
 import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
@@ -166,15 +165,16 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
   void _registerUser() async {
     if (_formKey.currentState?.validate() ?? false) {
       AppError? status = await bloc.register(registerData);
+      if (!mounted) return;
       if (status == null) {
-        if (!mounted) return;
-        showMySnackBar(context, "Berhasil registrasi, silahkan login.",
+        showMySnackBar(
+            context,
+            "Berhasil registrasi, silahkan login untuk verifikasi.",
             SnackbarStatus.success);
         navigateTo(context, const LoginPage(),
             transition: TransitionType.slideInFromBottom, replace: true);
         return;
       }
-      if (!mounted) return;
       showMySnackBar(
         context,
         status.message,
