@@ -47,6 +47,9 @@ class AuthBloc {
   Future checkLogin() async {
     try {
       var token = await Store.getToken();
+      if (kDebugMode) {
+        print("Token: $token");
+      }
       if (token.isNotEmpty) {
         await refreshProfile();
       }
