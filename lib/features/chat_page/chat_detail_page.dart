@@ -15,7 +15,6 @@ import 'package:eocout_flutter/utils/store.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -48,6 +47,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       }
     });
+
+    bloc.detailChatController.debounceTime(Durations.short3).listen((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
+    });
+
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       // If bringing conversation id from outside (from chat list)
       if (widget.conversationId != null) {
@@ -225,8 +231,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       controller: _scrollController,
                       padding: EdgeInsets.only(
                           top: 10,
-                          bottom:
-                              MediaQuery.of(context).viewInsets.bottom + 10),
+                          bottom: isLoading
+                              ? 0
+                              : MediaQuery.of(context).viewInsets.bottom + 10),
                       itemCount: chatMessageList.length,
                       itemBuilder: (context, index) {
                         final chatMessageData = chatMessageList[index];
@@ -246,52 +253,63 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           ),
         ),
       ),
-      bottomSheet: Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 1,
-                blurRadius: 2,
-                offset: const Offset(0, -2),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageTEC,
-                    maxLines: 3,
-                    minLines: 1,
-                    decoration: const InputDecoration(
-                      hintText: "Tulis pesan...",
+      bottomSheet: StreamBuilder<DetailChatState>(
+          stream: bloc.detailChatController,
+          builder: (context, snapshot) {
+            bool hasData = snapshot.hasData;
+            bool isLoading = snapshot.data?.isLoading ?? false;
+            bool hasError = snapshot.data?.hasError ?? false;
+            if (!hasData || isLoading || hasError) {
+              return const SizedBox();
+            }
+            return Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 2,
+                      offset: const Offset(0, -2),
                     ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _messageTEC,
+                          maxLines: 3,
+                          minLines: 1,
+                          decoration: const InputDecoration(
+                            hintText: "Tulis pesan...",
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      StreamBuilder<String>(
+                          stream: _messageController,
+                          initialData: "",
+                          builder: (context, snapshot) {
+                            String text = snapshot.data ?? "";
+                            if (text.isEmpty) {
+                              return const SizedBox();
+                            }
+                            return IconButton(
+                              onPressed: () => _sendMessage(text),
+                              icon: const Icon(Icons.send),
+                            );
+                          }),
+                    ],
                   ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                StreamBuilder<String>(
-                    stream: _messageController,
-                    initialData: "",
-                    builder: (context, snapshot) {
-                      String text = snapshot.data ?? "";
-                      if (text.isEmpty) {
-                        return const SizedBox();
-                      }
-                      return IconButton(
-                        onPressed: () => _sendMessage(text),
-                        icon: const Icon(Icons.send),
-                      );
-                    }),
-              ],
-            ),
-          )),
+                ));
+          }),
     );
   }
 
