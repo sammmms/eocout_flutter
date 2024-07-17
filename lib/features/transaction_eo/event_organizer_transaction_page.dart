@@ -36,7 +36,10 @@ class _EventOrganizerTransactionPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Status Pemesanan")),
+      appBar: AppBar(
+        scrolledUnderElevation: 0,
+        title: const Text("Status Pemesanan"),
+      ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: 80.0),
         child: Column(

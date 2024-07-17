@@ -44,6 +44,7 @@ class _UserTransactionPageState extends State<UserTransactionPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         title: const Text('Informasi Pembayaran'),
       ),
       body: Column(
