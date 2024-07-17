@@ -6,15 +6,20 @@ import 'package:eocout_flutter/bloc/booking/booking_state.dart';
 import 'package:eocout_flutter/bloc/category/category_bloc.dart';
 import 'package:eocout_flutter/bloc/service/service_bloc.dart';
 import 'package:eocout_flutter/bloc/service/service_state.dart';
+import 'package:eocout_flutter/components/my_confirmation_dialog.dart';
 import 'package:eocout_flutter/components/my_error_component.dart';
 import 'package:eocout_flutter/components/my_homepage_appbar.dart';
+import 'package:eocout_flutter/components/my_loading_dialog.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
+import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/balance_card.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/eo_recommendation_carousel.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/eo_business_carousel_items.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/today_booking_card.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/models/business_data.dart';
+import 'package:eocout_flutter/utils/app_error.dart';
+import 'package:eocout_flutter/utils/status_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -115,6 +120,10 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                         ));
                       }
 
+                      bookings.sort(
+                        (a, b) => StatusUtil.compare(a.status, b.status),
+                      );
+
                       return Skeletonizer(
                         enabled: isLoading,
                         child: ListView.separated(
@@ -128,7 +137,51 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                                 ),
                             itemBuilder: (context, index) {
                               BookingData booking = bookings[index];
-                              return TodayBookingCard(bookingData: booking);
+                              return TodayBookingCard(
+                                bookingData: booking,
+                                onTap: () async {
+                                  Confirmation? confirmOrder = await showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return const MyConfirmationDialog(
+                                          label: "Konfirmasi pesanan ini?",
+                                          subLabel:
+                                              "Konfirmasi bahwa pesanan ini dapat dilakukan pada jadwal yang ditentukan?",
+                                          positiveLabel: "Konfirmasi",
+                                          negativeLabel: "Batal",
+                                        );
+                                      });
+
+                                  if (confirmOrder == Confirmation.positive) {
+                                    if (!context.mounted) return;
+
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            const MyLoadingDialog());
+
+                                    AppError? error = await _bookingBloc
+                                        .confirmBooking(bookingId: booking.id);
+
+                                    if (!context.mounted) return;
+
+                                    Navigator.pop(context);
+
+                                    if (error != null) {
+                                      showMySnackBar(context, error.message,
+                                          SnackbarStatus.error);
+                                      return;
+                                    }
+
+                                    showMySnackBar(
+                                        context,
+                                        "Berhasil mengonfirmasi pesanan.",
+                                        SnackbarStatus.success);
+
+                                    _bookingBloc.getBookingRequest();
+                                  }
+                                },
+                              );
                             }),
                       );
                     }),
