@@ -1,9 +1,6 @@
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
-import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
 import 'package:eocout_flutter/bloc/profile/profile_bloc.dart';
-import 'package:eocout_flutter/features/dashboard_page.dart';
-import 'package:eocout_flutter/features/welcome_page.dart';
-import 'package:eocout_flutter/utils/my_firebase_messaging.dart';
+import 'package:eocout_flutter/splash_page.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +13,9 @@ void main() async {
     if (kDebugMode) {
       print('The .env file has been loaded');
       print('The BASE URL is ${dotenv.env['BASE_URL']}');
+      print('The WS URL is ${dotenv.env['WS_URL']}');
     }
   }
-
-  await MyFirebaseMessaging.initialize();
 
   runApp(const MainApp());
 }
@@ -37,7 +33,6 @@ class _MainAppState extends State<MainApp> {
 
   @override
   void initState() {
-    _authBloc.checkLogin();
     _profileBloc = ProfileBloc(_authBloc);
     super.initState();
   }
@@ -53,17 +48,7 @@ class _MainAppState extends State<MainApp> {
       ],
       child: MaterialApp(
         theme: lightThemeData,
-        home: StreamBuilder<AuthState>(
-            stream: _authBloc.stream,
-            builder: (context, snapshot) {
-              // return const DashboardPage();
-              if (snapshot.hasData) {
-                if (snapshot.data!.user != null) {
-                  return const DashboardPage();
-                }
-              }
-              return const WelcomePage();
-            }),
+        home: const SplashPage(),
       ),
     );
   }
