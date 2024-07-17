@@ -4,7 +4,6 @@ import 'package:eocout_flutter/components/my_background.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/authentication_page.dart';
-import 'package:eocout_flutter/features/authentication/forgot_password%20(unused)/forgot_password_page.dart';
 import 'package:eocout_flutter/features/authentication/register/eo_register_page.dart';
 import 'package:eocout_flutter/features/authentication/register/user_register_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
