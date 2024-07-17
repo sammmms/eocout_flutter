@@ -2,6 +2,8 @@ import 'package:eocout_flutter/bloc/chat/chat_bloc.dart';
 import 'package:eocout_flutter/bloc/chat/chat_state.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/components/my_searchbar.dart';
+import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/chat_page/chat_detail_page.dart';
 import 'package:eocout_flutter/features/chat_page/widget/chat_tile.dart';
 import 'package:eocout_flutter/models/chat_data.dart';
 import 'package:flutter/material.dart';
@@ -91,6 +93,19 @@ class _ChatPageState extends State<ChatPage> {
                             itemBuilder: (context, index) {
                               ChatData chatData = chatList[index];
                               return ChatTile(
+                                onTap: () async {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  await navigateTo(
+                                      context,
+                                      ChatDetailPage(
+                                        conversationId: chatData.conversationId,
+                                        withUser: chatData.withUser,
+                                      ),
+                                      transition:
+                                          TransitionType.slideInFromRight);
+                                  bloc.getChatList();
+                                },
                                 chatData: chatData,
                                 needUnread: !isLoading,
                               );

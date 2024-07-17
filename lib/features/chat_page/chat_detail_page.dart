@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:eocout_flutter/bloc/chat/chat_bloc.dart';
 import 'package:eocout_flutter/bloc/chat/detail_chat_state.dart';
+import 'package:eocout_flutter/components/my_avatar_loader.dart';
 import 'package:eocout_flutter/components/my_error_component.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
