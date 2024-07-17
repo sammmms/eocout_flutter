@@ -4,7 +4,7 @@ import 'package:eocout_flutter/components/my_error_component.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/features/transaction_user/widget/booking_card.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
-import 'package:eocout_flutter/utils/status_util.dart';
+import 'package:eocout_flutter/utils/booking_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -19,22 +19,19 @@ class _UserTransactionPageState extends State<UserTransactionPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final BookingBloc _bookingBloc = BookingBloc();
+  BookingFilter _bookingFilter = BookingFilter.pending();
 
   @override
   void initState() {
-    _bookingBloc.getAllBooking(status: Status.pending);
+    _bookingBloc.getAllBooking(filter: BookingFilter.pending());
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
-        if (_tabController.index == 0) {
-          _bookingBloc.getAllBooking(status: Status.pending);
-        }
+        _bookingFilter = _tabController.index == 0
+            ? BookingFilter.pending()
+            : BookingFilter.completed();
 
-        //
-
-        if (_tabController.index == 1) {
-          _bookingBloc.getAllBooking(status: Status.completed);
-        }
+        _bookingBloc.getAllBooking(filter: _bookingFilter);
       }
     });
     super.initState();
@@ -79,9 +76,7 @@ class _UserTransactionPageState extends State<UserTransactionPage>
   Widget _buildTransactionList() {
     return RefreshIndicator(
       onRefresh: () async {
-        await _bookingBloc.getAllBooking(
-            status:
-                _tabController.index == 0 ? Status.pending : Status.completed);
+        await _bookingBloc.getAllBooking(filter: _bookingFilter);
       },
       child: StreamBuilder<BookingState>(
           stream: _bookingBloc.stream,
@@ -95,10 +90,7 @@ class _UserTransactionPageState extends State<UserTransactionPage>
             if (hasError) {
               return MyErrorComponent(
                 onRefresh: () {
-                  _bookingBloc.getAllBooking(
-                      status: _tabController.index == 0
-                          ? Status.pending
-                          : Status.completed);
+                  _bookingBloc.getAllBooking(filter: _bookingFilter);
                 },
                 error: snapshot.data?.error,
               );
