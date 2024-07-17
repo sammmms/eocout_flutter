@@ -14,7 +14,6 @@ class DurationCountdown extends StatefulWidget {
 class _DurationCountdownState extends State<DurationCountdown> {
   @override
   void initState() {
-    widget.timer.startTimer(30);
     super.initState();
   }
 
