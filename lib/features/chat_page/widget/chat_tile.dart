@@ -3,7 +3,6 @@ import 'package:eocout_flutter/models/chat_data.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 class ChatTile extends StatefulWidget {
   final ChatData chatData;
@@ -22,36 +21,10 @@ class ChatTile extends StatefulWidget {
 
 class _ChatTileState extends State<ChatTile> {
   bool hasRead = false;
-
-  @override
-  void initState() {
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      ChatData chatData = widget.chatData;
-
-      String? lastRead =
-          await Store.getLastRead(widget.chatData.conversationId);
-
-      if (lastRead == null) {
-        return;
-      }
-
-      if (chatData.latestMessageTimestamp.isAfter(DateTime.parse(lastRead))) {
-        setState(() {
-          hasRead = false;
-        });
-      } else {
-        setState(() {
-          hasRead = true;
-        });
-      }
-    });
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    ChatData chatData = widget.chatData;
-    UserData withUser = chatData.withUser;
+    _checkHasRead();
+    UserData withUser = widget.chatData.withUser;
     return ListTile(
         leading: MyAvatarLoader(
           user: withUser,
@@ -59,7 +32,7 @@ class _ChatTileState extends State<ChatTile> {
         title: Text(withUser.fullname.isNotEmpty
             ? withUser.fullname
             : withUser.username),
-        subtitle: Text(chatData.latestMessage),
+        subtitle: Text(widget.chatData.latestMessage),
         onTap: widget.onTap,
         trailing: !hasRead && widget.needUnread
             ? const CircleAvatar(
@@ -67,5 +40,25 @@ class _ChatTileState extends State<ChatTile> {
                 backgroundColor: Colors.blue,
               )
             : null);
+  }
+
+  _checkHasRead() async {
+    if (!widget.needUnread) {
+      return;
+    }
+    String? lastRead = await Store.getLastRead(widget.chatData.conversationId);
+
+    if (lastRead == null) {
+      return;
+    }
+
+    if (DateTime.parse(lastRead)
+        .isAfter(widget.chatData.latestMessageTimestamp)) {
+      if (mounted) {
+        setState(() {
+          hasRead = true;
+        });
+      }
+    }
   }
 }
