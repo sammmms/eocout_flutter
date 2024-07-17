@@ -1,4 +1,5 @@
 import 'package:eocout_flutter/firebase_options.dart';
+import 'package:eocout_flutter/utils/print_error.dart';
 import 'package:eocout_flutter/utils/store.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -17,23 +18,27 @@ class MyFirebaseMessaging {
   static Future<void> initialize() async {
     // Initialize Firebase
 
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.android);
-    // Request notification permission
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    NotificationSettings settings = await messaging.requestPermission();
+    try {
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.android);
+      // Request notification permission
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      NotificationSettings settings = await messaging.requestPermission();
 
-    if (kDebugMode) {
-      print("Notification settings: $settings");
-    }
+      if (kDebugMode) {
+        print("Notification settings: $settings");
+      }
 
-    String? fcmToken = await messaging.getToken();
+      String? fcmToken = await messaging.getToken();
 
-    if (kDebugMode) {
-      print("FCM Token: $fcmToken");
-    }
+      if (kDebugMode) {
+        print("FCM Token: $fcmToken");
+      }
 
-    if (fcmToken != null) {
-      await Store.saveFCMToken(fcmToken);
+      if (fcmToken != null) {
+        await Store.saveFCMToken(fcmToken);
+      }
+    } catch (err) {
+      printError(err, method: "initializing FCM token");
     }
 
     // Initialize local notification
@@ -66,26 +71,30 @@ class MyFirebaseMessaging {
   }
 
   /// Initialize local notification
-  static Future<void> _initializeLocalNotification() {
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
+  static Future<void> _initializeLocalNotification() async {
+    try {
+      FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+          FlutterLocalNotificationsPlugin();
 
-    AndroidInitializationSettings androidInitializationSettings =
-        const AndroidInitializationSettings(
-      'app_icon',
-    );
+      AndroidInitializationSettings androidInitializationSettings =
+          const AndroidInitializationSettings(
+        'app_icon',
+      );
 
-    DarwinInitializationSettings iosInitializationSettings =
-        const DarwinInitializationSettings();
+      DarwinInitializationSettings iosInitializationSettings =
+          const DarwinInitializationSettings();
 
-    InitializationSettings initializationSettings = InitializationSettings(
-      android: androidInitializationSettings,
-      iOS: iosInitializationSettings,
-    );
+      InitializationSettings initializationSettings = InitializationSettings(
+        android: androidInitializationSettings,
+        iOS: iosInitializationSettings,
+      );
 
-    return flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-    );
+      flutterLocalNotificationsPlugin.initialize(
+        initializationSettings,
+      );
+    } catch (err) {
+      printError(err, method: "initializing local notification");
+    }
   }
 
   static Future<void> showNotification(String title, String body) async {
