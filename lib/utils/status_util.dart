@@ -17,4 +17,16 @@ class StatusUtil {
   static String textOf(Status status) {
     return statusMap[status]!;
   }
+
+  static int compare(Status statusA, Status statusB) {
+    bool isGreater =
+        Status.values.indexOf(statusA) > Status.values.indexOf(statusB);
+    bool isEqual =
+        Status.values.indexOf(statusA) == Status.values.indexOf(statusB);
+    return isEqual
+        ? 0
+        : isGreater
+            ? 1
+            : -1;
+  }
 }
