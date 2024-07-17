@@ -2,10 +2,10 @@ import 'package:eocout_flutter/bloc/chat/chat_bloc.dart';
 import 'package:eocout_flutter/bloc/chat/chat_state.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/components/my_searchbar.dart';
-import 'package:eocout_flutter/components/my_transition.dart';
-import 'package:eocout_flutter/features/chat_page/chat_detail_page.dart';
+import 'package:eocout_flutter/features/chat_page/widget/chat_tile.dart';
 import 'package:eocout_flutter/models/chat_data.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ChatPage extends StatefulWidget {
@@ -17,6 +17,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final ChatBloc bloc = ChatBloc();
+  final _searchStream = BehaviorSubject<String>.seeded("");
 
   @override
   void initState() {
@@ -37,74 +38,68 @@ class _ChatPageState extends State<ChatPage> {
             await bloc.getChatList();
           },
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
             child: Column(
               children: [
                 MySearchBar(
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    _searchStream.add(value);
+                  },
                   label: "Search",
                   isRounded: true,
                 ),
                 const SizedBox(height: 20),
-                StreamBuilder<ChatState>(
-                  stream: bloc.stream,
-                  builder: (context, snapshot) {
-                    bool isLoading =
-                        snapshot.data?.isLoading ?? false || !snapshot.hasData;
+                StreamBuilder(
+                  stream: _searchStream.stream,
+                  initialData: "",
+                  builder: (context, searchSnapshot) =>
+                      StreamBuilder<ChatState>(
+                    stream: bloc.stream,
+                    builder: (context, snapshot) {
+                      bool isLoading = snapshot.data?.isLoading ??
+                          false || !snapshot.hasData;
 
-                    if (snapshot.data?.hasError ?? false) {
-                      return const Center(child: Text("Terjadi kesalahan"));
-                    }
+                      if (snapshot.data?.hasError ?? false) {
+                        return const Center(child: Text("Terjadi kesalahan"));
+                      }
 
-                    List<ChatData> chatList = snapshot.data?.chatList ??
-                        List.generate(10, (_) => ChatData.dummy());
+                      List<ChatData> chatList = snapshot.data?.chatList ??
+                          List.generate(10, (_) => ChatData.dummy());
 
-                    if (chatList.isEmpty) {
-                      return const Expanded(
-                        child: MyNoDataComponent(
-                          label: "Tidak ada pesan",
+                      if (chatList.isEmpty) {
+                        return const Expanded(
+                          child: MyNoDataComponent(
+                            label: "Tidak ada pesan",
+                          ),
+                        );
+                      }
+
+                      chatList = chatList.where((element) {
+                        return element.withUser.fullname
+                            .toLowerCase()
+                            .contains(searchSnapshot.data!.toLowerCase());
+                      }).toList();
+
+                      return Expanded(
+                        child: Skeletonizer(
+                          enabled: isLoading,
+                          child: ListView.separated(
+                            itemCount: chatList.length,
+                            shrinkWrap: true,
+                            separatorBuilder: (context, index) =>
+                                const Divider(height: 0),
+                            itemBuilder: (context, index) {
+                              ChatData chatData = chatList[index];
+                              return ChatTile(
+                                chatData: chatData,
+                                needUnread: !isLoading,
+                              );
+                            },
+                          ),
                         ),
                       );
-                    }
-
-                    return Expanded(
-                      child: Skeletonizer(
-                        enabled: isLoading,
-                        child: ListView.separated(
-                          itemCount: chatList.length,
-                          shrinkWrap: true,
-                          separatorBuilder: (context, index) =>
-                              const Divider(height: 0),
-                          itemBuilder: (context, index) {
-                            ChatData chatData = chatList[index];
-                            return ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage:
-                                    chatData.withUser.profilePicture != null
-                                        ? FileImage(
-                                            chatData.withUser.profilePicture!)
-                                        : null,
-                                child: chatData.withUser.profilePicture == null
-                                    ? const Icon(Icons.person)
-                                    : null,
-                              ),
-                              title: Text(chatData.withUser.fullname),
-                              subtitle: Text(chatData.latestMessage),
-                              onTap: () {
-                                navigateTo(
-                                    context,
-                                    ChatDetailPage(
-                                      conversationId: chatData.conversationId,
-                                    ),
-                                    transition:
-                                        TransitionType.slideInFromRight);
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  },
+                    },
+                  ),
                 ),
               ],
             ),
