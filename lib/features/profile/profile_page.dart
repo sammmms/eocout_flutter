@@ -527,9 +527,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
     File image = File(pickedImage.path);
 
-    if (image.readAsBytesSync().lengthInBytes / 1024 / 1024 > 3) {
+    if (image.readAsBytesSync().lengthInBytes / 1024 / 1024 > 2) {
       if (mounted) {
-        showMySnackBar(context, "Ukuran gambar tidak boleh melebihi 3 MB.",
+        showMySnackBar(context, "Ukuran gambar tidak boleh melebihi 2 MB.",
             SnackbarStatus.error);
       }
       return;

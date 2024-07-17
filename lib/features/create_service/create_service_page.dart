@@ -85,16 +85,32 @@ class _AddEventPageState extends State<AddEventPage> {
 
                               if (source == null) return;
 
-                              final image = await ImagePicker().pickImage(
+                              final pickedImage = await ImagePicker().pickImage(
                                 source: source,
                               );
 
-                              if (image != null) {
-                                setState(() {
-                                  editableBusinessData.images
-                                      .add(File(image.path));
-                                });
+                              if (pickedImage == null) {
+                                return;
                               }
+
+                              File image = File(pickedImage.path);
+
+                              int imageSize =
+                                  image.readAsBytesSync().lengthInBytes;
+
+                              if (imageSize / 1024 / 1024 > 2) {
+                                if (context.mounted) {
+                                  showMySnackBar(
+                                      context,
+                                      "Ukuran gambar tidak boleh melebihi 2 MB.",
+                                      SnackbarStatus.error);
+                                }
+                                return;
+                              }
+                              setState(() {
+                                editableBusinessData.images
+                                    .add(File(image.path));
+                              });
                             },
                             child: Container(
                               decoration: BoxDecoration(
