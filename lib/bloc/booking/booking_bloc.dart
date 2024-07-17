@@ -5,6 +5,7 @@ import 'package:eocout_flutter/bloc/booking/booking_state.dart';
 import 'package:eocout_flutter/bloc/image_handle/image_bloc.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
+import 'package:eocout_flutter/utils/booking_filter.dart';
 import 'package:eocout_flutter/utils/dio_interceptor.dart';
 import 'package:eocout_flutter/utils/print_error.dart';
 import 'package:eocout_flutter/utils/status_util.dart';
@@ -49,10 +50,19 @@ class BookingBloc {
 
   BookingState? get state => controller.valueOrNull;
 
-  Future<AppError?> getBookingRequest() async {
+  Future<AppError?> getBookingRequest({BookingFilter? bookingFilter}) async {
     try {
       _updateStream(BookingState.loading());
-      var response = await dio.get('/booking/request');
+
+      String url = '/booking/request';
+
+      if (bookingFilter?.toQuery().isNotEmpty ?? false) {
+        url += '?${bookingFilter?.toQuery()}';
+      }
+
+      if (kDebugMode) print(url);
+
+      var response = await dio.get(url);
 
       var data = response.data['data'];
 
