@@ -106,9 +106,14 @@ class ServiceBloc {
     _updateStream(ServiceState.loading());
     try {
       List<String> mediaIds = [];
+
       for (var image in editableBusinessData.images) {
         final mediaId = await ImageBloc().uploadImage(image);
         mediaIds.add(mediaId);
+      }
+
+      if (mediaIds.isEmpty) {
+        throw "Harus mengirim minimal 1 gambar";
       }
 
       final editableBusinessDataParsed = editableBusinessData.toJson(mediaIds);
