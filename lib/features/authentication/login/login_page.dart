@@ -154,14 +154,14 @@ class _LoginPageState extends State<LoginPage> {
         print("Login data : ${loginData.toJson()}");
       }
       AppError? status = await bloc.login(loginData);
-      if (status == null) {
-        if (!mounted) return;
-        navigateTo(context, const DashboardPage(),
-            transition: TransitionType.fadeIn, clearStack: true);
+      if (!mounted) return;
+      if (status != null) {
+        showMySnackBar(context, status.message, SnackbarStatus.error);
+        return;
+      } else {
+        navigateTo(context, const DashboardPage(), clearStack: true);
         return;
       }
-      if (!mounted) return;
-      showMySnackBar(context, status.message, SnackbarStatus.error);
     }
   }
 }
