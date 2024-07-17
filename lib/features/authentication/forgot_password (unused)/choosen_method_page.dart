@@ -123,12 +123,7 @@ class _ChoosenMethodPageState extends State<ChoosenMethodPage> {
                   label: "Kirim kode OTP",
                   onPressed: () {
                     if (_formKey.currentState?.validate() ?? false) {
-                      navigateTo(
-                          context,
-                          OtpPage(
-                            from: widget,
-                          ),
-                          replace: true);
+                      navigateTo(context, const OtpPage());
                     }
                   },
                 ),
