@@ -1,5 +1,3 @@
-import 'package:eocout_flutter/utils/role_type_util.dart';
-
 class LoginData {
   String email;
   String password;

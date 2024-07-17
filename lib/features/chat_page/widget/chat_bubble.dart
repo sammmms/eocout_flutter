@@ -2,6 +2,7 @@ import 'package:eocout_flutter/models/chat_message_data.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 class ChatBubbleComponent extends StatelessWidget {
   final ChatMessageData chatMessageData;
@@ -43,11 +44,20 @@ class ChatBubbleComponent extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 5),
-                Text(
-                  chatMessageData.content,
-                  style: TextStyle(
-                    color: chatMessageData.isMe ? Colors.white : Colors.white,
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (chatMessageData.isLoading)
+                      Lottie.asset("assets/lottie/loading_animation.json",
+                          width: 30),
+                    Text(
+                      chatMessageData.content,
+                      style: TextStyle(
+                        color:
+                            chatMessageData.isMe ? Colors.white : Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
                 if (chatMessageData.hasError) ...[
                   const SizedBox(height: 5),

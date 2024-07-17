@@ -15,7 +15,7 @@ class ChatMessageData {
 
   factory ChatMessageData.fromJson(Map<String, dynamic> json) {
     return ChatMessageData(
-      content: json['content'],
+      content: json['content'] ?? "",
       createdAt: DateTime.parse(json['created_at']).toLocal(),
       isMe: json['is_me'],
     );
