@@ -9,10 +9,9 @@ class NotificationTypeUtil {
     NotificationType.payment: 'payment',
   };
 
-  static NotificationType fromString(String value) {
-    return notificationTypeMap.keys.firstWhereOrNull(
-            (element) => notificationTypeMap[element] == value) ??
-        NotificationType.userBooking;
+  static NotificationType? fromString(String? value) {
+    return notificationTypeMap.keys
+        .firstWhereOrNull((element) => notificationTypeMap[element] == value);
   }
 
   static String textOf(NotificationType value) {
