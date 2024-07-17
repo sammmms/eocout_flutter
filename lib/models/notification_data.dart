@@ -18,7 +18,8 @@ class NotificationData {
       id: json['id'],
       content: json['content'],
       createdAt: DateTime.parse(json['created_at']).toLocal(),
-      type: NotificationTypeUtil.fromString(json['notification_type']),
+      type: NotificationTypeUtil.fromString(json['notification_type']) ??
+          NotificationType.chat,
     );
   }
 
