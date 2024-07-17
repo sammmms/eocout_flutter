@@ -7,6 +7,15 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(
+  RemoteMessage message,
+) async {
+  if (kDebugMode) {
+    print("Handling a background message: ${message.messageId}");
+  }
+}
+
 class MyFirebaseMessaging {
   static const channel = AndroidNotificationChannel(
     'high_importance_channel',
@@ -138,14 +147,5 @@ class MyFirebaseMessaging {
       body,
       notificationDetails,
     );
-  }
-
-  @pragma('vm:entry-point')
-  Future<void> _firebaseMessagingBackgroundHandler(
-    RemoteMessage message,
-  ) async {
-    if (kDebugMode) {
-      print("Handling a background message: ${message.messageId}");
-    }
   }
 }
