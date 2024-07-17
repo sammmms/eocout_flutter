@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:eocout_flutter/models/profile_data.dart';
+import 'package:eocout_flutter/models/register_data.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
 
 class UserData {
@@ -116,6 +117,21 @@ class UserData {
       email: '',
       address: '',
       role: UserRole.user,
+      profilePicture: null,
+      isEmailVerified: false,
+      pictureId: '',
+      profileData: ProfileData.empty(),
+    );
+  }
+
+  factory UserData.fromRegisterData(RegisterData data) {
+    return UserData(
+      userId: '',
+      username: data.username,
+      fullname: '',
+      email: data.email,
+      address: '',
+      role: data.role,
       profilePicture: null,
       isEmailVerified: false,
       pictureId: '',
