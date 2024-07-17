@@ -50,4 +50,14 @@ class Store {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("resendOTPTime");
   }
+
+  static Future<void> saveLastRead(String chatId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("lastRead/$chatId", DateTime.now().toIso8601String());
+  }
+
+  static Future<String?> getLastRead(String chatId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString("lastRead/$chatId");
+  }
 }
