@@ -65,7 +65,7 @@ class _MyBusinessCategoryDropdownState
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: isLoading
-                ? const Text("Memuat kategori...")
+                ? const Center(child: Text("Memuat kategori..."))
                 : DropdownButtonHideUnderline(
                     child: DropdownButton(
                       borderRadius: BorderRadius.circular(20),

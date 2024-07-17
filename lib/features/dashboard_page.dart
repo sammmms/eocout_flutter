@@ -3,6 +3,7 @@ import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/bloc/profile/profile_bloc.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/authentication/register/otp_page.dart';
 import 'package:eocout_flutter/features/profile/eo_edit_detail_page.dart';
 import 'package:eocout_flutter/features/create_service/create_service_page.dart';
 import 'package:eocout_flutter/features/chat_page/chat_page.dart';
@@ -69,25 +70,41 @@ class _DashboardPageState extends State<DashboardPage> {
     bloc = context.read<AuthBloc>();
     user =
         bloc.stream.value.user ?? UserData.dummy(role: UserRole.eventOrganizer);
-    if (user.role != UserRole.eventOrganizer) {
-      pageItem.remove(NavigationItem.addEvent);
-    }
+
+    bool isEmailVerified = user.isEmailVerified;
+
     // Check for profile data validity
-    else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        UserData? userData =
-            context.read<ProfileBloc>().controller.valueOrNull?.profile;
 
-        if (userData == null) {
-          showMySnackBar(
-              context,
-              "Terjadi kesalahan autentikasi, harap login kembali.",
-              SnackbarStatus.error);
-          navigateTo(context, const WelcomePage(),
-              transition: TransitionType.slideInFromBottom, clearStack: true);
-          return;
-        }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!isEmailVerified) {
+        showMySnackBar(
+            context, "Email kamu belum terverifikasi.", SnackbarStatus.error);
+        navigateTo(
+            context,
+            const OtpPage(
+              from: DashboardPage(),
+            ),
+            transition: TransitionType.slideInFromBottom,
+            clearStack: true);
+        return;
+      }
 
+      UserData? userData =
+          context.read<ProfileBloc>().controller.valueOrNull?.profile;
+
+      if (userData == null) {
+        showMySnackBar(
+            context,
+            "Terjadi kesalahan autentikasi, harap login kembali.",
+            SnackbarStatus.error);
+        navigateTo(context, const WelcomePage(),
+            transition: TransitionType.slideInFromBottom, clearStack: true);
+        return;
+      }
+
+      if (user.role != UserRole.eventOrganizer) {
+        pageItem.remove(NavigationItem.addEvent);
+      } else {
         bool isRequiredFilled =
             userData.profileData?.isRequiredFilled() ?? false;
 
@@ -98,8 +115,8 @@ class _DashboardPageState extends State<DashboardPage> {
               transition: TransitionType.slideInFromBottom);
           return;
         }
-      });
-    }
+      }
+    });
 
     _pageController.addListener(() {
       if (_selectedPage.value != _pageController.page!.round()) {

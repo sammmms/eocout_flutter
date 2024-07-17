@@ -4,7 +4,6 @@ import 'package:eocout_flutter/components/my_background.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/authentication_page.dart';
-import 'package:eocout_flutter/features/authentication/forgot_password/forgot_password_page.dart';
 import 'package:eocout_flutter/features/authentication/register/eo_register_page.dart';
 import 'package:eocout_flutter/features/authentication/register/user_register_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
@@ -131,14 +130,14 @@ class _LoginPageState extends State<LoginPage> {
                           }),
                       const AuthButtonDivider(),
                       const GoogleAuthButton(),
-                      Center(
-                        child: TextButton(
-                            onPressed: () {
-                              navigateTo(context, const ForgotPasswordPage(),
-                                  transition: TransitionType.slideInFromBottom);
-                            },
-                            child: const Text('Lupa password? ')),
-                      ),
+                      // Center(
+                      //   child: TextButton(
+                      //       onPressed: () {
+                      //         navigateTo(context, const ForgotPasswordPage(),
+                      //             transition: TransitionType.slideInFromBottom);
+                      //       },
+                      //       child: const Text('Lupa password? ')),
+                      // ),
                     ],
                   ),
                 )
@@ -157,14 +156,14 @@ class _LoginPageState extends State<LoginPage> {
         print("Login data : ${loginData.toJson()}");
       }
       AppError? status = await bloc.login(loginData);
-      if (status == null) {
-        if (!mounted) return;
-        navigateTo(context, const DashboardPage(),
-            transition: TransitionType.fadeIn, clearStack: true);
+      if (!mounted) return;
+      if (status != null) {
+        showMySnackBar(context, status.message, SnackbarStatus.error);
+        return;
+      } else {
+        navigateTo(context, const DashboardPage(), clearStack: true);
         return;
       }
-      if (!mounted) return;
-      showMySnackBar(context, status.message, SnackbarStatus.error);
     }
   }
 }

@@ -1,17 +1,25 @@
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
+import 'package:eocout_flutter/bloc/balance/balance_bloc.dart';
+import 'package:eocout_flutter/bloc/balance/balance_state.dart';
 import 'package:eocout_flutter/bloc/booking/booking_bloc.dart';
 import 'package:eocout_flutter/bloc/booking/booking_state.dart';
 import 'package:eocout_flutter/bloc/category/category_bloc.dart';
 import 'package:eocout_flutter/bloc/service/service_bloc.dart';
 import 'package:eocout_flutter/bloc/service/service_state.dart';
+import 'package:eocout_flutter/components/my_confirmation_dialog.dart';
 import 'package:eocout_flutter/components/my_error_component.dart';
 import 'package:eocout_flutter/components/my_homepage_appbar.dart';
+import 'package:eocout_flutter/components/my_loading_dialog.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
+import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/balance_card.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/eo_recommendation_carousel.dart';
-import 'package:eocout_flutter/features/service_detail/service_detail_page.dart';
+import 'package:eocout_flutter/features/homepage_eo/widget/eo_business_carousel_items.dart';
+import 'package:eocout_flutter/features/homepage_eo/widget/today_booking_card.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/models/business_data.dart';
+import 'package:eocout_flutter/utils/app_error.dart';
+import 'package:eocout_flutter/utils/status_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,12 +36,14 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
   final _categoryBloc = CategoryBloc();
   final _bookingBloc = BookingBloc();
   final _serviceBloc = ServiceBloc();
+  final _balanceBloc = BalanceBloc();
 
   @override
   void initState() {
     _categoryBloc.getCategories();
-    _bookingBloc.getBookings();
+    _bookingBloc.getBookingRequest();
     _serviceBloc.getOwnService();
+    _balanceBloc.getBalance();
     super.initState();
   }
 
@@ -44,7 +54,7 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
         body: RefreshIndicator(
           onRefresh: () async {
             await _categoryBloc.getCategories();
-            await _bookingBloc.getBookings();
+            await _bookingBloc.getBookingRequest();
             await _serviceBloc.getOwnService();
           },
           child: SingleChildScrollView(
@@ -58,7 +68,21 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                 const SizedBox(
                   height: 40,
                 ),
-                const BalanceCard(),
+                StreamBuilder<BalanceState>(
+                    stream: _balanceBloc.stream,
+                    builder: (context, snapshot) {
+                      bool isLoading = snapshot.data?.isLoading ??
+                          false || !snapshot.hasData;
+
+                      bool hasError = snapshot.data?.hasError ?? false;
+                      return Skeletonizer(
+                          enabled: isLoading,
+                          child: BalanceCard(
+                            balance: snapshot.data?.currentBalance,
+                            hasError: hasError,
+                            onRefreshBalance: () => _balanceBloc.getBalance(),
+                          ));
+                    }),
                 const SizedBox(
                   height: 20,
                 ),
@@ -80,7 +104,7 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                       if (hasError) {
                         return MyErrorComponent(
                           onRefresh: () {
-                            _bookingBloc.getBookings();
+                            _bookingBloc.getBookingRequest();
                           },
                           error: snapshot.data?.error,
                         );
@@ -96,18 +120,67 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                         ));
                       }
 
+                      bookings.sort(
+                        (a, b) => StatusUtil.compare(a.status, b.status),
+                      );
+
                       return Skeletonizer(
                         enabled: isLoading,
-                        child: ListView.builder(
+                        child: ListView.separated(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount:
                                 bookings.length > 5 ? 5 : bookings.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(
+                                  height: 10,
+                                ),
                             itemBuilder: (context, index) {
                               BookingData booking = bookings[index];
-                              return ListTile(
-                                title: Text(booking.businessData.name),
-                                subtitle: Text(booking.bookingDate.toString()),
+                              return TodayBookingCard(
+                                bookingData: booking,
+                                onTap: () async {
+                                  Confirmation? confirmOrder = await showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return const MyConfirmationDialog(
+                                          label: "Konfirmasi pesanan ini?",
+                                          subLabel:
+                                              "Konfirmasi bahwa pesanan ini dapat dilakukan pada jadwal yang ditentukan?",
+                                          positiveLabel: "Konfirmasi",
+                                          negativeLabel: "Batal",
+                                        );
+                                      });
+
+                                  if (confirmOrder == Confirmation.positive) {
+                                    if (!context.mounted) return;
+
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            const MyLoadingDialog());
+
+                                    AppError? error = await _bookingBloc
+                                        .confirmBooking(bookingId: booking.id);
+
+                                    if (!context.mounted) return;
+
+                                    Navigator.pop(context);
+
+                                    if (error != null) {
+                                      showMySnackBar(context, error.message,
+                                          SnackbarStatus.error);
+                                      return;
+                                    }
+
+                                    showMySnackBar(
+                                        context,
+                                        "Berhasil mengonfirmasi pesanan.",
+                                        SnackbarStatus.success);
+
+                                    _bookingBloc.getBookingRequest();
+                                  }
+                                },
                               );
                             }),
                       );
@@ -166,60 +239,14 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                           child: CarouselSlider.builder(
                               itemCount: businessData.length,
                               options: CarouselOptions(
-                                autoPlay: true,
-                                aspectRatio: 16 / 9,
-                                enlargeCenterPage: true,
-                              ),
+                                  autoPlay: true,
+                                  aspectRatio: 16 / 9,
+                                  viewportFraction: 1,
+                                  enableInfiniteScroll: false),
                               itemBuilder: (context, index, _) {
                                 BusinessData business = businessData[index];
-                                return GestureDetector(
-                                  onTap: () {
-                                    showModalBottomSheet(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        useSafeArea: true,
-                                        builder: (context) => SafeArea(
-                                              child: ClipRRect(
-                                                borderRadius: const BorderRadius
-                                                    .vertical(
-                                                    top: Radius.circular(20)),
-                                                child: ServiceDetailPage(
-                                                  businessData: business,
-                                                ),
-                                              ),
-                                            ));
-                                  },
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      SizedBox(
-                                          width: double.infinity,
-                                          height: 400,
-                                          child: business.images.isEmpty
-                                              ? Image.asset(
-                                                  "assets/images/placeholder.png",
-                                                  width: double.infinity,
-                                                )
-                                              : Image.memory(
-                                                  business.images.first
-                                                      .readAsBytesSync(),
-                                                  fit: BoxFit.cover,
-                                                  width: double.infinity,
-                                                )),
-                                      Container(
-                                        color: Colors.black.withOpacity(0.2),
-                                      ),
-                                      Positioned(
-                                        bottom: 20,
-                                        child: Text(
-                                          business.name,
-                                          style: textTheme.headlineMedium!
-                                              .copyWith(color: Colors.white),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                );
+                                return EOBusinessCarouselItem(
+                                    business: business);
                               }));
                     })
               ],

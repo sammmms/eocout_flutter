@@ -96,7 +96,7 @@ class ServiceBloc {
 
       _updateStream(ServiceState.success(businessData));
     } catch (err) {
-      printError(err);
+      printError(err, method: 'getServices');
       _updateError(err);
     }
   }
@@ -106,9 +106,14 @@ class ServiceBloc {
     _updateStream(ServiceState.loading());
     try {
       List<String> mediaIds = [];
+
       for (var image in editableBusinessData.images) {
         final mediaId = await ImageBloc().uploadImage(image);
         mediaIds.add(mediaId);
+      }
+
+      if (mediaIds.isEmpty) {
+        throw "Harus mengirim minimal 1 gambar";
       }
 
       final editableBusinessDataParsed = editableBusinessData.toJson(mediaIds);
@@ -130,7 +135,7 @@ class ServiceBloc {
 
       return null;
     } catch (err) {
-      printError(err);
+      printError(err, method: 'createService');
       return _updateError(err);
     }
   }
@@ -177,7 +182,7 @@ class ServiceBloc {
 
       _updateStream(ServiceState.success(businessData));
     } catch (err) {
-      printError(err);
+      printError(err, method: 'getOwnService');
       _updateError(err);
     }
   }
@@ -199,7 +204,7 @@ class ServiceBloc {
 
       return null;
     } catch (err) {
-      printError(err);
+      printError(err, method: 'deleteService');
       return _updateError(err);
     }
   }

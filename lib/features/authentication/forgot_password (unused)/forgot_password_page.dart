@@ -1,7 +1,7 @@
 import 'package:eocout_flutter/components/my_background.dart';
 import 'package:eocout_flutter/components/my_button_textfield.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
-import 'package:eocout_flutter/features/authentication/forgot_password/choosen_method_page.dart';
+import 'package:eocout_flutter/features/authentication/forgot_password%20(unused)/choosen_method_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
 import 'package:eocout_flutter/models/register_data.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';

@@ -13,6 +13,7 @@ import 'package:eocout_flutter/features/authentication/widget/password_text_fiel
 import 'package:eocout_flutter/models/register_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/data.dart';
+import 'package:eocout_flutter/utils/store.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +28,7 @@ class UserRegisterPage extends StatefulWidget {
 class _UserRegisterPageState extends State<UserRegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
-  final registerData = RegisterData();
+  final registerSubject = RegisterData();
   late AuthBloc bloc;
 
   @override
@@ -78,7 +79,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                         labelText: 'Username',
                       ),
                       onChanged: (value) {
-                        registerData.username = value;
+                        registerSubject.username = value;
                       },
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
@@ -99,7 +100,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                         labelText: 'Email',
                       ),
                       onChanged: (value) {
-                        registerData.email = value;
+                        registerSubject.email = value;
                       },
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
@@ -117,7 +118,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                     ),
                     PasswordTextField(
                       onChanged: (value) {
-                        registerData.password = value;
+                        registerSubject.password = value;
                       },
                     ),
                     const SizedBox(
@@ -165,22 +166,20 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
 
   void _registerUser() async {
     if (_formKey.currentState?.validate() ?? false) {
-      AppError? status = await bloc.register(registerData);
+      AppError? status = await bloc.register(registerSubject);
+      if (!mounted) return;
       if (status == null) {
+        showMySnackBar(
+            context,
+            "Registrasi berhasil, silahkan login kembali untuk verifikasi",
+            SnackbarStatus.success);
+        await Store.saveResendOTPTime();
         if (!mounted) return;
-        navigateTo(
-          context,
-          const OtpPage(),
-          transition: TransitionType.fadeIn,
-        );
+        navigateTo(context, const OtpPage(from: UserRegisterPage()),
+            transition: TransitionType.slideInFromBottom, replace: true);
         return;
       }
-      if (!mounted) return;
-      showMySnackBar(
-        context,
-        status.message,
-        SnackbarStatus.error,
-      );
+      showMySnackBar(context, status.message, SnackbarStatus.error);
     }
   }
 }

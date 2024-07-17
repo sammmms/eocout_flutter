@@ -37,7 +37,10 @@ class ChatBubbleComponent extends StatelessWidget {
                   : CrossAxisAlignment.start,
               children: [
                 Text(
-                  DateFormat("HH:mm").format(chatMessageData.createdAt),
+                  isToday(chatMessageData.createdAt)
+                      ? DateFormat("HH:mm").format(chatMessageData.createdAt)
+                      : DateFormat("dd MMM yyyy HH:mm")
+                          .format(chatMessageData.createdAt),
                   style: TextStyle(
                     color: chatMessageData.isMe ? Colors.white : Colors.white,
                     fontSize: 12,
@@ -98,5 +101,12 @@ class ChatBubbleComponent extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  bool isToday(DateTime date) {
+    final now = DateTime.now();
+    return now.day == date.day &&
+        now.month == date.month &&
+        now.year == date.year;
   }
 }

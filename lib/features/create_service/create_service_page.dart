@@ -51,7 +51,7 @@ class _AddEventPageState extends State<AddEventPage> {
           child: Center(
               child: SingleChildScrollView(
             controller: _scrollController,
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
             child: Form(
               key: _formKey,
               child: Column(
@@ -303,7 +303,7 @@ class _AddEventPageState extends State<AddEventPage> {
                       onPressed: () async {
                         if (!_formKey.currentState!.validate()) return;
 
-                        FocusScope.of(context).unfocus();
+                        FocusScope.of(context).requestFocus(FocusNode());
 
                         showDialog(
                             context: context,
@@ -332,7 +332,6 @@ class _AddEventPageState extends State<AddEventPage> {
                         _locationTEC.clear();
                         _companyNameTEC.clear();
 
-                        FocusScope.of(context).requestFocus(FocusNode());
                         context.read<PageController>().jumpToPage(0);
                       },
                       child: const Text("Daftarkan Layanan"),

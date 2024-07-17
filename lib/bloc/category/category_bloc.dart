@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:eocout_flutter/bloc/category/category_state.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
+import 'package:eocout_flutter/utils/print_error.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:rxdart/rxdart.dart';
@@ -59,6 +60,7 @@ class CategoryBloc {
 
       _updateStream(CategoryState.success(categories));
     } catch (err) {
+      printError(err, method: "getCategories");
       _updateError(err);
     }
   }

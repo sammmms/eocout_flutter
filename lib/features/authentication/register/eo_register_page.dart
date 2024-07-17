@@ -13,6 +13,8 @@ import 'package:eocout_flutter/features/authentication/widget/password_text_fiel
 import 'package:eocout_flutter/models/register_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/data.dart';
+import 'package:eocout_flutter/utils/role_type_util.dart';
+import 'package:eocout_flutter/utils/store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +27,7 @@ class EORegisterPage extends StatefulWidget {
 
 class _EORegisterPageState extends State<EORegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final registerSubject = RegisterData();
+  final registerSubject = RegisterData(role: UserRole.eventOrganizer);
   late AuthBloc bloc;
 
   @override
@@ -148,16 +150,18 @@ class _EORegisterPageState extends State<EORegisterPage> {
   void _registerEO() async {
     if (_formKey.currentState!.validate()) {
       AppError? status = await bloc.register(registerSubject);
+      if (!mounted) return;
       if (status == null) {
+        showMySnackBar(
+            context,
+            "Registrasi berhasil, silahkan login kembali untuk verifikasi",
+            SnackbarStatus.success);
+        await Store.saveResendOTPTime();
         if (!mounted) return;
-        navigateTo(
-          context,
-          const OtpPage(),
-          transition: TransitionType.fadeIn,
-        );
+        navigateTo(context, const OtpPage(from: EORegisterPage()),
+            transition: TransitionType.slideInFromBottom, replace: true);
         return;
       }
-      if (!mounted) return;
       showMySnackBar(context, status.message, SnackbarStatus.error);
     }
   }

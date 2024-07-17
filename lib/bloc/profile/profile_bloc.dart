@@ -60,7 +60,7 @@ class ProfileBloc {
       await authBloc.refreshProfile();
       return null;
     } catch (err) {
-      printError(err);
+      printError(err, method: "updateProfile");
       return _updateError(err);
     }
   }

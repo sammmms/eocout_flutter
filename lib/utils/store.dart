@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:eocout_flutter/models/user_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Store {
@@ -9,37 +6,59 @@ class Store {
     prefs.setString("token", token);
   }
 
-  static Future<String?> getToken() async {
+  static Future<String> getToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString("token");
+    return prefs.getString("token") ?? "";
   }
 
-  static Future<void> removeToken() async {
+  static Future<String> removeToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token") ?? "";
     prefs.remove("token");
+    return token;
   }
 
-  static Future<void> saveUser(UserData user) async {
+  static clearAuthenticationStore() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String encodedUser = jsonEncode(user.toJson());
-    prefs.setString("user", encodedUser);
+    prefs.remove('token');
+    prefs.remove('resendOTPTime');
   }
 
-  static Future<UserData?> getUser() async {
+  static Future<void> saveFCMToken(String token) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? encodedUser = prefs.getString("user");
-    if (encodedUser == null) return null;
-    Map<String, dynamic> userMap = jsonDecode(encodedUser);
-    return UserData.fromJson(userMap);
+    prefs.setString("fcmToken", token);
   }
 
-  static Future<void> removeUser() async {
+  static Future<String> getFCMToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove("user");
+    return prefs.getString("fcmToken") ?? "";
   }
 
-  static clearStore() async {
+  static Future<void> saveResendOTPTime() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
+    DateTime time = DateTime.now().add(const Duration(seconds: 60));
+    prefs.setString("resendOTPTime", time.toIso8601String());
+  }
+
+  static Future<DateTime?> getResendOTPTime() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? time = prefs.getString("resendOTPTime");
+    if (time == null) return null;
+    return DateTime.parse(time);
+  }
+
+  static Future<void> removeResendOTPTime() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("resendOTPTime");
+  }
+
+  static Future<void> saveLastRead(String chatId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("lastRead/$chatId", DateTime.now().toIso8601String());
+  }
+
+  static Future<String?> getLastRead(String chatId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString("lastRead/$chatId");
   }
 }

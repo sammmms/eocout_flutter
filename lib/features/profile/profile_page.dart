@@ -4,6 +4,7 @@ import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_state.dart';
 import 'package:eocout_flutter/bloc/category/category_state.dart';
 import 'package:eocout_flutter/bloc/profile/profile_bloc.dart';
+import 'package:eocout_flutter/components/my_avatar_loader.dart';
 import 'package:eocout_flutter/components/my_confirmation_dialog.dart';
 import 'package:eocout_flutter/components/my_error_component.dart';
 import 'package:eocout_flutter/components/my_loading_dialog.dart';
@@ -304,17 +305,21 @@ class _ProfilePageState extends State<ProfilePage> {
                           const SizedBox(
                             height: 20,
                           ),
-                          GestureDetector(
+                          InkWell(
                               onTap: () {
                                 _authBloc.logout();
                                 navigateTo(context, const WelcomePage(),
                                     clearStack: true);
                               },
-                              child: Text(
-                                "Keluar",
-                                style: textTheme.labelLarge!.copyWith(
-                                    color: colorScheme.onSurface,
-                                    fontWeight: FontWeight.w400),
+                              child: Container(
+                                width: double.infinity,
+                                color: Colors.transparent,
+                                child: Text(
+                                  "Keluar",
+                                  style: textTheme.labelLarge!.copyWith(
+                                      color: colorScheme.error,
+                                      fontWeight: FontWeight.w400),
+                                ),
                               ))
                         ]
                       ],
@@ -542,29 +547,8 @@ class _ProfilePageState extends State<ProfilePage> {
           child: GestureDetector(
             onTap: isEdit ? _pickImage : null,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(200),
-              child: CircleAvatar(
-                radius: 80,
-                child: isEdit && editableUserData.picture != null
-                    ? Image.file(
-                        editableUserData.picture!,
-                        fit: BoxFit.cover,
-                        height: 200,
-                        width: 200,
-                      )
-                    : user.profilePicture == null
-                        ? const Icon(
-                            Icons.person,
-                            size: 80,
-                          )
-                        : Image.file(
-                            user.profilePicture!,
-                            fit: BoxFit.cover,
-                            height: 200,
-                            width: 200,
-                          ),
-              ),
-            ),
+                borderRadius: BorderRadius.circular(200),
+                child: MyAvatarLoader(user: user, radius: 80)),
           ),
         ),
         Positioned(

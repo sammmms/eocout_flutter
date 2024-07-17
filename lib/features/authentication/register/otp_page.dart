@@ -1,17 +1,23 @@
+import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/components/my_background.dart';
 import 'package:eocout_flutter/components/my_duration_countdown.dart';
+import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
-import 'package:eocout_flutter/features/authentication/forgot_password/choosen_method_page.dart';
-import 'package:eocout_flutter/features/authentication/forgot_password/reset_password_page.dart';
 import 'package:eocout_flutter/features/authentication/login/login_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
+import 'package:eocout_flutter/features/dashboard_page.dart';
+import 'package:eocout_flutter/features/welcome_page.dart';
+import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/countdown_timer.dart';
+import 'package:eocout_flutter/utils/store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:pinput/pinput.dart';
+import 'package:provider/provider.dart';
 
 class OtpPage extends StatefulWidget {
   final Widget? from;
-  const OtpPage({super.key, this.from});
+  const OtpPage({super.key, required this.from});
 
   @override
   State<OtpPage> createState() => _OtpPageState();
@@ -21,10 +27,40 @@ class _OtpPageState extends State<OtpPage> {
   final _formKey = GlobalKey<FormState>();
   final _pinInput = TextEditingController();
   final _timer = CountdownTimer();
+  late AuthBloc _authBloc;
+  String? token;
+
+  @override
+  void initState() {
+    _authBloc = context.read<AuthBloc>();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      // Remove token on land to page OTP, to prevent user from going to this page on launch (when not verified)
+      token = await Store.removeToken();
+
+      DateTime? resendTime = await Store.getResendOTPTime();
+
+      // Check if resend time is not null
+      if (resendTime != null) {
+        int diff = resendTime.difference(DateTime.now()).inSeconds;
+        if (diff > 0) {
+          _timer.startTimer(diff);
+          return;
+        } else {
+          await Store.removeResendOTPTime();
+        }
+      }
+
+      _trySendOTPCode();
+    });
+
+    super.initState();
+  }
 
   @override
   void dispose() {
     _pinInput.dispose();
+    _timer.cancelTimer();
     super.dispose();
   }
 
@@ -34,11 +70,27 @@ class _OtpPageState extends State<OtpPage> {
       body: Form(
         child: Column(
           children: [
-            const Expanded(
+            Expanded(
                 flex: 3,
-                child: LogoWithTitle(
-                  title: 'Verifikasi OTP',
-                  subtitle: 'Masukkan kode OTP yang dikirimkan ke email Anda.',
+                child: Stack(
+                  children: [
+                    const LogoWithTitle(
+                      title: 'Verifikasi OTP',
+                      subtitle:
+                          'Masukkan kode OTP yang dikirimkan ke email Anda.',
+                    ),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () {
+                          navigateTo(context, const WelcomePage(),
+                              clearStack: true);
+                        },
+                      ),
+                    ),
+                  ],
                 )),
             Form(
               key: _formKey,
@@ -52,9 +104,10 @@ class _OtpPageState extends State<OtpPage> {
                       ),
                       Pinput(
                         controller: _pinInput,
+                        length: 6,
                         onChanged: (value) {
-                          if (value.length == 4) {
-                            FocusScope.of(context).unfocus();
+                          if (value.length == 6) {
+                            FocusScope.of(context).requestFocus(FocusNode());
                             _validateAndNavigate();
                           }
                         },
@@ -93,15 +146,16 @@ class _OtpPageState extends State<OtpPage> {
                                 return Text(
                                     'Kirim ulang kode dalam $remainingTime detik');
                               }),
+                          const SizedBox(
+                            width: 10,
+                          ),
                           StreamBuilder<int>(
                               stream: _timer.timer,
                               builder: (context, snapshot) {
                                 return TextButton(
                                   onPressed: (snapshot.data ?? 0) > 0
                                       ? null
-                                      : () {
-                                          _timer.startTimer(30);
-                                        },
+                                      : _trySendOTPCode,
                                   child: const Text('Kirim kode'),
                                 );
                               }),
@@ -118,18 +172,57 @@ class _OtpPageState extends State<OtpPage> {
     );
   }
 
-  void _validateAndNavigate() {
+  void _validateAndNavigate() async {
     if (_formKey.currentState!.validate()) {
-      if (widget.from is ChoosenMethodPage) {
-        navigateTo(context, const ResetPasswordPage(), replace: true);
+      AppError? error = await _authBloc.verifyEmail(_pinInput.text);
+
+      if (!mounted) return;
+      if (error != null) {
+        showMySnackBar(context, error.message, SnackbarStatus.error);
+        return;
+      }
+
+      showMySnackBar(
+          context, "Email berhasil diverfiikasi", SnackbarStatus.success);
+
+      await Store.saveToken(token!);
+
+      var response = await _authBloc.checkLogin();
+
+      if (!mounted) return;
+
+      if (response is AppError) {
+        showMySnackBar(context, response.message, SnackbarStatus.error);
+        return;
+      }
+
+      if (widget.from is DashboardPage) {
+        navigateTo(context, const DashboardPage(), clearStack: true);
       } else {
-        navigateTo(
-            context,
-            LoginPage(
-              from: widget,
-            ),
-            clearStack: true);
+        navigateTo(context, const LoginPage(), replace: true);
       }
     }
+  }
+
+  void _trySendOTPCode() async {
+    AppError? error = await _authBloc.resendOTPCode();
+
+    if (!mounted) return;
+
+    if (error != null) {
+      showMySnackBar(context, error.message, SnackbarStatus.error);
+      if (error.code == 401) {
+        navigateTo(context, const WelcomePage(), clearStack: true);
+        return;
+      }
+      return;
+    }
+
+    _timer.startTimer(60);
+
+    showMySnackBar(
+        context,
+        "Kode OTP dikirim ke email anda. \nSilahkan cek email anda.",
+        SnackbarStatus.success);
   }
 }

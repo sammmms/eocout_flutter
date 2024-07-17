@@ -25,6 +25,7 @@ class EOEditBusinessDataPage extends StatefulWidget {
 
 class _EOEditBusinessDataPageState extends State<EOEditBusinessDataPage> {
   final _formKey = GlobalKey<FormState>();
+  final _nibTEC = TextEditingController();
   late ProfileBloc bloc;
   late EditableProfileData profileData;
 
@@ -32,6 +33,7 @@ class _EOEditBusinessDataPageState extends State<EOEditBusinessDataPage> {
   void initState() {
     bloc = context.read<ProfileBloc>();
     profileData = context.read<EditableProfileData>();
+    _nibTEC.text = profileData.businessIdentityNumber;
     super.initState();
   }
 
@@ -56,6 +58,7 @@ class _EOEditBusinessDataPageState extends State<EOEditBusinessDataPage> {
                       height: 10,
                     ),
                     TextFormField(
+                      controller: _nibTEC,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: const InputDecoration(
                         label: MyImportantText('NIB (Nomor Induk Berusaha)'),
