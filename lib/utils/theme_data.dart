@@ -206,6 +206,7 @@ ThemeData lightThemeData = ThemeData(
   appBarTheme: AppBarTheme(
     backgroundColor: colorScheme.surface,
     elevation: 0,
+    scrolledUnderElevation: 0,
     titleTextStyle: textTheme.headlineSmall,
     iconTheme: IconThemeData(
       color: colorScheme.onSurface,
