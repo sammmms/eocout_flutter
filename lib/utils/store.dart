@@ -61,4 +61,16 @@ class Store {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString("lastRead/$chatId");
   }
+
+  static Future<void> saveLastSeenNotification() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("lastSeenNotification", DateTime.now().toIso8601String());
+  }
+
+  static Future<DateTime?> getLastSeenNotification() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? time = prefs.getString("lastSeenNotification");
+    if (time == null) return null;
+    return DateTime.parse(time);
+  }
 }
