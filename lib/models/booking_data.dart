@@ -24,6 +24,9 @@ class BookingData {
 
   bool get isPaid => paymentStatus == PaymentStatus.completed;
 
+  bool get isComplete =>
+      status == Status.completed && paymentStatus == PaymentStatus.completed;
+
   factory BookingData.fromJson(Map<String, dynamic> json,
       {List<File>? serviceImage, File? profilePic}) {
     return BookingData(
