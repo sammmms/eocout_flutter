@@ -3,12 +3,14 @@ import 'package:eocout_flutter/utils/app_error.dart';
 
 class NotificationState {
   final List<NotificationData>? notificationList;
+  final int? totalUnread;
   final bool isLoading;
   final bool hasError;
   final AppError? error;
 
   NotificationState({
     this.notificationList,
+    this.totalUnread,
     this.isLoading = false,
     this.hasError = false,
     this.error,
@@ -40,7 +42,9 @@ class NotificationState {
     return NotificationState(hasError: true, error: error);
   }
 
-  factory NotificationState.success(List<NotificationData> notificationList) {
-    return NotificationState(notificationList: notificationList);
+  factory NotificationState.success(List<NotificationData> notificationList,
+      {int? totalUnread}) {
+    return NotificationState(
+        notificationList: notificationList, totalUnread: totalUnread);
   }
 }
