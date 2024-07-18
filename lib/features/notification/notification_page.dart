@@ -4,6 +4,7 @@ import 'package:eocout_flutter/components/my_error_component.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/features/notification/widget/notification_card.dart';
 import 'package:eocout_flutter/models/notification_data.dart';
+import 'package:eocout_flutter/utils/store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -21,6 +22,7 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   void initState() {
     _notificationBloc = context.read<NotificationBloc>();
+    Store.saveLastSeenNotification();
     super.initState();
   }
 
@@ -50,7 +52,9 @@ class _NotificationPageState extends State<NotificationPage> {
 
             if (hasError) {
               return MyErrorComponent(
-                onRefresh: () {},
+                onRefresh: () {
+                  _notificationBloc.fetchNotifications();
+                },
                 error: snapshot.data?.error,
               );
             }
