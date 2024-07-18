@@ -1,13 +1,11 @@
 import 'package:eocout_flutter/bloc/booking/booking_bloc.dart';
-import 'package:eocout_flutter/bloc/booking/booking_state.dart';
-import 'package:eocout_flutter/components/my_snackbar.dart';
+import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/transaction_detail_user/user_transaction_detail_page.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
-import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/status_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class BookingCard extends StatefulWidget {
   final BookingData bookingData;
@@ -89,46 +87,42 @@ class _BookingCardState extends State<BookingCard> {
             const SizedBox(
               height: 20,
             ),
-            StreamBuilder<BookingState>(
-                stream: bloc.controller,
-                builder: (context, snapshot) {
-                  bool isLoading =
-                      snapshot.data?.isLoading ?? false || !snapshot.hasData;
-
-                  return Align(
-                    alignment: AlignmentDirectional.bottomEnd,
-                    child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor:
-                              widget.bookingData.status == Status.confirmed
-                                  ? colorScheme.primary
-                                  : colorScheme.secondary,
-                        ),
-                        onPressed: widget.bookingData.isPaid || isLoading
-                            ? null
-                            : () async {
-                                var response = await bloc
-                                    .paymentBooking(widget.bookingData.id);
-
-                                if (response is AppError) {
-                                  showMySnackBar(context, response.message,
-                                      SnackbarStatus.error);
-                                  return;
-                                }
-
-                                if (response is String) {
-                                  Uri url = Uri.parse(response);
-
-                                  print(response);
-
-                                  await launchUrl(url);
-                                }
-                              },
-                        child: widget.bookingData.status == Status.confirmed
-                            ? const Text("Lakukan Pembayaran")
-                            : const Text("Menunggu Konfirmasi Penjual")),
-                  );
-                }),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (widget.bookingData.isComplete)
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorScheme.outline,
+                      ),
+                      onPressed: () {},
+                      child: const Text("Ulas")),
+                const SizedBox(
+                  width: 10,
+                ),
+                OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor:
+                          widget.bookingData.status == Status.confirmed
+                              ? colorScheme.primary
+                              : colorScheme.secondary,
+                    ),
+                    onPressed: widget.bookingData.status == Status.pending
+                        ? null
+                        : () {
+                            navigateTo(
+                                context,
+                                UserTransactionDetailPage(
+                                    bookingData: widget.bookingData),
+                                transition: TransitionType.slideInFromRight);
+                          },
+                    child: widget.bookingData.status == Status.confirmed
+                        ? widget.bookingData.isPaid
+                            ? const Text('Lihat Detail')
+                            : const Text('Bayar Sekarang')
+                        : const Text('Menunggu Konfirmasi')),
+              ],
+            )
           ],
         ));
   }
