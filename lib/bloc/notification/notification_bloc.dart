@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:eocout_flutter/bloc/image_handle/image_bloc.dart';
 import 'package:eocout_flutter/bloc/notification/notification_state.dart';
 import 'package:eocout_flutter/models/notification_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/dio_interceptor.dart';
+import 'package:eocout_flutter/utils/print_error.dart';
+import 'package:eocout_flutter/utils/store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:rxdart/rxdart.dart';
@@ -59,13 +64,33 @@ class NotificationBloc {
         throw AppError('Gagal mengambil data notifikasi');
       }
 
-      List<NotificationData> notificationData = data
-          .map<NotificationData>((item) => NotificationData.fromJson(item))
-          .toList();
+      List<NotificationData> notificationData = [];
+      for (var notification in data) {
+        var image = notification['ref_user']['profile_pic_media_id'];
 
-      _updateStream(NotificationState.success(notificationData));
-    } catch (e) {
-      _updateError(e);
+        File? imageFile;
+        if (image != null) {
+          imageFile = await ImageBloc().loadImage(image);
+        }
+
+        notificationData.add(
+            NotificationData.fromJson(notification, profilePic: imageFile));
+      }
+
+      notificationData.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      DateTime? lastSeen = await Store.getLastSeenNotification();
+
+      int totalUnread = notificationData
+          .where((element) =>
+              element.createdAt.isAfter(lastSeen ?? DateTime.now()))
+          .length;
+
+      _updateStream(NotificationState.success(notificationData,
+          totalUnread: totalUnread));
+    } catch (err) {
+      printError(err, method: "fetchNotifications");
+      _updateError(err);
     }
   }
 }
