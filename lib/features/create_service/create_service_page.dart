@@ -229,6 +229,12 @@ class _AddEventPageState extends State<AddEventPage> {
                       if (value == null || value.isEmpty) {
                         return "Harga tidak boleh kosong";
                       }
+                      if (int.parse(value) < 100000) {
+                        return "Harga tidak boleh kurang dari Rp100.000";
+                      }
+                      if (int.parse(value) > 20000000) {
+                        return "Harga tidak boleh lebih dari Rp20.000.000";
+                      }
                       return null;
                     },
                     onChanged: (value) {
