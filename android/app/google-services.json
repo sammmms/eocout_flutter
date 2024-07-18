@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:1095787047782:android:53c8b9f6703924d8cb36a7",
+        "android_client_info": {
+          "package_name": "com.eocout.eocout_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwzAyclQhSO43yDTMGwZQjjcvD0VI_mB0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:1095787047782:android:c022e1072b14f111cb36a7",
         "android_client_info": {
           "package_name": "com.example.eocout_flutter"
