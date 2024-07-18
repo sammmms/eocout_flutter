@@ -35,12 +35,17 @@ class ImageBloc {
 
   Future<File?> loadImage(String imageId) async {
     try {
+      final tempDir = await getTemporaryDirectory();
+      File file = File('${tempDir.path}/$imageId.jpg');
+
+      if (await file.exists()) {
+        return file;
+      }
+
       var responsePicture = await dio.get('/image/$imageId',
           options: Options(responseType: ResponseType.bytes));
       Uint8List responseData = responsePicture.data;
 
-      final tempDir = await getTemporaryDirectory();
-      File file = File('${tempDir.path}/$imageId.jpg');
       await file.writeAsBytes(responseData);
       return file;
     } catch (err) {
