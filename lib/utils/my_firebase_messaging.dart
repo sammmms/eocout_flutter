@@ -82,7 +82,13 @@ class MyFirebaseMessaging {
           print(notification.toString());
         }
 
-        if (title != null && body != null) {
+        if (title != null &&
+            body != null &&
+            notificationBloc.currentChatId.valueOrNull !=
+                message.data["ref_id"]) {
+          if (kDebugMode) {
+            print("Showing notification");
+          }
           showNotification(title, body, message.data);
         }
       }

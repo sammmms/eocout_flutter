@@ -3,11 +3,13 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:eocout_flutter/bloc/chat/chat_bloc.dart';
 import 'package:eocout_flutter/bloc/chat/detail_chat_state.dart';
+import 'package:eocout_flutter/bloc/notification/notification_bloc.dart';
 import 'package:eocout_flutter/components/my_avatar_loader.dart';
 import 'package:eocout_flutter/components/my_error_component.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/features/chat_page/widget/chat_bubble.dart';
+import 'package:eocout_flutter/main.dart';
 import 'package:eocout_flutter/models/chat_message_data.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
@@ -15,6 +17,7 @@ import 'package:eocout_flutter/utils/store.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -34,7 +37,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   final _messageController = BehaviorSubject<String>.seeded("");
   final _messageTEC = TextEditingController();
   final _scrollSubject = BehaviorSubject<double>.seeded(0);
-  String? conversationId;
+  final _conversationId = BehaviorSubject<String?>();
 
   @override
   void initState() {
@@ -52,6 +55,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       if (_scrollController.hasClients) {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       }
+    });
+
+    _conversationId.listen((event) {
+      context.read<NotificationBloc>().currentChatId.add(event ?? "");
     });
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
@@ -76,7 +83,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
         _withUser.add(user);
 
-        conversationId = widget.conversationId;
+        _conversationId.add(widget.conversationId);
       }
       // If bringing withUser from outside (from vendor event)
       else {
@@ -92,16 +99,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           // When chat is not found, create new chat
           if (chat != null) {
             await bloc.getChatMessageHistory(chatId: chat.conversationId);
-            conversationId = chat.conversationId;
+            _conversationId.add(chat.conversationId);
           } else {
             await bloc.createNewChat();
           }
         }
       }
 
-      if (conversationId != null) {
-        await _tryConnectingToChat();
-      }
+      await _tryConnectingToChat();
 
       if (_scrollController.hasClients) {
         Future.delayed(
@@ -116,9 +121,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   void dispose() {
-    if (conversationId != null) {
-      Store.saveLastRead(conversationId!);
-    }
+    navigatorKey.currentContext?.read<NotificationBloc>().currentChatId.add("");
+    Store.saveLastRead(_conversationId.valueOrNull ?? "");
     bloc.dispose();
     _messageController.close();
     _messageTEC.removeListener(() {});
@@ -174,11 +178,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          if (conversationId != null) {
-            await bloc.getChatMessageHistory(chatId: conversationId!);
-            if (bloc.channel == null) {
-              _tryConnectingToChat();
-            }
+          await bloc.getChatMessageHistory(chatId: _conversationId.value!);
+          if (bloc.channel == null) {
+            _tryConnectingToChat();
           }
         },
         child: Padding(
@@ -195,11 +197,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 return Center(
                   child: MyErrorComponent(
                     onRefresh: () {
-                      if (conversationId != null) {
-                        bloc.getChatMessageHistory(chatId: conversationId!);
-                        if (bloc.channel == null) {
-                          _tryConnectingToChat();
-                        }
+                      bloc.getChatMessageHistory(
+                          chatId: _conversationId.value!);
+                      if (bloc.channel == null) {
+                        _tryConnectingToChat();
                       }
                     },
                     error: snapshot.data?.error,
@@ -241,11 +242,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                         return ChatBubbleComponent(
                           chatMessageData: chatMessageData,
                           onResendMessage: () async {
-                            if (conversationId == null) {
-                              return;
-                            }
                             await bloc.resendMessage(
-                                chatId: conversationId!,
+                                chatId: _conversationId.value!,
                                 chatMessageData: chatMessageData);
                           },
                         );
@@ -315,13 +313,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   }
 
   Future<void> _tryConnectingToChat() async {
-    if (conversationId != null) {
-      AppError? error = await bloc.connectToChat(conversationId!);
+    AppError? error = await bloc.connectToChat(_conversationId.value!);
 
-      if (!mounted) return;
-      if (error != null) {
-        showMySnackBar(context, error.message, SnackbarStatus.error);
-      }
+    if (!mounted) return;
+    if (error != null) {
+      showMySnackBar(context, error.message, SnackbarStatus.error);
     }
   }
 
@@ -329,33 +325,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     String text,
   ) async {
     _messageTEC.clear();
-    if (conversationId == null) {
-      await bloc.sendNewMessage(
-          toUsername: _withUser.valueOrNull?.username ?? "", content: text);
-      await bloc.getChatList();
-      final chatList = bloc.state?.chatList;
-      if (chatList != null) {
-        final chat = chatList.firstWhereOrNull((element) =>
-            element.withUser.username == _withUser.valueOrNull?.username);
-        if (chat != null) {
-          await bloc.getChatMessageHistory(chatId: chat.conversationId);
-          conversationId = chat.conversationId;
-        }
-      }
-
-      if (conversationId != null) {
-        await _tryConnectingToChat();
-      }
-
-      if (_scrollController.hasClients) {
-        Future.delayed(
-            Durations.long1,
-            () => _scrollController
-                .jumpTo(_scrollController.position.maxScrollExtent));
-      }
-    } else {
-      await bloc.sendMessage(chatId: conversationId!, content: text);
-    }
+    await bloc.sendMessage(chatId: _conversationId.value!, content: text);
     Future.delayed(
         Durations.short1,
         () => _scrollController
