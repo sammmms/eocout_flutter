@@ -80,12 +80,14 @@ class _MyHomepageAppBarState extends State<MyHomepageAppBar> {
                             List<NotificationData> notifications =
                                 snapshot.data?.notificationList ?? [];
 
+                            int totalUnread = snapshot.data?.totalUnread ?? 0;
+
                             return Stack(
                               children: [
                                 const Padding(
                                     padding: EdgeInsets.all(5),
                                     child: Icon(Icons.notifications)),
-                                if (notifications.isNotEmpty)
+                                if (totalUnread > 0)
                                   Positioned(
                                     right: 0,
                                     child: Container(
@@ -96,8 +98,7 @@ class _MyHomepageAppBarState extends State<MyHomepageAppBar> {
                                           borderRadius:
                                               BorderRadius.circular(30)),
                                       child: Center(
-                                        child: Text(
-                                            notifications.length.toString(),
+                                        child: Text(totalUnread.toString(),
                                             style: textTheme.bodySmall!
                                                 .copyWith(color: Colors.white)),
                                       ),
