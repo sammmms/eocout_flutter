@@ -84,6 +84,7 @@ class ProfileData {
         province.isNotEmpty &&
         city.isNotEmpty &&
         businessIdentityNumber.isNotEmpty &&
+        bankNumber.isNotEmpty &&
         preferredBusinessCategoryId.isNotEmpty;
   }
 }

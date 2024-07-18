@@ -243,7 +243,7 @@ class _EOEditDetailDataPageState extends State<EOEditDetailDataPage> {
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return null;
+                            return "Nomor Rekening wajib diisi.";
                           }
                           if (value.length < 8) {
                             return 'Nomor Rekening harus terdiri dari 8 digit atau lebih.';
