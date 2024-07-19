@@ -248,6 +248,8 @@ class BookingBloc {
 
       await dio.post('/booking', data: data);
 
+      _updateStream(BookingState.initial());
+
       return null;
     } catch (err) {
       printError(err, method: 'createBooking');

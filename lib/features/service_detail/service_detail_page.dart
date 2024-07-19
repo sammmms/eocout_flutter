@@ -1,10 +1,13 @@
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/bloc/booking/booking_bloc.dart';
+import 'package:eocout_flutter/bloc/booking/booking_state.dart';
 import 'package:eocout_flutter/bloc/review/review_bloc.dart';
 import 'package:eocout_flutter/bloc/review/review_state.dart';
 import 'package:eocout_flutter/bloc/service/service_bloc.dart';
+import 'package:eocout_flutter/components/my_confirmation_dialog.dart';
 import 'package:eocout_flutter/components/my_error_component.dart';
+import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/components/my_review_card.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
@@ -259,9 +262,12 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                     bool hasError = snapshot.data?.hasError ?? false;
 
                     if (hasError) {
-                      return MyErrorComponent(onRefresh: () {
-                        _reviewBloc.fetchReviews(widget.businessData.id);
-                      });
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 20, bottom: 60),
+                        child: MyErrorComponent(onRefresh: () {
+                          _reviewBloc.fetchReviews(widget.businessData.id);
+                        }),
+                      );
                     }
 
                     List<ReviewData> reviews = snapshot.data?.reviews ??
@@ -305,21 +311,29 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Skeletonizer(
-                            enabled: isLoading,
-                            child: ListView.separated(
-                                shrinkWrap: true,
-                                itemCount:
-                                    reviews.length > 7 ? 7 : reviews.length,
-                                physics: const NeverScrollableScrollPhysics(),
-                                padding:
-                                    const EdgeInsets.fromLTRB(20, 0, 20, 40),
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(height: 10),
-                                itemBuilder: (context, index) {
-                                  ReviewData review = reviews[index];
-                                  return MyReviewCard(review: review);
-                                })),
+                        if (reviews.isEmpty)
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(20, 20, 20, 80),
+                            child: MyNoDataComponent(
+                              label: "Belum ada ulasan",
+                            ),
+                          )
+                        else
+                          Skeletonizer(
+                              enabled: isLoading,
+                              child: ListView.separated(
+                                  shrinkWrap: true,
+                                  itemCount:
+                                      reviews.length > 7 ? 7 : reviews.length,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(20, 0, 20, 40),
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(height: 10),
+                                  itemBuilder: (context, index) {
+                                    ReviewData review = reviews[index];
+                                    return MyReviewCard(review: review);
+                                  })),
                       ],
                     );
                   }),
@@ -425,49 +439,76 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
             children: [
               SizedBox(
                 height: 54,
-                child: OutlinedButton(
-                  onPressed: () async {
-                    if (_choosenDate.valueOrNull == null) {
-                      showMySnackBar(context, "Pilih tanggal terlebih dahulu",
-                          SnackbarStatus.error);
-                      RenderBox box = _datePickerKey.currentContext
-                          ?.findRenderObject() as RenderBox;
-                      Offset position = box.localToGlobal(Offset.zero);
-                      _scrollController.animateTo(position.dy,
-                          duration: const Duration(milliseconds: 500),
-                          curve: Curves.easeInOut);
-                      return;
-                    }
+                child: StreamBuilder<BookingState>(
+                    stream: _bookingBloc.stream,
+                    builder: (context, snapshot) {
+                      bool isLoading = snapshot.data?.isLoading ?? false;
+                      return OutlinedButton(
+                        onPressed: isLoading
+                            ? null
+                            : () async {
+                                if (_choosenDate.valueOrNull == null) {
+                                  showMySnackBar(
+                                      context,
+                                      "Pilih tanggal terlebih dahulu",
+                                      SnackbarStatus.error);
+                                  RenderBox box = _datePickerKey.currentContext
+                                      ?.findRenderObject() as RenderBox;
+                                  Offset position =
+                                      box.localToGlobal(Offset.zero);
+                                  _scrollController.animateTo(position.dy,
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                  return;
+                                }
 
-                    AppError? error = await _bookingBloc.createBooking(
-                      serviceId: widget.businessData.id,
-                      bookingDate: _choosenDate.value,
-                    );
+                                Confirmation? confirmation = await showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const MyConfirmationDialog(
+                                          label: "Ingin memesan layanan ini?",
+                                          subLabel:
+                                              "Apakah anda yang ingin memesan layanan ini?\n\nLayanan hanya dapat di batalkan sebelum Vendor mengonfirmasi layanan.",
+                                          negativeLabel: "Tidak",
+                                          positiveLabel: "Ya, saya mau",
+                                        ));
 
-                    if (!mounted) return;
-                    if (error != null) {
-                      showMySnackBar(
-                          context, error.message, SnackbarStatus.error);
-                    } else {
-                      showMySnackBar(
-                          context,
-                          "Berhasil membuat pesanan terhadap layanan",
-                          SnackbarStatus.success);
-                    }
-                  },
-                  style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  )),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Text(
-                      "Pesan",
-                      style: textTheme.bodyLarge!
-                          .copyWith(color: colorScheme.surface),
-                    ),
-                  ),
-                ),
+                                if (confirmation == Confirmation.negative ||
+                                    confirmation == null) return;
+
+                                AppError? error =
+                                    await _bookingBloc.createBooking(
+                                  serviceId: widget.businessData.id,
+                                  bookingDate: _choosenDate.value,
+                                );
+
+                                if (!context.mounted) return;
+                                if (error != null) {
+                                  showMySnackBar(context, error.message,
+                                      SnackbarStatus.error);
+                                } else {
+                                  showMySnackBar(
+                                      context,
+                                      "Berhasil membuat pesanan terhadap layanan",
+                                      SnackbarStatus.success);
+                                }
+                              },
+                        style: OutlinedButton.styleFrom(
+                            backgroundColor: isLoading ? Colors.grey : null,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            )),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Text(
+                            "Pesan",
+                            style: textTheme.bodyLarge!
+                                .copyWith(color: colorScheme.surface),
+                          ),
+                        ),
+                      );
+                    }),
               ),
               const SizedBox(
                 width: 10,
