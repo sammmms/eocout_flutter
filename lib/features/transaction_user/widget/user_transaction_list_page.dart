@@ -5,7 +5,10 @@ import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/features/transaction_user/widget/booking_card.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/utils/booking_filter.dart';
+import 'package:eocout_flutter/utils/status_util.dart';
+import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class UserTransactionListPage extends StatefulWidget {
@@ -61,17 +64,58 @@ class _UserTransactionListPageState extends State<UserTransactionListPage> {
               );
             }
 
+            bookings.sort((a, b) => StatusUtil.compare(a.status, b.status));
+
             return Skeletonizer(
               enabled: isLoading,
-              child: ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
-                  itemCount: bookings.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 20),
-                  itemBuilder: (context, index) {
-                    BookingData booking = bookings[index];
-                    return BookingCard(bookingData: booking);
-                  }),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    if (widget.bookingFilter.isCompletePayment &&
+                        bookings.isNotEmpty) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        child: Card(
+                          color: colorScheme.primary.withOpacity(0.6),
+                          elevation: 0,
+                          child: const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline_rounded,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                    child: Text(
+                                  "Anda dapat mengulas setelah penjual menyelesaikan pesanan Anda.",
+                                  style: TextStyle(color: Colors.white),
+                                )),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                    ListView.separated(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.fromLTRB(20, 10, 20, 80),
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: bookings.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 20),
+                        itemBuilder: (context, index) {
+                          BookingData booking = bookings[index];
+                          return Provider<BookingBloc>.value(
+                              value: _bookingBloc,
+                              child: BookingCard(bookingData: booking));
+                        }),
+                  ],
+                ),
+              ),
             );
           }),
     );
