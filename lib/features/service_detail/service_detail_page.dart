@@ -9,6 +9,7 @@ import 'package:eocout_flutter/components/my_review_card.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/chat_page/chat_detail_page.dart';
+import 'package:eocout_flutter/features/review/review_page.dart';
 import 'package:eocout_flutter/models/service_data.dart';
 import 'package:eocout_flutter/models/review_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
@@ -97,9 +98,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
         ],
         scrolledUnderElevation: 0,
       ),
-      bottomSheet: _buildBottomAppBar(),
+      bottomSheet: isEOOwner ? null : _buildBottomAppBar(),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 20, 0, 80),
+        padding: EdgeInsets.fromLTRB(0, 20, 0, isEOOwner ? 10 : 80),
         child: SingleChildScrollView(
           controller: _scrollController,
           child: Column(
@@ -245,14 +246,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                         ],
                       ),
                     ],
-
-                    // REVIEW
-                    const SizedBox(height: 20),
-                    Text("Ulasan", style: textTheme.headlineSmall),
-                    const SizedBox(height: 10),
                   ],
                 ),
               ),
+              // REVIEW
               StreamBuilder<ReviewState>(
                   stream: _reviewBloc.controller,
                   builder: (context, snapshot) {
@@ -269,19 +266,62 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
 
                     List<ReviewData> reviews = snapshot.data?.reviews ??
                         List.generate(7, (index) => ReviewData.dummy());
-                    return Skeletonizer(
-                        enabled: isLoading,
-                        child: ListView.separated(
-                            shrinkWrap: true,
-                            itemCount: reviews.length,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 10),
-                            itemBuilder: (context, index) {
-                              ReviewData review = reviews[index];
-                              return MyReviewCard(review: review);
-                            }));
+                    return Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Ulasan", style: textTheme.headlineSmall),
+                              if (reviews.length > 7)
+                                GestureDetector(
+                                  onTap: () {
+                                    navigateTo(
+                                        context,
+                                        Provider<ReviewBloc>.value(
+                                            value: _reviewBloc,
+                                            child: ReviewPage(
+                                              businessData: widget.businessData,
+                                            )),
+                                        transition:
+                                            TransitionType.slideInFromRight);
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Text("Lihat semua",
+                                          style: textTheme.bodyMedium!.copyWith(
+                                              color: colorScheme.tertiary)),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Icon(Icons.arrow_forward_ios_rounded,
+                                          color: colorScheme.tertiary)
+                                    ],
+                                  ),
+                                )
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Skeletonizer(
+                            enabled: isLoading,
+                            child: ListView.separated(
+                                shrinkWrap: true,
+                                itemCount:
+                                    reviews.length > 7 ? 7 : reviews.length,
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 0, 20, 40),
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(height: 10),
+                                itemBuilder: (context, index) {
+                                  ReviewData review = reviews[index];
+                                  return MyReviewCard(review: review);
+                                })),
+                      ],
+                    );
                   }),
             ],
           ),
@@ -373,122 +413,86 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
       ),
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-      child: isEOOwner
-          ? SizedBox(
-              width: 150,
-              height: 54,
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: colorScheme.error,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                ),
-                onPressed: () async {
-                  AppError? error = await _serviceBloc.deleteService(
-                      eoServiceId: widget.businessData.id);
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+              NumberFormat.currency(
+                      locale: 'id', symbol: 'Rp', decimalDigits: 0)
+                  .format(widget.businessData.price),
+              style: textTheme.headlineMedium),
+          Row(
+            children: [
+              SizedBox(
+                height: 54,
+                child: OutlinedButton(
+                  onPressed: () async {
+                    if (_choosenDate.valueOrNull == null) {
+                      showMySnackBar(context, "Pilih tanggal terlebih dahulu",
+                          SnackbarStatus.error);
+                      RenderBox box = _datePickerKey.currentContext
+                          ?.findRenderObject() as RenderBox;
+                      Offset position = box.localToGlobal(Offset.zero);
+                      _scrollController.animateTo(position.dy,
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.easeInOut);
+                      return;
+                    }
 
-                  if (!mounted) return;
-                  if (error != null) {
-                    showMySnackBar(
-                        context, error.message, SnackbarStatus.error);
-                    return;
-                  } else {
-                    showMySnackBar(context, "Berhasil menghapus layanan",
-                        SnackbarStatus.success);
-                    Navigator.pop(context);
-                  }
-                },
-                child: Text(
-                  "Hapus Layanan",
-                  style:
-                      textTheme.bodyLarge!.copyWith(color: colorScheme.surface),
+                    AppError? error = await _bookingBloc.createBooking(
+                      serviceId: widget.businessData.id,
+                      bookingDate: _choosenDate.value,
+                    );
+
+                    if (!mounted) return;
+                    if (error != null) {
+                      showMySnackBar(
+                          context, error.message, SnackbarStatus.error);
+                    } else {
+                      showMySnackBar(
+                          context,
+                          "Berhasil membuat pesanan terhadap layanan",
+                          SnackbarStatus.success);
+                    }
+                  },
+                  style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  )),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Text(
+                      "Pesan",
+                      style: textTheme.bodyLarge!
+                          .copyWith(color: colorScheme.surface),
+                    ),
+                  ),
                 ),
               ),
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                    NumberFormat.currency(
-                            locale: 'id', symbol: 'Rp', decimalDigits: 0)
-                        .format(widget.businessData.price),
-                    style: textTheme.headlineMedium),
-                Row(
-                  children: [
-                    SizedBox(
-                      height: 54,
-                      child: OutlinedButton(
-                        onPressed: () async {
-                          if (_choosenDate.valueOrNull == null) {
-                            showMySnackBar(
-                                context,
-                                "Pilih tanggal terlebih dahulu",
-                                SnackbarStatus.error);
-                            RenderBox box = _datePickerKey.currentContext
-                                ?.findRenderObject() as RenderBox;
-                            Offset position = box.localToGlobal(Offset.zero);
-                            _scrollController.animateTo(position.dy,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut);
-                            return;
-                          }
-
-                          AppError? error = await _bookingBloc.createBooking(
-                            serviceId: widget.businessData.id,
-                            bookingDate: _choosenDate.value,
-                          );
-
-                          if (!mounted) return;
-                          if (error != null) {
-                            showMySnackBar(
-                                context, error.message, SnackbarStatus.error);
-                          } else {
-                            showMySnackBar(
-                                context,
-                                "Berhasil membuat pesanan terhadap layanan",
-                                SnackbarStatus.success);
-                          }
-                        },
-                        style: OutlinedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        )),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: Text(
-                            "Pesan",
-                            style: textTheme.bodyLarge!
-                                .copyWith(color: colorScheme.surface),
+              const SizedBox(
+                width: 10,
+              ),
+              SizedBox(
+                height: 54,
+                child: OutlinedButton(
+                    onPressed: () {
+                      navigateTo(
+                          context,
+                          ChatDetailPage(
+                            withUser: widget.businessData.profile,
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    SizedBox(
-                      height: 54,
-                      child: OutlinedButton(
-                          onPressed: () {
-                            navigateTo(
-                                context,
-                                ChatDetailPage(
-                                  withUser: widget.businessData.profile,
-                                ),
-                                transition: TransitionType.slideInFromRight);
-                          },
-                          style: OutlinedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          )),
-                          child: SvgPicture.asset("assets/svg/chat_icon.svg")),
-                    )
-                  ],
-                )
-              ],
-            ),
+                          transition: TransitionType.slideInFromRight);
+                    },
+                    style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    )),
+                    child: SvgPicture.asset("assets/svg/chat_icon.svg")),
+              )
+            ],
+          )
+        ],
+      ),
     );
   }
 }
