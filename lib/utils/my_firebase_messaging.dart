@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:eocout_flutter/bloc/notification/notification_bloc.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/chat_page/chat_detail_page.dart';
+import 'package:eocout_flutter/features/dashboard_page.dart';
 import 'package:eocout_flutter/firebase_options.dart';
 import 'package:eocout_flutter/utils/notification_type_util.dart';
 import 'package:eocout_flutter/utils/print_error.dart';
@@ -184,6 +185,9 @@ class MyFirebaseMessaging {
         ),
         transition: TransitionType.slideInFromBottom,
       );
+    } else if (type == NotificationType.userBooking) {
+      navigatorNavigateTo(const DashboardPage(),
+          transition: TransitionType.slideInFromBottom, clearStack: true);
     }
   }
 }
