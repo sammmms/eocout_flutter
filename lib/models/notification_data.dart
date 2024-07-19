@@ -28,7 +28,9 @@ class NotificationData {
           : UserData.fromJson(json['ref_user'], profilePicture: profilePic),
       createdAt: json['created_at'] == null
           ? null
-          : DateTime.parse(json['created_at']).toLocal(),
+          : DateTime.parse(json['created_at'])
+              .toLocal()
+              .add(const Duration(hours: 7)),
       type: NotificationTypeUtil.fromString(json['notification_type']) ??
           NotificationType.chat,
     );
