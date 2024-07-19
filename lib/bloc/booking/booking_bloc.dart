@@ -66,7 +66,7 @@ class BookingBloc {
 
       var data = response.data['data'];
 
-      if (kDebugMode) print(data);
+      if (kDebugMode) print("BookingRequest: $data");
 
       if (data == null) {
         return _updateError('Data not found');

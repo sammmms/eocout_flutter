@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 
 class TodayBookingCard extends StatefulWidget {
   final BookingData bookingData;
-  final Function() onTap;
+  final Function()? onTap;
   const TodayBookingCard(
       {super.key, required this.bookingData, required this.onTap});
 
@@ -114,8 +114,21 @@ class _TodayBookingCardState extends State<TodayBookingCard> {
           Icons.cancel,
           color: colorScheme.error,
         );
+      case Status.rejected:
+        return Icon(
+          Icons.delete_forever,
+          color: colorScheme.error,
+        );
+      case Status.completed:
+        return Icon(
+          Icons.check_circle,
+          color: colorScheme.primary,
+        );
       default:
-        return const Icon(Icons.pending_actions);
+        return const Icon(
+          Icons.pending_actions,
+          color: Colors.amber,
+        );
     }
   }
 }

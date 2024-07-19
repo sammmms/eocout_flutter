@@ -1,17 +1,21 @@
-enum Status { pending, confirmed, completed, cancelled, all }
+import 'package:collection/collection.dart';
+
+enum Status { pending, confirmed, completed, cancelled, rejected, all }
 
 class StatusUtil {
   static const Map<Status, String> statusMap = {
     Status.pending: 'pending',
     Status.confirmed: 'confirmed',
     Status.cancelled: 'cancelled',
+    Status.rejected: 'rejected',
     Status.completed: 'completed',
   };
 
   static Status fromText(String text) {
     return statusMap.entries
-        .firstWhere((element) => element.value == text.toLowerCase())
-        .key;
+            .firstWhereOrNull((element) => element.value == text.toLowerCase())
+            ?.key ??
+        Status.all;
   }
 
   static String textOf(Status status) {
