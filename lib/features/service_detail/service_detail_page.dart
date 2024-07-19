@@ -217,7 +217,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                     ],
 
                     // PROMOTION
-                    if (!isEOOwner) ...[
+                    if (!isEOOwner &&
+                        widget.businessData
+                            .isAcceptPartyPromotionOrMarketing) ...[
                       const SizedBox(height: 20),
                       Text("Pemasaran dan Promosi Acara",
                           style: textTheme.headlineSmall),
