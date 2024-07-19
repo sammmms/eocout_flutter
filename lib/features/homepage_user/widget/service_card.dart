@@ -6,14 +6,14 @@ import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 
 class ServiceCard extends StatelessWidget {
-  final ServiceData businessData;
-  const ServiceCard({super.key, required this.businessData});
+  final ServiceData serviceData;
+  const ServiceCard({super.key, required this.serviceData});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        navigateTo(context, ServiceDetailPage(businessData: businessData),
+        navigateTo(context, ServiceDetailPage(businessData: serviceData),
             transition: TransitionType.slideInFromRight);
       },
       child: Card(
@@ -29,10 +29,9 @@ class ServiceCard extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: businessData.images.firstOrNull != null
+                      child: serviceData.images.firstOrNull != null
                           ? Image.memory(
-                              businessData.images.firstOrNull!
-                                  .readAsBytesSync(),
+                              serviceData.images.firstOrNull!.readAsBytesSync(),
                               width: 50,
                               height: 50,
                               fit: BoxFit.cover,
@@ -50,11 +49,11 @@ class ServiceCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(businessData.companyName,
+                          Text(serviceData.companyName,
                               overflow: TextOverflow.ellipsis,
                               style: textTheme.headlineSmall!
                                   .copyWith(fontWeight: FontWeight.w600)),
-                          Text(businessData.name,
+                          Text(serviceData.name,
                               overflow: TextOverflow.ellipsis,
                               style: textTheme.titleMedium!
                                   .copyWith(fontWeight: FontWeight.w600)),
@@ -65,7 +64,7 @@ class ServiceCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  businessData.description,
+                  serviceData.description,
                   maxLines: 2,
                   textAlign: TextAlign.justify,
                   overflow: TextOverflow.ellipsis,
@@ -76,8 +75,8 @@ class ServiceCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     MyReviewStar(
-                      rating: businessData.averageRating.round(),
-                      ratingCount: businessData.ratingCount,
+                      rating: serviceData.averageRating.round(),
+                      ratingCount: serviceData.ratingCount,
                     ),
                     SizedBox(
                       height: 40,
@@ -87,7 +86,7 @@ class ServiceCard extends StatelessWidget {
                                   const EdgeInsets.symmetric(horizontal: 20)),
                           onPressed: () {
                             navigateTo(context,
-                                ServiceDetailPage(businessData: businessData),
+                                ServiceDetailPage(businessData: serviceData),
                                 transition: TransitionType.slideInFromRight);
                           },
                           child: const Text("Lihat Detail")),

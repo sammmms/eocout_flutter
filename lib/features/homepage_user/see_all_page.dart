@@ -116,7 +116,7 @@ class _SeeAllPageState extends State<SeeAllPage> {
                               ),
                           itemBuilder: (context, index) {
                             ServiceData data = businessData[index];
-                            return ServiceCard(businessData: data);
+                            return ServiceCard(serviceData: data);
                           }),
                     );
                   }),
