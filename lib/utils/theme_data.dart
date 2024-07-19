@@ -182,11 +182,11 @@ ThemeData lightThemeData = ThemeData(
     ),
   ),
   cardTheme: CardTheme(
-    color: colorScheme.tertiaryContainer,
-    shadowColor: colorScheme.shadow,
+    color: Colors.white,
+    shadowColor: Colors.grey,
     surfaceTintColor: Colors.transparent,
     margin: EdgeInsets.zero,
-    elevation: 0,
+    elevation: 5,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(20),
     ),
