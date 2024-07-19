@@ -108,12 +108,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
       await _tryConnectingToChat();
 
-      if (_scrollController.hasClients) {
-        Future.delayed(
-            Durations.long1,
-            () => _scrollController
-                .jumpTo(_scrollController.position.maxScrollExtent));
-      }
+      Future.delayed(Durations.long1, () {
+        if (_scrollController.hasClients) {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        }
+      });
     });
 
     super.initState();
@@ -313,7 +312,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   }
 
   Future<void> _tryConnectingToChat() async {
-    AppError? error = await bloc.connectToChat(_conversationId.value!);
+    String? conversationId = _conversationId.valueOrNull ?? "";
+
+    if (conversationId.isEmpty) {
+      return;
+    }
+
+    AppError? error = await bloc.connectToChat(conversationId);
 
     if (!mounted) return;
     if (error != null) {
@@ -325,7 +330,29 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     String text,
   ) async {
     _messageTEC.clear();
-    await bloc.sendMessage(chatId: _conversationId.value!, content: text);
+
+    if (_conversationId.valueOrNull == null) {
+      await bloc.sendNewMessage(
+          toUsername: widget.withUser?.username ?? "", content: text);
+
+      // Try to get conversation id again
+      final chatList = bloc.state?.chatList;
+
+      if (chatList != null) {
+        final chat = chatList.firstWhereOrNull((element) =>
+            element.withUser.username == widget.withUser!.username);
+
+        // When chat is not found, create new chat
+        if (chat != null) {
+          _conversationId.add(chat.conversationId);
+        }
+
+        await _tryConnectingToChat();
+      }
+    } else {
+      await bloc.sendMessage(chatId: _conversationId.value!, content: text);
+    }
+
     Future.delayed(
         Durations.short1,
         () => _scrollController
