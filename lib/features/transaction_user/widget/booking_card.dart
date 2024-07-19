@@ -1,11 +1,15 @@
 import 'package:eocout_flutter/bloc/booking/booking_bloc.dart';
+import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
+import 'package:eocout_flutter/features/create_review/create_review_page.dart';
 import 'package:eocout_flutter/features/transaction_detail_user/user_transaction_detail_page.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
-import 'package:eocout_flutter/utils/status_util.dart';
+import 'package:eocout_flutter/utils/app_error.dart';
+import 'package:eocout_flutter/utils/booking_filter.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class BookingCard extends StatefulWidget {
   final BookingData bookingData;
@@ -26,6 +30,9 @@ class _BookingCardState extends State<BookingCard> {
 
   @override
   Widget build(BuildContext context) {
+    bool isCancelled = widget.bookingData.isCancelled;
+    bool isNotPaid = widget.bookingData.isNotPaid;
+    bool isConfirmed = widget.bookingData.isConfirmed;
     return Container(
         padding: const EdgeInsets.all(20),
         width: double.infinity,
@@ -44,6 +51,7 @@ class _BookingCardState extends State<BookingCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
@@ -61,16 +69,17 @@ class _BookingCardState extends State<BookingCard> {
                           fit: BoxFit.cover,
                         ),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 15),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.bookingData.businessData.name,
+                      Text(widget.bookingData.businessData.companyName,
                           overflow: TextOverflow.ellipsis,
                           style: textTheme.headlineSmall),
-                      Text(DateFormat('dd MMMM yyyy')
-                          .format(widget.bookingData.bookingDate))
+                      Text(widget.bookingData.businessData.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.titleMedium),
                     ],
                   ),
                 ),
@@ -78,6 +87,11 @@ class _BookingCardState extends State<BookingCard> {
             ),
             const SizedBox(
               height: 20,
+            ),
+            Text(DateFormat('dd MMMM yyyy')
+                .format(widget.bookingData.bookingDate)),
+            const SizedBox(
+              height: 5,
             ),
             Text(
                 NumberFormat.currency(
@@ -92,38 +106,65 @@ class _BookingCardState extends State<BookingCard> {
               children: [
                 if (widget.bookingData.isComplete)
                   ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.outline,
-                      ),
-                      onPressed: () {},
+                      onPressed: () {
+                        navigateTo(context,
+                            CreateReviewPage(bookingData: widget.bookingData),
+                            transition: TransitionType.slideInFromRight);
+                      },
                       child: const Text("Ulas")),
                 const SizedBox(
                   width: 10,
                 ),
                 OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      backgroundColor:
-                          widget.bookingData.status == Status.confirmed
-                              ? colorScheme.primary
-                              : colorScheme.secondary,
+                      backgroundColor: isCancelled
+                          ? Colors.grey
+                          : !isConfirmed
+                              ? colorScheme.error
+                              : colorScheme.primary,
                     ),
-                    onPressed: widget.bookingData.status == Status.pending
+                    onPressed: isCancelled
                         ? null
-                        : () {
-                            navigateTo(
-                                context,
-                                UserTransactionDetailPage(
-                                    bookingData: widget.bookingData),
-                                transition: TransitionType.slideInFromRight);
-                          },
-                    child: widget.bookingData.status == Status.confirmed
-                        ? widget.bookingData.isPaid
-                            ? const Text('Lihat Detail')
-                            : const Text('Bayar Sekarang')
-                        : const Text('Menunggu Konfirmasi')),
+                        : !isConfirmed
+                            ? _cancelBooking
+                            : () {
+                                navigateTo(
+                                    context,
+                                    UserTransactionDetailPage(
+                                        bookingData: widget.bookingData),
+                                    transition:
+                                        TransitionType.slideInFromRight);
+                              },
+                    child: isCancelled
+                        ? const Text("Pesanan Dibatalkan")
+                        : !isConfirmed
+                            ? const Text("Batalkan Pesanan")
+                            : isNotPaid
+                                ? const Text("Bayar Sekarang")
+                                : const Text("Lihat Detail"))
               ],
             )
           ],
         ));
+  }
+
+  void _cancelBooking() async {
+    AppError? error =
+        await bloc.cancelBooking(bookingId: widget.bookingData.id);
+
+    if (!mounted) return;
+
+    if (error != null) {
+      showMySnackBar(context, error.message, SnackbarStatus.error);
+      return;
+    }
+
+    showMySnackBar(context, 'Pemesanan dibatalkan', SnackbarStatus.success);
+
+    Future.delayed(const Duration(seconds: 2), () {
+      context
+          .read<BookingBloc>()
+          .getAllBooking(filter: BookingFilter.pendingPayment());
+    });
   }
 }
