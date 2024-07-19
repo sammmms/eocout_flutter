@@ -9,13 +9,13 @@ class BookingData {
   String id;
   PaymentStatus paymentStatus;
   Status status;
-  ServiceData businessData;
+  ServiceData serviceData;
 
   BookingData({
     required this.bookingDate,
     required this.id,
     required this.paymentStatus,
-    required this.businessData,
+    required this.serviceData,
     required this.status,
   });
   bool get isCancelled => status == Status.cancelled;
@@ -36,7 +36,7 @@ class BookingData {
       bookingDate: DateTime.parse(json['booking_date']).toLocal(),
       id: json['id'],
       paymentStatus: PaymentStatusUtil.fromString(json['payment_status']),
-      businessData: ServiceData.fromJson(json['service'],
+      serviceData: ServiceData.fromJson(json['service'],
           images: serviceImage, profilePic: profilePic),
       status: StatusUtil.fromText(json['status']),
     );
@@ -47,7 +47,7 @@ class BookingData {
       bookingDate: DateTime.now(),
       id: '',
       paymentStatus: PaymentStatus.pending,
-      businessData: ServiceData.empty(),
+      serviceData: ServiceData.empty(),
       status: Status.pending,
     );
   }
@@ -57,7 +57,7 @@ class BookingData {
       bookingDate: DateTime.now(),
       id: '1',
       paymentStatus: PaymentStatus.pending,
-      businessData: ServiceData.dummy(),
+      serviceData: ServiceData.dummy(),
       status: Status.pending,
     );
   }

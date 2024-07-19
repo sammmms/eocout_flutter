@@ -21,9 +21,9 @@ class TransactionCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: bookingData.businessData.images.isNotEmpty
+                  child: bookingData.serviceData.images.isNotEmpty
                       ? Image.file(
-                          bookingData.businessData.images.first,
+                          bookingData.serviceData.images.first,
                           height: 60,
                           width: 60,
                           fit: BoxFit.cover,
@@ -40,7 +40,7 @@ class TransactionCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(bookingData.businessData.name,
+                      Text(bookingData.serviceData.name,
                           style: textTheme.headlineSmall),
                       Text(DateFormat('dd MMMM yyyy')
                           .format(bookingData.bookingDate))
@@ -55,7 +55,7 @@ class TransactionCard extends StatelessWidget {
             Text(
                 NumberFormat.currency(
                         locale: 'id', symbol: 'Rp', decimalDigits: 0)
-                    .format(bookingData.businessData.price),
+                    .format(bookingData.serviceData.price),
                 style: textTheme.headlineLarge),
             const SizedBox(
               height: 20,

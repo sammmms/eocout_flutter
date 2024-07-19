@@ -34,12 +34,12 @@ class _CreateReviewPageState extends State<CreateReviewPage> {
   @override
   void initState() {
     bookingData = widget.bookingData;
-    businessData = widget.bookingData.businessData;
+    businessData = widget.bookingData.serviceData;
 
     bloc.fetchReviews(businessData.id);
 
     reviewData = EditableReviewData(
-      serviceId: bookingData.businessData.id,
+      serviceId: bookingData.serviceData.id,
     );
     super.initState();
   }

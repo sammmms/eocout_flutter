@@ -99,7 +99,7 @@ class _UserTransactionDetailPageState extends State<UserTransactionDetailPage> {
                         const SizedBox(height: 5),
                         Text(
                             NumberFormat.currency(locale: 'id', symbol: 'Rp')
-                                .format(bookingData.businessData.price),
+                                .format(bookingData.serviceData.price),
                             overflow: TextOverflow.ellipsis),
                       ],
                     ),
@@ -143,14 +143,14 @@ class _UserTransactionDetailPageState extends State<UserTransactionDetailPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(bookingData.businessData.name),
+                        Text(bookingData.serviceData.name),
                         const SizedBox(height: 5),
                         Text(
                             DateFormat('dd MMMM yyyy')
                                 .format(bookingData.bookingDate),
                             overflow: TextOverflow.ellipsis),
                         const SizedBox(height: 5),
-                        Text(bookingData.businessData.location)
+                        Text(bookingData.serviceData.location)
                       ],
                     ),
                   ),

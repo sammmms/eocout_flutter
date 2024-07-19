@@ -29,8 +29,8 @@ class _TodayBookingCardState extends State<TodayBookingCard> {
 
   @override
   Widget build(BuildContext context) {
-    UserData userData = widget.bookingData.businessData.profile;
-    ServiceData serviceData = widget.bookingData.businessData;
+    UserData userData = widget.bookingData.serviceData.profile;
+    ServiceData serviceData = widget.bookingData.serviceData;
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(

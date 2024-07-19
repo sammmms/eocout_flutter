@@ -55,9 +55,9 @@ class _BookingCardState extends State<BookingCard> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: widget.bookingData.businessData.images.isNotEmpty
+                  child: widget.bookingData.serviceData.images.isNotEmpty
                       ? Image.file(
-                          widget.bookingData.businessData.images.first,
+                          widget.bookingData.serviceData.images.first,
                           height: 60,
                           width: 60,
                           fit: BoxFit.cover,
@@ -74,10 +74,10 @@ class _BookingCardState extends State<BookingCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.bookingData.businessData.companyName,
+                      Text(widget.bookingData.serviceData.companyName,
                           overflow: TextOverflow.ellipsis,
                           style: textTheme.headlineSmall),
-                      Text(widget.bookingData.businessData.name,
+                      Text(widget.bookingData.serviceData.name,
                           overflow: TextOverflow.ellipsis,
                           style: textTheme.titleMedium),
                     ],
@@ -96,7 +96,7 @@ class _BookingCardState extends State<BookingCard> {
             Text(
                 NumberFormat.currency(
                         locale: 'id', symbol: 'Rp', decimalDigits: 0)
-                    .format(widget.bookingData.businessData.price),
+                    .format(widget.bookingData.serviceData.price),
                 style: textTheme.headlineLarge),
             const SizedBox(
               height: 20,
