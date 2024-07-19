@@ -88,9 +88,45 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                 const SizedBox(
                   height: 20,
                 ),
-                Text(
-                  "Pesanan Terbaru",
-                  style: textTheme.headlineMedium,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Pesanan Terbaru",
+                      style: textTheme.headlineMedium,
+                    ),
+                    StreamBuilder<BookingState>(
+                        stream: _bookingBloc.stream,
+                        builder: (context, snapshot) {
+                          List<BookingData> bookings =
+                              snapshot.data?.bookings ?? [];
+
+                          if (bookings.isEmpty || bookings.length <= 5) {
+                            return const SizedBox();
+                          }
+
+                          return GestureDetector(
+                            onTap: () {
+                              context.read<PageController>().animateToPage(2,
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.easeInOut);
+                            },
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("Lihat Semua"),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 12,
+                                )
+                              ],
+                            ),
+                          );
+                        })
+                  ],
                 ),
                 const SizedBox(
                   height: 10,
