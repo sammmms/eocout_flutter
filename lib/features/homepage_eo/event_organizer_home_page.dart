@@ -15,7 +15,7 @@ import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/balance_card.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/eo_recommendation_carousel.dart';
-import 'package:eocout_flutter/features/homepage_eo/widget/eo_business_carousel_items.dart';
+import 'package:eocout_flutter/features/homepage_eo/widget/eo_service_item.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/today_booking_card.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/models/service_data.dart';
@@ -188,22 +188,46 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                       );
                     }),
                 const SizedBox(
-                  height: 20,
+                  height: 30,
                 ),
-                Text(
-                  "Pengumuman Mitra",
-                  style: textTheme.headlineMedium,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                const EoRecommendationCarousel(),
-                const SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  "Bisnis Kamu",
-                  style: textTheme.headlineMedium,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Layanan Kamu",
+                      style: textTheme.headlineMedium,
+                    ),
+                    StreamBuilder<ServiceState>(
+                        stream: _serviceBloc.stream,
+                        builder: (context, snapshot) {
+                          List<ServiceData> businessData =
+                              snapshot.data?.serviceData ?? [];
+
+                          if (businessData.isEmpty ||
+                              businessData.length <= 5) {
+                            return const SizedBox();
+                          }
+
+                          return GestureDetector(
+                            onTap: () {
+                              // TODO : CREATE THAT
+                            },
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("Lihat Semua"),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 12,
+                                )
+                              ],
+                            ),
+                          );
+                        })
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
@@ -232,25 +256,43 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                       if (businessData.isEmpty) {
                         return const Center(
                             child: MyNoDataComponent(
-                          label: "Tidak ada bisnis.",
+                          label: "Tidak ada layanan.",
                         ));
                       }
 
                       return Skeletonizer(
                           enabled: isLoading,
                           child: CarouselSlider.builder(
-                              itemCount: businessData.length,
+                              itemCount: businessData.length > 5
+                                  ? 5
+                                  : businessData.length,
                               options: CarouselOptions(
+                                  height: 250,
+                                  padEnds: false,
+                                  enableInfiniteScroll: false,
                                   autoPlay: true,
-                                  aspectRatio: 16 / 9,
-                                  viewportFraction: 1,
-                                  enableInfiniteScroll: false),
-                              itemBuilder: (context, index, _) {
-                                ServiceData service = businessData[index];
-                                return EOBusinessCarouselItem(
-                                    serviceData: service);
+                                  autoPlayInterval: const Duration(seconds: 5),
+                                  autoPlayAnimationDuration:
+                                      const Duration(milliseconds: 800),
+                                  autoPlayCurve: Curves.fastOutSlowIn),
+                              itemBuilder: (context, index, __) {
+                                ServiceData serviceData = businessData[index];
+                                return EOServiceItem(
+                                  serviceData: serviceData,
+                                );
                               }));
-                    })
+                    }),
+                const SizedBox(
+                  height: 30,
+                ),
+                Text(
+                  "Pengumuman Mitra",
+                  style: textTheme.headlineMedium,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const EoRecommendationCarousel(),
               ],
             ),
           ),
