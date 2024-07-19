@@ -1,5 +1,4 @@
 import 'package:eocout_flutter/models/booking_data.dart';
-import 'package:eocout_flutter/utils/status_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,20 +11,9 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Card(
+      child: Padding(
         padding: const EdgeInsets.all(20),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 3,
-              offset: Offset(0, 2),
-            )
-          ],
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -48,14 +36,16 @@ class TransactionCard extends StatelessWidget {
                         ),
                 ),
                 const SizedBox(width: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(bookingData.businessData.name,
-                        style: textTheme.headlineSmall),
-                    Text(DateFormat('dd MMMM yyyy')
-                        .format(bookingData.bookingDate))
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(bookingData.businessData.name,
+                          style: textTheme.headlineSmall),
+                      Text(DateFormat('dd MMMM yyyy')
+                          .format(bookingData.bookingDate))
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -73,15 +63,12 @@ class TransactionCard extends StatelessWidget {
             Align(
               alignment: AlignmentDirectional.bottomEnd,
               child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: bookingData.status == Status.confirmed
-                        ? colorScheme.primary
-                        : colorScheme.secondary,
-                  ),
                   onPressed: onButtonPressed,
                   child: const Text("Lihat Detail")),
             ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }

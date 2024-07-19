@@ -1,4 +1,4 @@
-import 'package:eocout_flutter/utils/business_type_util.dart';
+import 'package:eocout_flutter/utils/service_type_util.dart';
 
 class ProfileData {
   final String identityNumber;
@@ -98,7 +98,7 @@ class EditableProfileData {
   String taxIdentityNumber;
   String businessIdentityNumber;
   String preferredBusinessCategoryId;
-  BusinessType? preferredBusinessCategory;
+  ServiceType? preferredBusinessCategory;
 
   EditableProfileData(
       {this.identityNumber = "",

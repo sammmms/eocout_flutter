@@ -5,7 +5,7 @@ import 'package:eocout_flutter/components/my_loading_dialog.dart';
 import 'package:eocout_flutter/components/my_pick_image.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/features/create_service/widget/picture_viewer.dart';
-import 'package:eocout_flutter/models/business_data.dart';
+import 'package:eocout_flutter/models/service_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,7 @@ class _AddEventPageState extends State<AddEventPage> {
   final _companyNameTEC = TextEditingController();
   final _scrollController = ScrollController();
 
-  final editableBusinessData = EditableBusinessData();
+  final editableBusinessData = EditableServiceData();
   bool _isChecked = false;
 
   final ServiceBloc _serviceBloc = ServiceBloc();

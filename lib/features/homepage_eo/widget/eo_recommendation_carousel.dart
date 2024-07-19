@@ -61,15 +61,17 @@ class EoRecommendationCarousel extends StatelessWidget {
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
-                    Text(
-                      subtitle[idx],
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300),
-                      textAlign: TextAlign.end,
-                    )
+                    Text(subtitle[idx],
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300),
+                        textAlign: TextAlign.end,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2)
                   ],
                 ),
               )
