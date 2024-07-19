@@ -190,10 +190,10 @@ class ChatBloc {
         "message": chatMessageData.content
       });
 
-      await channel?.ready;
-
       if (response.statusCode == 200) {
         chatMessageData.isLoading = false;
+        await getChatList();
+
         _updateDetailChatStream(
             detailChatState!.copyWith(chatMessageList: chatMessageList));
       }
@@ -203,7 +203,7 @@ class ChatBloc {
       chatMessageData.hasError = true;
 
       AppError error = AppError.fromErr(err);
-      printError(err, method: "resendNewMessage");
+      printError(err, method: "sendNewMessage");
       return error;
     } finally {
       chatMessageData.isLoading = false;
