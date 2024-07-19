@@ -1,10 +1,11 @@
 import 'package:eocout_flutter/bloc/booking/booking_bloc.dart';
 import 'package:eocout_flutter/components/my_error_component.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
+import 'package:eocout_flutter/features/transaction_detail_eo/eo_transaction_detail_page.dart';
 import 'package:eocout_flutter/features/transaction_eo/widget/transaction_card.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/utils/booking_filter.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class EventOrganizerTransactionList extends StatefulWidget {
@@ -34,48 +35,72 @@ class _EventOrganizerTransactionListState
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: _bookingBloc.controller,
-        builder: (context, snapshot) {
-          bool isLoading =
-              snapshot.data?.isLoading ?? false || !snapshot.hasData;
+    return RefreshIndicator(
+      onRefresh: () async {
+        await _bookingBloc.getBookingRequest(bookingFilter: widget.filter);
+      },
+      child: StreamBuilder(
+          stream: _bookingBloc.controller,
+          builder: (context, snapshot) {
+            bool isLoading =
+                snapshot.data?.isLoading ?? false || !snapshot.hasData;
 
-          bool hasError = snapshot.data?.hasError ?? false;
+            bool hasError = snapshot.data?.hasError ?? false;
 
-          if (hasError) {
-            return MyErrorComponent(onRefresh: () {
-              _bookingBloc.getBookingRequest(bookingFilter: widget.filter);
-            });
-          }
+            if (hasError) {
+              return MyErrorComponent(onRefresh: () {
+                _bookingBloc.getBookingRequest(bookingFilter: widget.filter);
+              });
+            }
 
-          List<BookingData> bookingDataList = snapshot.data?.bookings ??
-              List.generate(7, (_) => BookingData.dummy());
+            List<BookingData> bookingDataList = snapshot.data?.bookings ??
+                List.generate(7, (_) => BookingData.dummy());
 
-          if (bookingDataList.isEmpty) {
-            return const Center(
-                child: MyNoDataComponent(
-              label: "Tidak ada pesanan saat ini",
-            ));
-          }
+            if (bookingDataList.isEmpty) {
+              return const Center(
+                  child: MyNoDataComponent(
+                label: "Tidak ada pesanan saat ini",
+              ));
+            }
 
-          return Skeletonizer(
-            enabled: isLoading,
-            child: ListView.separated(
-                shrinkWrap: true,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-                itemCount: bookingDataList.length,
-                separatorBuilder: (context, index) => const SizedBox(
-                      height: 10,
-                    ),
-                itemBuilder: (context, index) {
-                  BookingData bookingData = bookingDataList[index];
-                  return TransactionCard(
-                    bookingData: bookingData,
-                    onButtonPressed: () {},
-                  );
-                }),
-          );
-        });
+            return Skeletonizer(
+              enabled: isLoading,
+              child: ListView.separated(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 10),
+                  itemCount: bookingDataList.length,
+                  separatorBuilder: (context, index) => const SizedBox(
+                        height: 10,
+                      ),
+                  itemBuilder: (context, index) {
+                    BookingData bookingData = bookingDataList[index];
+                    return TransactionCard(
+                      bookingData: bookingData,
+                      onButtonPressed: () async {
+                        await showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            showDragHandle: true,
+                            constraints: BoxConstraints(
+                                maxHeight:
+                                    MediaQuery.of(context).size.height * 0.9),
+                            builder: (context) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(8, 20, 8, 10.0),
+                                child: EventOrganizerTransactionDetailPage(
+                                    bookingData: bookingData),
+                              );
+                            });
+
+                        _bookingBloc.getBookingRequest(
+                            bookingFilter: widget.filter);
+                      },
+                    );
+                  }),
+            );
+          }),
+    );
   }
 }
