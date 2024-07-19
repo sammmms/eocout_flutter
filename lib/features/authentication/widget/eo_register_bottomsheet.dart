@@ -70,6 +70,7 @@ class _EORegisterBottomsheetState extends State<EORegisterBottomsheet> {
                             child: Card(
                               color: colorScheme.tertiaryContainer
                                   .withOpacity(0.05),
+                              elevation: 0,
                               child: Padding(
                                   padding: const EdgeInsets.all(20),
                                   child: Text(cities[index],
