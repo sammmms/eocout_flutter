@@ -186,7 +186,7 @@ ThemeData lightThemeData = ThemeData(
     shadowColor: Colors.grey,
     surfaceTintColor: Colors.transparent,
     margin: EdgeInsets.zero,
-    elevation: 5,
+    elevation: 3,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(20),
     ),
