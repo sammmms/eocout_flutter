@@ -170,7 +170,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Center(
                           child: Column(
                             children: [
-                              _showProfilePicture(user),
+                              _showProfilePicture(user, editableUserData),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -538,16 +538,21 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {});
   }
 
-  Widget _showProfilePicture(UserData user) {
+  Widget _showProfilePicture(
+      UserData user, EditableUserData? editableUserData) {
+    File? image = editableUserData?.picture;
+
     return Stack(
       children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 10.0),
           child: GestureDetector(
             onTap: isEdit ? _pickImage : null,
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(200),
-                child: MyAvatarLoader(user: user, radius: 80)),
+            child: MyAvatarLoader(
+                user: image != null && isEdit
+                    ? UserData(profilePicture: image)
+                    : user,
+                radius: 80),
           ),
         ),
         Positioned(

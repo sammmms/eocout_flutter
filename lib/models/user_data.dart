@@ -166,9 +166,7 @@ class EditableUserData {
     return fullname == user.fullname &&
         address == user.address &&
         username == user.username &&
-        ((picture == null || user.profilePicture == null)
-            ? true
-            : picture! == user.profilePicture!) &&
+        picture == user.profilePicture &&
         profileData.isEqual(user.profileData);
   }
 
