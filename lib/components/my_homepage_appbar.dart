@@ -8,7 +8,6 @@ import 'package:eocout_flutter/components/my_avatar_loader.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/notification/notification_page.dart';
 import 'package:eocout_flutter/features/profile/profile_page.dart';
-import 'package:eocout_flutter/models/notification_data.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
