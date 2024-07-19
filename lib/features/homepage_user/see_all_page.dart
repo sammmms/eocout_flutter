@@ -3,8 +3,8 @@ import 'package:eocout_flutter/bloc/service/service_state.dart';
 import 'package:eocout_flutter/components/my_error_component.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/components/my_searchbar.dart';
-import 'package:eocout_flutter/features/homepage_user/widget/business_card.dart';
-import 'package:eocout_flutter/models/business_data.dart';
+import 'package:eocout_flutter/features/homepage_user/widget/service_card.dart';
+import 'package:eocout_flutter/models/service_data.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -92,9 +92,9 @@ class _SeeAllPageState extends State<SeeAllPage> {
                       );
                     }
 
-                    List<BusinessData> businessData =
+                    List<ServiceData> businessData =
                         snapshot.data?.businessData ??
-                            List.generate(5, (_) => BusinessData.dummy());
+                            List.generate(5, (_) => ServiceData.dummy());
 
                     if (businessData.isEmpty) {
                       return const Padding(
@@ -115,8 +115,8 @@ class _SeeAllPageState extends State<SeeAllPage> {
                                 height: 20,
                               ),
                           itemBuilder: (context, index) {
-                            BusinessData data = businessData[index];
-                            return BusinessCard(businessData: data);
+                            ServiceData data = businessData[index];
+                            return ServiceCard(businessData: data);
                           }),
                     );
                   }),

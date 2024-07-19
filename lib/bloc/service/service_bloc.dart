@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:eocout_flutter/bloc/image_handle/image_bloc.dart';
 import 'package:eocout_flutter/bloc/service/service_state.dart';
-import 'package:eocout_flutter/models/business_data.dart';
+import 'package:eocout_flutter/models/service_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/dio_interceptor.dart';
 import 'package:eocout_flutter/utils/print_error.dart';
@@ -66,7 +66,7 @@ class ServiceBloc {
         print(data);
       }
 
-      List<BusinessData> businessData = [];
+      List<ServiceData> businessData = [];
 
       for (var business in data) {
         List responseImages = business['images'] ?? [];
@@ -90,7 +90,7 @@ class ServiceBloc {
               .loadImage(business['profile']['profile_pic_media_id']);
         }
 
-        businessData.add(BusinessData.fromJson(business,
+        businessData.add(ServiceData.fromJson(business,
             images: images, profilePic: profilePic));
       }
 
@@ -102,7 +102,7 @@ class ServiceBloc {
   }
 
   Future<AppError?> createService(
-      {required EditableBusinessData editableBusinessData}) async {
+      {required EditableServiceData editableBusinessData}) async {
     _updateStream(ServiceState.loading());
     try {
       List<String> mediaIds = [];
@@ -152,7 +152,7 @@ class ServiceBloc {
 
       final data = response.data['data'];
 
-      List<BusinessData> businessData = [];
+      List<ServiceData> businessData = [];
 
       for (var business in data) {
         List responseImages = business['images'] ?? [];
@@ -176,7 +176,7 @@ class ServiceBloc {
               .loadImage(business['profile']['profile_pic_media_id']);
         }
 
-        businessData.add(BusinessData.fromJson(business,
+        businessData.add(ServiceData.fromJson(business,
             images: images, profilePic: profilePic));
       }
 

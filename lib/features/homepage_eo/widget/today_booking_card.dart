@@ -1,7 +1,7 @@
 import 'package:eocout_flutter/bloc/booking/booking_bloc.dart';
 import 'package:eocout_flutter/components/my_avatar_loader.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
-import 'package:eocout_flutter/models/business_data.dart';
+import 'package:eocout_flutter/models/service_data.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/status_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
@@ -30,7 +30,7 @@ class _TodayBookingCardState extends State<TodayBookingCard> {
   @override
   Widget build(BuildContext context) {
     UserData userData = widget.bookingData.businessData.profile;
-    BusinessData serviceData = widget.bookingData.businessData;
+    ServiceData serviceData = widget.bookingData.businessData;
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(

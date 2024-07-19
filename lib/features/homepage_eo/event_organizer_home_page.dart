@@ -18,7 +18,7 @@ import 'package:eocout_flutter/features/homepage_eo/widget/eo_recommendation_car
 import 'package:eocout_flutter/features/homepage_eo/widget/eo_business_carousel_items.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/today_booking_card.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
-import 'package:eocout_flutter/models/business_data.dart';
+import 'package:eocout_flutter/models/service_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/status_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
@@ -89,7 +89,7 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                   height: 20,
                 ),
                 Text(
-                  "Pesanan Hari Ini",
+                  "Pesanan Terbaru",
                   style: textTheme.headlineMedium,
                 ),
                 const SizedBox(
@@ -225,9 +225,9 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                         );
                       }
 
-                      List<BusinessData> businessData =
+                      List<ServiceData> businessData =
                           snapshot.data?.businessData ??
-                              List.generate(5, (_) => BusinessData.dummy());
+                              List.generate(5, (_) => ServiceData.dummy());
 
                       if (businessData.isEmpty) {
                         return const Center(
@@ -246,7 +246,7 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                                   viewportFraction: 1,
                                   enableInfiniteScroll: false),
                               itemBuilder: (context, index, _) {
-                                BusinessData business = businessData[index];
+                                ServiceData business = businessData[index];
                                 return EOBusinessCarouselItem(
                                     business: business);
                               }));

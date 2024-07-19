@@ -1,10 +1,10 @@
 import 'package:eocout_flutter/features/service_detail/service_detail_page.dart';
-import 'package:eocout_flutter/models/business_data.dart';
+import 'package:eocout_flutter/models/service_data.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 
 class EOBusinessCarouselItem extends StatelessWidget {
-  final BusinessData business;
+  final ServiceData business;
   const EOBusinessCarouselItem({super.key, required this.business});
 
   @override
