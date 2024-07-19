@@ -13,6 +13,7 @@ import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -84,23 +85,31 @@ class _MyHomepageAppBarState extends State<MyHomepageAppBar> {
 
                             return Stack(
                               children: [
-                                const Padding(
-                                    padding: EdgeInsets.all(5),
-                                    child: Icon(Icons.notifications)),
+                                CircleAvatar(
+                                  backgroundColor: Colors.transparent,
+                                  child: SvgPicture.asset(
+                                    "assets/svg/notification_icon.svg",
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
                                 if (totalUnread > 0)
                                   Positioned(
                                     right: 0,
                                     child: Container(
-                                      width: 15,
-                                      height: 15,
+                                      width: 20,
+                                      height: 20,
                                       decoration: BoxDecoration(
                                           color: Colors.red,
                                           borderRadius:
                                               BorderRadius.circular(30)),
                                       child: Center(
-                                        child: Text(totalUnread.toString(),
-                                            style: textTheme.bodySmall!
-                                                .copyWith(color: Colors.white)),
+                                        child: Text(
+                                            totalUnread > 99
+                                                ? "99"
+                                                : totalUnread.toString(),
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10)),
                                       ),
                                     ),
                                   )
