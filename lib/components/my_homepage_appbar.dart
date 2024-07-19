@@ -71,9 +71,10 @@ class _MyHomepageAppBarState extends State<MyHomepageAppBar> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        navigateTo(context, const NotificationPage(),
+                      onTap: () async {
+                        await navigateTo(context, const NotificationPage(),
                             transition: TransitionType.slideInFromRight);
+                        _notificationBloc.fetchNotifications();
                       },
                       child: StreamBuilder<NotificationState>(
                           stream: _notificationBloc.stream,
