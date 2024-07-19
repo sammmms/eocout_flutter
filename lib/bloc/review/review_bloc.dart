@@ -49,7 +49,7 @@ class ReviewBloc {
 
   ReviewState? get state => controller.valueOrNull;
 
-  void fetchReviews(String eoServiceId) async {
+  Future<void> fetchReviews(String eoServiceId) async {
     _updateStream(ReviewState.loading());
     try {
       String url = '/eo-service/$eoServiceId/review';
