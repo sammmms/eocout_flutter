@@ -32,22 +32,26 @@ class EOServiceItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  width: double.infinity,
-                  height: 150,
-                  child: serviceData.images.isEmpty
-                      ? Image.asset(
-                          "assets/images/placeholder.png",
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          height: 150,
-                          fit: BoxFit.cover,
-                        )
-                      : Image.memory(
-                          serviceData.images.first.readAsBytesSync(),
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          height: 150,
-                          fit: BoxFit.cover,
-                        ),
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(20)),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 150,
+                    child: serviceData.images.isEmpty
+                        ? Image.asset(
+                            "assets/images/placeholder.png",
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            height: 150,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.memory(
+                            serviceData.images.first.readAsBytesSync(),
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            height: 150,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
                 ),
                 Padding(
                   padding:
