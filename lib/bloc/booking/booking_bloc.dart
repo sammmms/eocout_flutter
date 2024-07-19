@@ -125,6 +125,51 @@ class BookingBloc {
     }
   }
 
+  Future<AppError?> cancelBooking({required String bookingId}) async {
+    try {
+      var response = await dio.post('/booking/$bookingId/user-cancel');
+
+      if (kDebugMode) {
+        print(response);
+      }
+
+      return null;
+    } catch (err) {
+      printError(err, method: 'cancelBooking');
+      return _updateError(err);
+    }
+  }
+
+  Future<AppError?> completeBooking({required String bookingId}) async {
+    try {
+      var response = await dio.post('/booking/$bookingId/complete');
+
+      if (kDebugMode) {
+        print(response);
+      }
+
+      return null;
+    } catch (err) {
+      printError(err, method: 'completeBooking');
+      return _updateError(err);
+    }
+  }
+
+  Future<AppError?> rejectBooking({required String bookingId}) async {
+    try {
+      var response = await dio.post('/booking/$bookingId/reject');
+
+      if (kDebugMode) {
+        print(response);
+      }
+
+      return null;
+    } catch (err) {
+      printError(err, method: 'rejectBooking');
+      return _updateError(err);
+    }
+  }
+
   Future<AppError?> getAllBooking({BookingFilter? filter}) async {
     try {
       _updateStream(BookingState.loading());
