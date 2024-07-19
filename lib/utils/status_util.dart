@@ -1,4 +1,4 @@
-enum Status { pending, confirmed, cancelled, completed, all }
+enum Status { pending, confirmed, completed, cancelled, all }
 
 class StatusUtil {
   static const Map<Status, String> statusMap = {
