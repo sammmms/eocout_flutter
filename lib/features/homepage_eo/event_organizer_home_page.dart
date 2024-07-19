@@ -13,10 +13,12 @@ import 'package:eocout_flutter/components/my_homepage_appbar.dart';
 import 'package:eocout_flutter/components/my_loading_dialog.dart';
 import 'package:eocout_flutter/components/my_no_data_component.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
+import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/balance_card.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/eo_recommendation_carousel.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/eo_service_item.dart';
 import 'package:eocout_flutter/features/homepage_eo/widget/today_booking_card.dart';
+import 'package:eocout_flutter/features/service_eo/service_page.dart';
 import 'package:eocout_flutter/models/booking_data.dart';
 import 'package:eocout_flutter/models/service_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
@@ -177,48 +179,56 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                               BookingData booking = bookings[index];
                               return TodayBookingCard(
                                 bookingData: booking,
-                                onTap: () async {
-                                  Confirmation? confirmOrder = await showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return const MyConfirmationDialog(
-                                          label: "Konfirmasi pesanan ini?",
-                                          subLabel:
-                                              "Konfirmasi bahwa pesanan ini dapat dilakukan pada jadwal yang ditentukan?",
-                                          positiveLabel: "Konfirmasi",
-                                          negativeLabel: "Batal",
-                                        );
-                                      });
+                                onTap: !booking.isPending
+                                    ? null
+                                    : () async {
+                                        Confirmation? confirmOrder =
+                                            await showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return const MyConfirmationDialog(
+                                                    label:
+                                                        "Konfirmasi pesanan ini?",
+                                                    subLabel:
+                                                        "Konfirmasi bahwa pesanan ini dapat dilakukan pada jadwal yang ditentukan?",
+                                                    positiveLabel: "Konfirmasi",
+                                                    negativeLabel: "Batal",
+                                                  );
+                                                });
 
-                                  if (confirmOrder == Confirmation.positive) {
-                                    if (!context.mounted) return;
+                                        if (confirmOrder ==
+                                            Confirmation.positive) {
+                                          if (!context.mounted) return;
 
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            const MyLoadingDialog());
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  const MyLoadingDialog());
 
-                                    AppError? error = await _bookingBloc
-                                        .confirmBooking(bookingId: booking.id);
+                                          AppError? error =
+                                              await _bookingBloc.confirmBooking(
+                                                  bookingId: booking.id);
 
-                                    if (!context.mounted) return;
+                                          if (!context.mounted) return;
 
-                                    Navigator.pop(context);
+                                          Navigator.pop(context);
 
-                                    if (error != null) {
-                                      showMySnackBar(context, error.message,
-                                          SnackbarStatus.error);
-                                      return;
-                                    }
+                                          if (error != null) {
+                                            showMySnackBar(
+                                                context,
+                                                error.message,
+                                                SnackbarStatus.error);
+                                            return;
+                                          }
 
-                                    showMySnackBar(
-                                        context,
-                                        "Berhasil mengonfirmasi pesanan.",
-                                        SnackbarStatus.success);
+                                          showMySnackBar(
+                                              context,
+                                              "Berhasil mengonfirmasi pesanan.",
+                                              SnackbarStatus.success);
 
-                                    _bookingBloc.getBookingRequest();
-                                  }
-                                },
+                                          _bookingBloc.getBookingRequest();
+                                        }
+                                      },
                               );
                             }),
                       );
@@ -246,7 +256,8 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
 
                           return GestureDetector(
                             onTap: () {
-                              // TODO : CREATE THAT
+                              navigateTo(context, const ServicePage(),
+                                  transition: TransitionType.slideInFromRight);
                             },
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
