@@ -31,7 +31,7 @@ class _BookingCardState extends State<BookingCard> {
   @override
   Widget build(BuildContext context) {
     bool isCancelled = widget.bookingData.isCancelled;
-    bool isNotPaid = widget.bookingData.isNotPaid;
+    bool isNotPaid = widget.bookingData.isPendingPayment;
     bool isConfirmed = widget.bookingData.isConfirmed;
     return Container(
         padding: const EdgeInsets.all(20),
@@ -104,7 +104,7 @@ class _BookingCardState extends State<BookingCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                if (widget.bookingData.isComplete)
+                if (widget.bookingData.isCompleted)
                   ElevatedButton(
                       onPressed: () {
                         navigateTo(context,

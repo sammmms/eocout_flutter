@@ -18,17 +18,20 @@ class BookingData {
     required this.serviceData,
     required this.status,
   });
+
+  bool get isPending => status == Status.pending;
+
+  bool get isConfirmed => status == Status.confirmed;
+
   bool get isCancelled => status == Status.cancelled;
 
-  bool get isNotPaid =>
-      status == Status.confirmed && paymentStatus == PaymentStatus.pending;
+  bool get isCompleted => status == Status.completed;
 
   bool get isPaid => paymentStatus == PaymentStatus.completed;
 
-  bool get isComplete =>
-      status == Status.completed && paymentStatus == PaymentStatus.completed;
+  bool get isFailed => paymentStatus == PaymentStatus.failed;
 
-  bool get isConfirmed => status == Status.confirmed;
+  bool get isPendingPayment => paymentStatus == PaymentStatus.pending;
 
   factory BookingData.fromJson(Map<String, dynamic> json,
       {List<File>? serviceImage, File? profilePic}) {
