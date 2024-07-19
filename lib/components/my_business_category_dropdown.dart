@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:eocout_flutter/bloc/category/category_bloc.dart';
 import 'package:eocout_flutter/bloc/category/category_state.dart';
 import 'package:eocout_flutter/utils/service_type_util.dart';
@@ -29,10 +30,10 @@ class _MyBusinessCategoryDropdownState
         List<EOCategory>? categories = _categoryBloc.state?.categories;
 
         if (categories != null) {
-          final category = categories
-              .firstWhere((element) => element.id == widget.selectedBusinessId);
+          final category = categories.firstWhereOrNull(
+              (element) => element.id == widget.selectedBusinessId);
           setState(() {
-            selectedBusiness = category.serviceType;
+            selectedBusiness = category?.serviceType;
           });
         }
       }
