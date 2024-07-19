@@ -27,33 +27,37 @@ class EOBusinessCarouselItem extends StatelessWidget {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            SizedBox(
-                width: double.infinity,
-                height: 400,
-                child: serviceData.images.isEmpty
-                    ? Image.asset(
-                        "assets/images/placeholder.png",
-                        width: double.infinity,
-                      )
-                    : Image.memory(
-                        serviceData.images.first.readAsBytesSync(),
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                      )),
-            Container(
-              color: Colors.black.withOpacity(0.2),
-            ),
-            Positioned(
-              bottom: 20,
-              child: Text(
-                serviceData.name,
-                style: textTheme.headlineMedium!.copyWith(color: Colors.white),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                  width: double.infinity,
+                  height: 400,
+                  child: serviceData.images.isEmpty
+                      ? Image.asset(
+                          "assets/images/placeholder.png",
+                          width: double.infinity,
+                        )
+                      : Image.memory(
+                          serviceData.images.first.readAsBytesSync(),
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        )),
+              Container(
+                color: Colors.black.withOpacity(0.2),
               ),
-            )
-          ],
+              Positioned(
+                bottom: 20,
+                child: Text(
+                  serviceData.name,
+                  style:
+                      textTheme.headlineMedium!.copyWith(color: Colors.white),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
