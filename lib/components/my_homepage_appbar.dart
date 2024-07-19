@@ -78,9 +78,6 @@ class _MyHomepageAppBarState extends State<MyHomepageAppBar> {
                       child: StreamBuilder<NotificationState>(
                           stream: _notificationBloc.stream,
                           builder: (context, snapshot) {
-                            List<NotificationData> notifications =
-                                snapshot.data?.notificationList ?? [];
-
                             int totalUnread = snapshot.data?.totalUnread ?? 0;
 
                             return Stack(
