@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:eocout_flutter/models/user_data.dart';
 
-class BusinessData {
+class ServiceData {
   final String id;
   final String companyName;
   final String description;
@@ -12,8 +12,10 @@ class BusinessData {
   final String name;
   final int price;
   final UserData profile;
+  final double averageRating;
+  final int ratingCount;
 
-  BusinessData({
+  ServiceData({
     required this.id,
     required this.companyName,
     required this.description,
@@ -23,22 +25,28 @@ class BusinessData {
     this.name = "",
     this.price = 0,
     UserData? profile,
+    this.averageRating = 0,
+    this.ratingCount = 0,
   }) : profile = profile ?? UserData();
 
-  factory BusinessData.fromJson(Map<String, dynamic> json,
+  factory ServiceData.fromJson(Map<String, dynamic> json,
       {List<File>? images, File? profilePic}) {
-    return BusinessData(
-      id: json['id'],
-      companyName: json['company_name'],
-      description: json['description'],
-      images: images ?? [],
-      isAcceptPartyPromotionOrMarketing:
-          json['is_accept_party_promotion_or_marketing'] ?? false,
-      location: json['location'],
-      name: json['name'],
-      price: int.tryParse(json['price']) ?? 0,
-      profile: UserData.fromJson(json['profile'], profilePicture: profilePic),
-    );
+    return ServiceData(
+        id: json['id'],
+        companyName: json['company_name'],
+        description: json['description'],
+        images: images ?? [],
+        isAcceptPartyPromotionOrMarketing:
+            json['is_accept_party_promotion_or_marketing'] ?? false,
+        location: json['location'],
+        name: json['name'],
+        price: int.tryParse(json['price']) ?? 0,
+        profile: UserData.fromJson(
+          json['profile'],
+          profilePicture: profilePic,
+        ),
+        averageRating: json['average_rating'],
+        ratingCount: json['rating_count']);
   }
 
   Map<String, dynamic> toJson() {
@@ -51,11 +59,14 @@ class BusinessData {
           isAcceptPartyPromotionOrMarketing,
       'location': location,
       'name': name,
+      'profile': profile.toJson(),
+      'average_rating': averageRating,
+      'rating_count': ratingCount,
     };
   }
 
-  factory BusinessData.dummy() {
-    return BusinessData(
+  factory ServiceData.dummy() {
+    return ServiceData(
       id: "1",
       companyName: "PT. Eocout",
       description:
@@ -66,11 +77,13 @@ class BusinessData {
       name: "Eocout",
       price: 1000000,
       profile: UserData.dummy(),
+      averageRating: 4.5,
+      ratingCount: 100,
     );
   }
 
-  factory BusinessData.empty() {
-    return BusinessData(
+  factory ServiceData.empty() {
+    return ServiceData(
       id: "",
       companyName: "",
       description: "",
@@ -80,11 +93,13 @@ class BusinessData {
       name: "",
       price: 0,
       profile: UserData.empty(),
+      averageRating: 0,
+      ratingCount: 0,
     );
   }
 }
 
-class EditableBusinessData {
+class EditableServiceData {
   String companyName;
   String description;
   List<File> images;
@@ -93,7 +108,7 @@ class EditableBusinessData {
   String name;
   int price;
 
-  EditableBusinessData({
+  EditableServiceData({
     this.companyName = "",
     this.description = "",
     List<File>? images,

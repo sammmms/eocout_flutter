@@ -226,7 +226,7 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                       }
 
                       List<ServiceData> businessData =
-                          snapshot.data?.businessData ??
+                          snapshot.data?.serviceData ??
                               List.generate(5, (_) => ServiceData.dummy());
 
                       if (businessData.isEmpty) {
@@ -246,9 +246,9 @@ class _EventOrganizerHomePageState extends State<EventOrganizerHomePage> {
                                   viewportFraction: 1,
                                   enableInfiniteScroll: false),
                               itemBuilder: (context, index, _) {
-                                ServiceData business = businessData[index];
+                                ServiceData service = businessData[index];
                                 return EOBusinessCarouselItem(
-                                    business: business);
+                                    serviceData: service);
                               }));
                     })
               ],

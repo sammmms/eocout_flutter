@@ -3,7 +3,7 @@ import 'package:eocout_flutter/bloc/category/category_bloc.dart';
 import 'package:eocout_flutter/bloc/category/category_state.dart';
 import 'package:eocout_flutter/bloc/notification/notification_bloc.dart';
 import 'package:eocout_flutter/components/my_homepage_appbar.dart';
-import 'package:eocout_flutter/utils/business_type_util.dart';
+import 'package:eocout_flutter/utils/service_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -68,8 +68,8 @@ class ExploreList extends StatelessWidget {
                                             Colors.black.withOpacity(0.3),
                                             BlendMode.darken),
                                         image: AssetImage(
-                                            BusinessTypeUtil.imageOf(
-                                                category.businessType)),
+                                            ServiceTypeUtil.imageOf(
+                                                category.serviceType)),
                                         fit: BoxFit.cover)),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -81,8 +81,8 @@ class ExploreList extends StatelessWidget {
                                           color: colorScheme.onPrimary),
                                     ),
                                     Text(
-                                      BusinessTypeUtil.textOf(
-                                          category.businessType),
+                                      ServiceTypeUtil.textOf(
+                                          category.serviceType),
                                       style: textTheme.headlineLarge!.copyWith(
                                           color: colorScheme.onPrimary),
                                     ),

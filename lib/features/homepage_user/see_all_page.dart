@@ -93,7 +93,7 @@ class _SeeAllPageState extends State<SeeAllPage> {
                     }
 
                     List<ServiceData> businessData =
-                        snapshot.data?.businessData ??
+                        snapshot.data?.serviceData ??
                             List.generate(5, (_) => ServiceData.dummy());
 
                     if (businessData.isEmpty) {

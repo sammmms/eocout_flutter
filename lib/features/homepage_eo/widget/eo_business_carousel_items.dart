@@ -4,8 +4,8 @@ import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 
 class EOBusinessCarouselItem extends StatelessWidget {
-  final ServiceData business;
-  const EOBusinessCarouselItem({super.key, required this.business});
+  final ServiceData serviceData;
+  const EOBusinessCarouselItem({super.key, required this.serviceData});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class EOBusinessCarouselItem extends StatelessWidget {
                     borderRadius:
                         const BorderRadius.vertical(top: Radius.circular(20)),
                     child: ServiceDetailPage(
-                      businessData: business,
+                      businessData: serviceData,
                     ),
                   ),
                 ));
@@ -33,13 +33,13 @@ class EOBusinessCarouselItem extends StatelessWidget {
             SizedBox(
                 width: double.infinity,
                 height: 400,
-                child: business.images.isEmpty
+                child: serviceData.images.isEmpty
                     ? Image.asset(
                         "assets/images/placeholder.png",
                         width: double.infinity,
                       )
                     : Image.memory(
-                        business.images.first.readAsBytesSync(),
+                        serviceData.images.first.readAsBytesSync(),
                         fit: BoxFit.cover,
                         width: double.infinity,
                       )),
@@ -49,7 +49,7 @@ class EOBusinessCarouselItem extends StatelessWidget {
             Positioned(
               bottom: 20,
               child: Text(
-                business.name,
+                serviceData.name,
                 style: textTheme.headlineMedium!.copyWith(color: Colors.white),
               ),
             )

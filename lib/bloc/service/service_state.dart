@@ -2,26 +2,26 @@ import 'package:eocout_flutter/models/service_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 
 class ServiceState {
-  List<ServiceData>? businessData;
+  List<ServiceData>? serviceData;
   final bool isLoading;
   final bool hasError;
   final AppError? error;
 
   ServiceState({
-    this.businessData,
+    this.serviceData,
     this.isLoading = false,
     this.hasError = false,
     this.error,
   });
 
   ServiceState copyWith({
-    List<ServiceData>? businessData,
+    List<ServiceData>? serviceData,
     bool? isLoading,
     bool? hasError,
     AppError? error,
   }) {
     return ServiceState(
-      businessData: businessData ?? this.businessData,
+      serviceData: serviceData ?? this.serviceData,
       isLoading: isLoading ?? this.isLoading,
       hasError: hasError ?? this.hasError,
       error: error ?? this.error,
@@ -40,7 +40,7 @@ class ServiceState {
     return ServiceState(hasError: true, error: error);
   }
 
-  factory ServiceState.success(List<ServiceData> businessData) {
-    return ServiceState(businessData: businessData);
+  factory ServiceState.success(List<ServiceData> serviceData) {
+    return ServiceState(serviceData: serviceData);
   }
 }

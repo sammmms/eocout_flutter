@@ -1,11 +1,16 @@
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:eocout_flutter/bloc/authentication/authentication_bloc.dart';
 import 'package:eocout_flutter/bloc/booking/booking_bloc.dart';
+import 'package:eocout_flutter/bloc/review/review_bloc.dart';
+import 'package:eocout_flutter/bloc/review/review_state.dart';
 import 'package:eocout_flutter/bloc/service/service_bloc.dart';
+import 'package:eocout_flutter/components/my_error_component.dart';
+import 'package:eocout_flutter/components/my_review_card.dart';
 import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/chat_page/chat_detail_page.dart';
-import 'package:eocout_flutter/models/business_data.dart';
+import 'package:eocout_flutter/models/service_data.dart';
+import 'package:eocout_flutter/models/review_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
@@ -15,9 +20,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ServiceDetailPage extends StatefulWidget {
-  final BusinessData businessData;
+  final ServiceData businessData;
   const ServiceDetailPage({super.key, required this.businessData});
 
   @override
@@ -34,6 +40,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
   final _bookingBloc = BookingBloc();
   final _datePickerKey = GlobalKey();
   final _scrollController = ScrollController();
+  final _reviewBloc = ReviewBloc();
 
   @override
   void initState() {
@@ -50,6 +57,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
       }
     }
 
+    _reviewBloc.fetchReviews(widget.businessData.id);
+
     super.initState();
   }
 
@@ -59,6 +68,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
     _currentIndex.close();
     _serviceBloc.dispose();
     _bookingBloc.dispose();
+    _reviewBloc.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -89,149 +99,190 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
       ),
       bottomSheet: _buildBottomAppBar(),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+        padding: const EdgeInsets.fromLTRB(0, 20, 0, 80),
         child: SingleChildScrollView(
           controller: _scrollController,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  CarouselSlider(
-                      items: widget.businessData.images
-                          .map((e) => SizedBox(
-                                height: 400,
-                                width: 400,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image.memory(
-                                    e.readAsBytesSync(),
-                                    height: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ))
-                          .toList(),
-                      controller: _carouselController,
-                      options: CarouselOptions(
-                          autoPlay: true,
-                          onPageChanged: (index, reason) {
-                            _currentIndex.add(index);
-                          },
-                          aspectRatio: 1 / 1,
-                          enableInfiniteScroll: false,
-                          padEnds: true,
-                          pageSnapping: true,
-                          viewportFraction: 1)),
-                  StreamBuilder<int>(
-                      stream: _currentIndex,
-                      initialData: 0,
-                      builder: (context, snapshot) {
-                        int index = snapshot.data!;
-                        return Row(
-                          children: [
-                            if (index > 0)
-                              GestureDetector(
-                                  onTap: () {
-                                    _currentIndex.add(index - 1);
-                                  },
-                                  child: const Icon(
-                                    Icons.arrow_back_ios_new_rounded,
-                                    color: Colors.white,
-                                  )),
-                            const Spacer(),
-                            if (index < widget.businessData.images.length &&
-                                index != widget.businessData.images.length - 1)
-                              GestureDetector(
-                                  onTap: () {
-                                    _currentIndex.add(index + 1);
-                                  },
-                                  child: const Icon(
-                                      Icons.arrow_forward_ios_rounded,
-                                      color: Colors.white)),
-                          ],
-                        );
-                      }),
-                  Positioned(bottom: 20, child: _buildPaginationIndicator())
-                ],
-              ),
-
-              // DETAIL
-              const SizedBox(height: 20),
-              Text(widget.businessData.companyName,
-                  style: textTheme.headlineMedium),
-              const SizedBox(height: 20),
-              Text(
-                widget.businessData.name,
-                style: textTheme.headlineLarge,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                widget.businessData.description,
-                style: textTheme.bodyMedium,
-              ),
-
-              // LOCATION
-              const SizedBox(height: 20),
-              Text(
-                "Lokasi",
-                style: textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                widget.businessData.location,
-                style: textTheme.bodyMedium,
-              ),
-
-              // LOCATION
-              if (!isEOOwner) ...[
-                const SizedBox(height: 20),
-                Text(
-                  "Tanggal dan Waktu",
-                  style: textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 10),
-                _buildDatePicker()
-              ],
-
-              // PROMOTION
-              if (!isEOOwner) ...[
-                const SizedBox(height: 20),
-                Text("Pemasaran dan Promosi Acara",
-                    style: textTheme.headlineSmall),
-                const SizedBox(height: 10),
-                Row(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        "Kami akan membantu anda dalam memasarkan dan mempromosikan acara anda agar lebih dikenal oleh masyarakat luas.",
-                        style: textTheme.bodyMedium,
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CarouselSlider(
+                            items: widget.businessData.images
+                                .map((e) => SizedBox(
+                                      height: 400,
+                                      width: 400,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: Image.memory(
+                                          e.readAsBytesSync(),
+                                          height: double.infinity,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
+                            controller: _carouselController,
+                            options: CarouselOptions(
+                                autoPlay: true,
+                                onPageChanged: (index, reason) {
+                                  _currentIndex.add(index);
+                                },
+                                aspectRatio: 1 / 1,
+                                enableInfiniteScroll: false,
+                                padEnds: true,
+                                pageSnapping: true,
+                                viewportFraction: 1)),
+                        StreamBuilder<int>(
+                            stream: _currentIndex,
+                            initialData: 0,
+                            builder: (context, snapshot) {
+                              int index = snapshot.data!;
+                              return Row(
+                                children: [
+                                  if (index > 0)
+                                    GestureDetector(
+                                        onTap: () {
+                                          _currentIndex.add(index - 1);
+                                        },
+                                        child: const Icon(
+                                          Icons.arrow_back_ios_new_rounded,
+                                          color: Colors.white,
+                                        )),
+                                  const Spacer(),
+                                  if (index <
+                                          widget.businessData.images.length &&
+                                      index !=
+                                          widget.businessData.images.length - 1)
+                                    GestureDetector(
+                                        onTap: () {
+                                          _currentIndex.add(index + 1);
+                                        },
+                                        child: const Icon(
+                                            Icons.arrow_forward_ios_rounded,
+                                            color: Colors.white)),
+                                ],
+                              );
+                            }),
+                        Positioned(
+                            bottom: 20, child: _buildPaginationIndicator())
+                      ],
+                    ),
+
+                    // DETAIL
+                    const SizedBox(height: 20),
+                    Text(widget.businessData.companyName,
+                        style: textTheme.headlineMedium),
+                    const SizedBox(height: 20),
+                    Text(
+                      widget.businessData.name,
+                      style: textTheme.headlineLarge,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      widget.businessData.description,
+                      style: textTheme.bodyMedium,
+                    ),
+
+                    // LOCATION
+                    const SizedBox(height: 20),
+                    Text(
+                      "Lokasi",
+                      style: textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      widget.businessData.location,
+                      style: textTheme.bodyMedium,
+                    ),
+
+                    // LOCATION
+                    if (!isEOOwner) ...[
+                      const SizedBox(height: 20),
+                      Text(
+                        "Tanggal dan Waktu",
+                        style: textTheme.headlineSmall,
                       ),
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    Checkbox(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
+                      const SizedBox(height: 10),
+                      _buildDatePicker()
+                    ],
+
+                    // PROMOTION
+                    if (!isEOOwner) ...[
+                      const SizedBox(height: 20),
+                      Text("Pemasaran dan Promosi Acara",
+                          style: textTheme.headlineSmall),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Kami akan membantu anda dalam memasarkan dan mempromosikan acara anda agar lebih dikenal oleh masyarakat luas.",
+                              style: textTheme.bodyMedium,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Checkbox(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            visualDensity: VisualDensity.compact,
+                            activeColor: colorScheme.tertiary,
+                            value: _isChecked,
+                            onChanged: (_) {
+                              setState(() {
+                                _isChecked = !_isChecked;
+                              });
+                            },
+                          ),
+                        ],
                       ),
-                      visualDensity: VisualDensity.compact,
-                      activeColor: colorScheme.tertiary,
-                      value: _isChecked,
-                      onChanged: (_) {
-                        setState(() {
-                          _isChecked = !_isChecked;
-                        });
-                      },
-                    ),
+                    ],
+
+                    // REVIEW
+                    const SizedBox(height: 20),
+                    Text("Ulasan", style: textTheme.headlineSmall),
+                    const SizedBox(height: 10),
                   ],
                 ),
-              ],
+              ),
+              StreamBuilder<ReviewState>(
+                  stream: _reviewBloc.controller,
+                  builder: (context, snapshot) {
+                    bool isLoading =
+                        snapshot.data?.isLoading ?? false || !snapshot.hasData;
 
-              // REVIEW
-              const SizedBox(height: 20),
-              Text("Ulasan", style: textTheme.headlineSmall),
+                    bool hasError = snapshot.data?.hasError ?? false;
+
+                    if (hasError) {
+                      return MyErrorComponent(onRefresh: () {
+                        _reviewBloc.fetchReviews(widget.businessData.id);
+                      });
+                    }
+
+                    List<ReviewData> reviews = snapshot.data?.reviews ??
+                        List.generate(7, (index) => ReviewData.dummy());
+                    return Skeletonizer(
+                        enabled: isLoading,
+                        child: ListView.separated(
+                            shrinkWrap: true,
+                            itemCount: reviews.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 10),
+                            itemBuilder: (context, index) {
+                              ReviewData review = reviews[index];
+                              return MyReviewCard(review: review);
+                            }));
+                  }),
             ],
           ),
         ),

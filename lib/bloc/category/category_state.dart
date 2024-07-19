@@ -1,5 +1,5 @@
 import 'package:eocout_flutter/utils/app_error.dart';
-import 'package:eocout_flutter/utils/business_type_util.dart';
+import 'package:eocout_flutter/utils/service_type_util.dart';
 
 class CategoryState {
   final List<EOCategory>? categories;
@@ -44,17 +44,16 @@ class CategoryState {
 
 class EOCategory {
   final String id;
-  final BusinessType businessType;
+  final ServiceType serviceType;
 
-  EOCategory({required this.id, required this.businessType});
+  EOCategory({required this.id, required this.serviceType});
 
   factory EOCategory.fromJson(Map<String, dynamic> json) {
     return EOCategory(
-        id: json['id'],
-        businessType: BusinessTypeUtil.fromString(json['name']));
+        id: json['id'], serviceType: ServiceTypeUtil.fromString(json['name']));
   }
 
   factory EOCategory.dummy() {
-    return EOCategory(id: "", businessType: BusinessType.publicEvent);
+    return EOCategory(id: "", serviceType: ServiceType.publicEvent);
   }
 }

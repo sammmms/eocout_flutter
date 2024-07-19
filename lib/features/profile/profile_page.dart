@@ -16,7 +16,7 @@ import 'package:eocout_flutter/features/welcome_page.dart';
 import 'package:eocout_flutter/models/profile_data.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
-import 'package:eocout_flutter/utils/business_type_util.dart';
+import 'package:eocout_flutter/utils/service_type_util.dart';
 import 'package:eocout_flutter/utils/role_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -334,10 +334,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   List<Widget> _showBusinessField(UserData user) {
     ProfileData profileData = user.profileData ?? ProfileData.empty();
-    BusinessType? businessType = widget.categories
+    ServiceType? businessType = widget.categories
         .firstWhereOrNull(
             (element) => element.id == profileData.preferredBusinessCategoryId)
-        ?.businessType;
+        ?.serviceType;
     return [
       const SizedBox(
         height: 10,
@@ -368,9 +368,8 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       _showLabel(
           label: "Kategori Bisnis",
-          value: businessType == null
-              ? ""
-              : BusinessTypeUtil.textOf(businessType)),
+          value:
+              businessType == null ? "" : ServiceTypeUtil.textOf(businessType)),
       const SizedBox(
         height: 10,
       ),

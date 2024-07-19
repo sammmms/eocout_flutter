@@ -1,13 +1,13 @@
 import 'package:eocout_flutter/bloc/category/category_bloc.dart';
 import 'package:eocout_flutter/bloc/category/category_state.dart';
-import 'package:eocout_flutter/utils/business_type_util.dart';
+import 'package:eocout_flutter/utils/service_type_util.dart';
 import 'package:eocout_flutter/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 class MyBusinessCategoryDropdown extends StatefulWidget {
   final String? selectedBusinessId;
-  final Function(BusinessType? businessType, String? id) onChanged;
+  final Function(ServiceType? businessType, String? id) onChanged;
   const MyBusinessCategoryDropdown(
       {super.key, this.selectedBusinessId, required this.onChanged});
 
@@ -18,7 +18,7 @@ class MyBusinessCategoryDropdown extends StatefulWidget {
 
 class _MyBusinessCategoryDropdownState
     extends State<MyBusinessCategoryDropdown> {
-  BusinessType? selectedBusiness;
+  ServiceType? selectedBusiness;
   final _categoryBloc = CategoryBloc();
 
   @override
@@ -32,7 +32,7 @@ class _MyBusinessCategoryDropdownState
           final category = categories
               .firstWhere((element) => element.id == widget.selectedBusinessId);
           setState(() {
-            selectedBusiness = category.businessType;
+            selectedBusiness = category.serviceType;
           });
         }
       }
@@ -73,19 +73,19 @@ class _MyBusinessCategoryDropdownState
                       icon: const Icon(Icons.keyboard_arrow_down),
                       items: categories
                           .map((category) => DropdownMenuItem(
-                                value: category.businessType,
-                                child: Text(BusinessTypeUtil.textOf(
-                                    category.businessType)),
+                                value: category.serviceType,
+                                child: Text(ServiceTypeUtil.textOf(
+                                    category.serviceType)),
                               ))
                           .toList(),
-                      onChanged: (BusinessType? value) {
+                      onChanged: (ServiceType? value) {
                         setState(() {
                           selectedBusiness = value;
                           widget.onChanged(
                               value,
                               categories
-                                  .firstWhere((element) =>
-                                      element.businessType == value)
+                                  .firstWhere(
+                                      (element) => element.serviceType == value)
                                   .id);
                         });
                       },

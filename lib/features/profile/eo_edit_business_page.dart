@@ -11,7 +11,7 @@ import 'package:eocout_flutter/features/dashboard_page.dart';
 import 'package:eocout_flutter/models/profile_data.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
-import 'package:eocout_flutter/utils/business_type_util.dart';
+import 'package:eocout_flutter/utils/service_type_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -87,7 +87,7 @@ class _EOEditBusinessDataPageState extends State<EOEditBusinessDataPage> {
                       selectedBusinessId:
                           profileData.preferredBusinessCategoryId,
                       onChanged:
-                          (BusinessType? businessType, String? businessId) {
+                          (ServiceType? businessType, String? businessId) {
                         if (businessType == null || businessId == null) return;
                         profileData.preferredBusinessCategoryId = businessId;
                         profileData.preferredBusinessCategory = businessType;
