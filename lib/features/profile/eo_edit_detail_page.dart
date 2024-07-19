@@ -232,7 +232,7 @@ class _EOEditDetailDataPageState extends State<EOEditDetailDataPage> {
                         controller: _bankNumberTEC,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: const InputDecoration(
-                          labelText: 'Nomor Rekening',
+                          label: MyImportantText("Nomor Rekening"),
                         ),
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
