@@ -7,8 +7,6 @@ import 'package:eocout_flutter/features/authentication/authentication_page.dart'
 import 'package:eocout_flutter/features/authentication/register/eo_register_page.dart';
 import 'package:eocout_flutter/features/authentication/register/user_register_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
-import 'package:eocout_flutter/features/authentication/widget/button_divider.dart';
-import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
 import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
 import 'package:eocout_flutter/features/dashboard_page.dart';
@@ -128,8 +126,8 @@ class _LoginPageState extends State<LoginPage> {
                                 label: "Masuk",
                                 onPressed: isLoading ? null : _loginUser);
                           }),
-                      const AuthButtonDivider(),
-                      const GoogleAuthButton(),
+                      // const AuthButtonDivider(),
+                      // const GoogleAuthButton(),
                       // Center(
                       //   child: TextButton(
                       //       onPressed: () {

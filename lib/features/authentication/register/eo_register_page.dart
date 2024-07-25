@@ -6,8 +6,6 @@ import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/authentication/login/login_page.dart';
 import 'package:eocout_flutter/features/authentication/register/otp_page.dart';
 import 'package:eocout_flutter/features/authentication/widget/action_button.dart';
-import 'package:eocout_flutter/features/authentication/widget/button_divider.dart';
-import 'package:eocout_flutter/features/authentication/widget/google_button.dart';
 import 'package:eocout_flutter/features/authentication/widget/logo_with_title.dart';
 import 'package:eocout_flutter/features/authentication/widget/password_text_field.dart';
 import 'package:eocout_flutter/models/register_data.dart';
@@ -117,8 +115,8 @@ class _EORegisterPageState extends State<EORegisterPage> {
                             onPressed: isLoading ? null : _registerEO,
                           );
                         }),
-                    const AuthButtonDivider(),
-                    const GoogleAuthButton(),
+                    // const AuthButtonDivider(),
+                    // const GoogleAuthButton(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
