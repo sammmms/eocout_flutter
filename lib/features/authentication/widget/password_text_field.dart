@@ -52,7 +52,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
                 return 'Password minimal 8 karakter.';
               }
               RegExp passwordRegex = RegExp(
-                  r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+                  r'((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,64})');
               if (passwordRegex.hasMatch(value) == false) {
                 return 'Password harus mengandung setidaknya satu huruf besar, satu huruf kecil, satu angka, dan satu karakter spesial.';
               }
