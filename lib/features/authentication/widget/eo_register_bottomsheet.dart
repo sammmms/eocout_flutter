@@ -60,7 +60,7 @@ class _EORegisterBottomsheetState extends State<EORegisterBottomsheet> {
                       child: ListView.separated(
                         itemCount: cities.length,
                         separatorBuilder: (context, index) => const SizedBox(
-                          height: 3,
+                          height: 5,
                         ),
                         itemBuilder: (context, index) {
                           return GestureDetector(
@@ -68,9 +68,8 @@ class _EORegisterBottomsheetState extends State<EORegisterBottomsheet> {
                               Navigator.pop(context, cities[index]);
                             },
                             child: Card(
-                              color: colorScheme.tertiaryContainer
-                                  .withOpacity(0.05),
-                              elevation: 0,
+                              color: Colors.white,
+                              surfaceTintColor: Colors.white,
                               child: Padding(
                                   padding: const EdgeInsets.all(20),
                                   child: Text(cities[index],
@@ -122,7 +121,7 @@ class _EORegisterBottomsheetState extends State<EORegisterBottomsheet> {
                     child: ListView.separated(
                       itemCount: provinces.length,
                       separatorBuilder: (context, index) => const SizedBox(
-                        height: 3,
+                        height: 5,
                       ),
                       itemBuilder: (context, index) {
                         return GestureDetector(
@@ -130,8 +129,8 @@ class _EORegisterBottomsheetState extends State<EORegisterBottomsheet> {
                             Navigator.pop(context, provinces[index]);
                           },
                           child: Card(
-                            color:
-                                colorScheme.tertiaryContainer.withOpacity(0.05),
+                            color: Colors.white,
+                            surfaceTintColor: Colors.white,
                             child: Padding(
                                 padding: const EdgeInsets.all(20),
                                 child: Text(provinces[index],
