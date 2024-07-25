@@ -19,24 +19,22 @@ class MyButtonTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return TextFormField(
+      validator: validator,
       onTap: onTap,
-      child: TextFormField(
-        validator: validator,
-        controller: controller,
-        autovalidateMode: autovalidateMode,
-        decoration: InputDecoration(
-            enabled: false,
-            contentPadding: const EdgeInsets.fromLTRB(20, 20, 10, 20),
-            disabledBorder: Theme.of(context)
-                .inputDecorationTheme
-                .disabledBorder
-                ?.copyWith(
-                    borderSide:
-                        BorderSide(color: colorScheme.secondaryContainer)),
-            label: label,
-            prefixIcon: icon),
-      ),
+      readOnly: true,
+      controller: controller,
+      autovalidateMode: autovalidateMode,
+      decoration: InputDecoration(
+          contentPadding: const EdgeInsets.fromLTRB(20, 20, 10, 20),
+          disabledBorder: Theme.of(context)
+              .inputDecorationTheme
+              .disabledBorder
+              ?.copyWith(
+                  borderSide:
+                      BorderSide(color: colorScheme.secondaryContainer)),
+          label: label,
+          prefixIcon: icon),
     );
   }
 }
