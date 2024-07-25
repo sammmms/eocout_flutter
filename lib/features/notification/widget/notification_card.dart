@@ -10,46 +10,37 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (data.user != null)
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (data.user != null)
+              Row(
+                children: [
+                  MyAvatarLoader(user: data.user!),
+                  const SizedBox(width: 10),
+                  Text(
+                    data.user!.fullname,
+                    style: textTheme.headlineMedium,
+                  ),
+                ],
+              ),
+            const SizedBox(height: 10),
             Row(
               children: [
-                MyAvatarLoader(user: data.user!),
-                const SizedBox(width: 10),
-                Text(
-                  data.user!.fullname,
-                  style: textTheme.headlineMedium,
+                Icon(
+                  NotificationTypeUtil.iconOf(data.type),
+                  color: colorScheme.secondaryContainer,
                 ),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: Text(data.content, style: textTheme.bodyMedium)),
               ],
-            ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Icon(
-                NotificationTypeUtil.iconOf(data.type),
-                color: colorScheme.secondaryContainer,
-              ),
-              const SizedBox(width: 10),
-              Expanded(child: Text(data.content, style: textTheme.bodyMedium)),
-            ],
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

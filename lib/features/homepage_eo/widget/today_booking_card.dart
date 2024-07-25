@@ -33,65 +33,56 @@ class _TodayBookingCardState extends State<TodayBookingCard> {
     ServiceData serviceData = widget.bookingData.serviceData;
     return GestureDetector(
       onTap: widget.onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 5,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            MyAvatarLoader(user: userData),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          userData.fullname.isNotEmpty
-                              ? userData.fullname
-                              : userData.username,
-                          style: textTheme.headlineMedium,
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      _buildStatusIcon()
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              MyAvatarLoader(user: userData),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
                           child: Text(
-                        serviceData.name,
-                      )),
-                      Expanded(
-                        child: Text(
-                            DateFormat('dd MMM yyyy')
-                                .format(widget.bookingData.bookingDate),
-                            textAlign: TextAlign.end),
-                      )
-                    ],
-                  )
-                ],
+                            userData.fullname.isNotEmpty
+                                ? userData.fullname
+                                : userData.username,
+                            style: textTheme.headlineMedium,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        _buildStatusIcon()
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                            child: Text(
+                          serviceData.name,
+                        )),
+                        Expanded(
+                          child: Text(
+                              DateFormat('dd MMM yyyy')
+                                  .format(widget.bookingData.bookingDate),
+                              textAlign: TextAlign.end),
+                        )
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

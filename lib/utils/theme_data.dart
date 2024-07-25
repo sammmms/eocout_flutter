@@ -183,12 +183,13 @@ ThemeData lightThemeData = ThemeData(
   ),
   cardTheme: CardTheme(
     color: Colors.white,
-    shadowColor: Colors.grey,
+    shadowColor: Colors.transparent,
     surfaceTintColor: Colors.transparent,
     margin: EdgeInsets.zero,
-    elevation: 3,
+    elevation: 0,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(20),
+      side: BorderSide(color: Colors.grey.shade300),
     ),
   ),
   iconButtonTheme: IconButtonThemeData(
