@@ -302,15 +302,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         if (!isEdit) ...[
                           const Divider(),
-                          const SizedBox(
-                            height: 20,
-                          ),
                           InkWell(
-                              onTap: () {
-                                _authBloc.logout();
-                                navigateTo(context, const WelcomePage(),
-                                    clearStack: true);
-                              },
+                            onTap: () {
+                              _authBloc.logout();
+                              navigateTo(context, const WelcomePage(),
+                                  clearStack: true);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
                               child: Container(
                                 width: double.infinity,
                                 color: Colors.transparent,
@@ -320,7 +319,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                       color: colorScheme.error,
                                       fontWeight: FontWeight.w400),
                                 ),
-                              ))
+                              ),
+                            ),
+                          )
                         ]
                       ],
                     ),
