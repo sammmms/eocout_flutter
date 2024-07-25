@@ -494,6 +494,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                       context,
                                       "Berhasil membuat pesanan terhadap layanan",
                                       SnackbarStatus.success);
+                                  Navigator.pop(context);
                                 }
                               },
                         style: OutlinedButton.styleFrom(
