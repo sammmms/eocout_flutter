@@ -13,6 +13,7 @@ import 'package:eocout_flutter/components/my_snackbar.dart';
 import 'package:eocout_flutter/components/my_transition.dart';
 import 'package:eocout_flutter/features/profile/eo_edit_detail_page.dart';
 import 'package:eocout_flutter/features/welcome_page.dart';
+import 'package:eocout_flutter/information_page.dart';
 import 'package:eocout_flutter/models/profile_data.dart';
 import 'package:eocout_flutter/models/user_data.dart';
 import 'package:eocout_flutter/utils/app_error.dart';
@@ -103,6 +104,13 @@ class _ProfilePageState extends State<ProfilePage> {
               );
             }),
         actions: [
+          GestureDetector(
+              onTap: () {
+                navigateTo(context, const InformationPage(),
+                    transition: TransitionType.slideInFromRight);
+              },
+              child: Icon(Icons.info_outline_rounded,
+                  color: colorScheme.onBackground)),
           StreamBuilder<AuthState>(
               stream: _authBloc.controller,
               builder: (context, snapshot) {
